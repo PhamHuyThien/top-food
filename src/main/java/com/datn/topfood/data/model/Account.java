@@ -25,7 +25,6 @@ import org.springframework.security.core.userdetails.UserDetails;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@ToString
 @Entity
 public class Account extends Base implements UserDetails {
 	@Column(unique = true)

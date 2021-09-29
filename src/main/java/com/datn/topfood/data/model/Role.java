@@ -12,6 +12,13 @@ import javax.persistence.ManyToMany;
 
 import com.datn.topfood.util.enums.RoleName;
 
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
 @Entity
 public class Role {
 	@Id

@@ -8,6 +8,14 @@ import javax.persistence.Enumerated;
 import javax.persistence.ManyToMany;
 
 import com.datn.topfood.util.enums.FileType;
+
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
 @Entity
 public class File extends Base{
 
