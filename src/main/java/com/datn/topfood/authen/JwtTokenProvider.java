@@ -10,7 +10,7 @@ public class JwtTokenProvider {
     public static final String PREFIX = "Bearer ";
 
     private static final long EXPIRED_TIME = 86_400_000;
-    private static final String SECRET = "hello_everyone_my_name_is_thien_i_am_deveploper";
+    private static final String SECRET = "hello_everyone_my_name_is_thien_i_am_dev_c404f5e8eb6d34e1eea78f91a40a72492eb42597bbba5918438387c2ed3aea57";
 
     public static String generateToken(UserDetails userDetail) {
         Date datePresent = new Date();
