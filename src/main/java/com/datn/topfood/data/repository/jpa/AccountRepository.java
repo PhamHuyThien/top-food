@@ -1,4 +1,8 @@
 package com.datn.topfood.data.repository.jpa;
 
-public class AccountRepository {
+import com.datn.topfood.data.model.Account;
+import org.springframework.data.jpa.repository.JpaRepository;
+
+public interface AccountRepository extends JpaRepository<Account, Long> {
+    Account findByUsername(String username);
 }

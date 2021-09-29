@@ -14,9 +14,18 @@ import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 
+import com.datn.topfood.util.enums.AccountStatus;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.ToString;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+@ToString
 @Entity
 public class Account extends Base implements UserDetails {
 	@Column(unique = true)
@@ -26,7 +35,7 @@ public class Account extends Base implements UserDetails {
 	private String phoneNumber;
 	@Column(unique = true)
 	private String email;
-	private String status;
+	private AccountStatus status;
 	
 	@OneToOne
 	private AccountOtp accountOtp;
@@ -86,14 +95,12 @@ public class Account extends Base implements UserDetails {
 
 	@Override
 	public String getPassword() {
-		// TODO Auto-generated method stub
-		return null;
+		return password;
 	}
 
 	@Override
 	public String getUsername() {
-		// TODO Auto-generated method stub
-		return null;
+		return username;
 	}
 
 	@Override
