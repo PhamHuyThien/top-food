@@ -1,5 +1,6 @@
 package com.datn.topfood.data.model;
 
+import java.util.List;
 import java.util.Set;
 
 import javax.persistence.CascadeType;
@@ -10,6 +11,16 @@ import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 
+import org.apache.commons.lang3.builder.ToStringExclude;
+
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
+
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
 @Entity
 public class Food extends Base{
 
@@ -21,7 +32,9 @@ public class Food extends Base{
 	@ManyToOne
 	@JoinColumn(name = "profile_id")
 	private Profile profile;
-	
+
+	@EqualsAndHashCode.Exclude
+	@ToStringExclude
 	@ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
 	@JoinTable(
 			  name = "food_file", 
