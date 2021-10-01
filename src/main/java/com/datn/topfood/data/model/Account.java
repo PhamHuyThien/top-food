@@ -17,15 +17,17 @@ import javax.persistence.OneToOne;
 import com.datn.topfood.util.enums.AccountStatus;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
+
+import org.apache.commons.lang3.builder.ToStringExclude;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@ToString
 @Entity
 public class Account extends Base implements UserDetails {
 	@Column(unique = true)
@@ -36,51 +38,69 @@ public class Account extends Base implements UserDetails {
 	@Column(unique = true)
 	private String email;
 	private AccountStatus status;
-	
+
 	@OneToOne
 	private AccountOtp accountOtp;
-	
+
 	@OneToOne
 	private Profile profile;
-	
+
+	@EqualsAndHashCode.Exclude
+	@ToStringExclude
 	@ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-	@JoinTable(
-			  name = "account_role", 
-			  joinColumns = @JoinColumn(name = "account_id"), 
-			  inverseJoinColumns = @JoinColumn(name = "role_id"))
+	@JoinTable(name = "account_role", joinColumns = @JoinColumn(name = "account_id"), inverseJoinColumns = @JoinColumn(name = "role_id"))
 	private Set<Role> roles;
-	
+
+	@EqualsAndHashCode.Exclude
+	@ToStringExclude
 	@OneToMany(mappedBy = "account", cascade = CascadeType.ALL)
 	private List<Comment> comments;
 	
+	@EqualsAndHashCode.Exclude
+	@ToStringExclude
 	@OneToMany(mappedBy = "accountRequest", cascade = CascadeType.ALL)
 	private List<FriendShip> friendShipsRequest;
 	
+	@EqualsAndHashCode.Exclude
+	@ToStringExclude
 	@OneToMany(mappedBy = "accountAddressee", cascade = CascadeType.ALL)
 	private List<FriendShip> friendShipsAddressee;
 	
+	@EqualsAndHashCode.Exclude
+	@ToStringExclude
 	@OneToMany(mappedBy = "account", cascade = CascadeType.ALL)
 	private List<Approach> approachs;
 	
+	@EqualsAndHashCode.Exclude
+	@ToStringExclude
 	@OneToMany(mappedBy = "account", cascade = CascadeType.ALL)
 	private List<Intereact> intereacts;
 	
-	@OneToMany(mappedBy = "account",cascade = CascadeType.ALL)
+	@EqualsAndHashCode.Exclude
+	@ToStringExclude
+	@OneToMany(mappedBy = "account", cascade = CascadeType.ALL)
 	private List<Messages> messages;
 	
-	@OneToMany(mappedBy = "account",cascade = CascadeType.ALL)
+	@EqualsAndHashCode.Exclude
+	@ToStringExclude
+	@OneToMany(mappedBy = "account", cascade = CascadeType.ALL)
 	private List<Participants> participants;
 	
-	@OneToMany(mappedBy = "account",cascade = CascadeType.ALL)
+	@EqualsAndHashCode.Exclude
+	@ToStringExclude
+	@OneToMany(mappedBy = "account", cascade = CascadeType.ALL)
 	private List<Favorite> favorites;
 	
-	@OneToMany(mappedBy = "account",cascade = CascadeType.ALL)
+	@EqualsAndHashCode.Exclude
+	@ToStringExclude
+	@OneToMany(mappedBy = "account", cascade = CascadeType.ALL)
 	private List<CommentReply> commentReplys;
 	
-	@OneToMany(mappedBy = "account",cascade = CascadeType.ALL)
+	@EqualsAndHashCode.Exclude
+	@ToStringExclude
+	@OneToMany(mappedBy = "account", cascade = CascadeType.ALL)
 	private List<AccountFollow> accountFollow;
 
-	
 	public Account(String username, String password) {
 		super();
 		this.username = username;
