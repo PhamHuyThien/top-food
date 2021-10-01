@@ -67,9 +67,7 @@ public class AuthServiceImpl implements AuthService {
 		Account account = modelMapper.map(registerRequest, Account.class);
 		account.setCreateAt(DateUtils.currentTimestamp());
 		Profile profile = profileRepository.save(modelMapper.map(registerRequest, Profile.class));
-		account.setProfile(profile);
-		
-		accountRepository.save(account);
-		
+		// lưu ý ở đây chưa set account cho profile nên khi nối bẳng chỉ có thể nối từ account đến profile
+		account = accountRepository.save(account);
 	}
 }
