@@ -1,5 +1,7 @@
 package com.datn.topfood.authen;
 
+import com.datn.topfood.services.interf.AuthService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -16,6 +18,9 @@ import java.io.IOException;
 @Component
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
+    @Autowired
+    AuthService authService;
+
     @Override
     protected void doFilterInternal(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse, FilterChain filterChain) throws ServletException, IOException {
         String header = httpServletRequest.getHeader(JwtTokenProvider.HEADER);
@@ -24,7 +29,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             try {
                 JwtTokenProvider.validateToken(jwtToken);
                 String username = JwtTokenProvider.getUsernameFromToken(jwtToken);
-                UserDetails userDetails = null; //sử dụng UserDetailService interf
+                UserDetails userDetails = authService.loadUserByUsername(username);
                 Authentication authentication = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
                 SecurityContextHolder.getContext().setAuthentication(authentication);
             } catch (Exception e) {
