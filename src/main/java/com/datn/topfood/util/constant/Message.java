@@ -8,5 +8,8 @@ public class Message {
     public  static final String OTHER_ACTION_IS_DENIED = "Hành động bị từ chối.";
     public static final String OTHER_SUCCESS = "Thành công!";
     public static final String OTHER_API_NOT_FOUND = "Api này không tồn tại.";
+    public static final String ACCOUNT_EMAIL_ALREADY_EXIST = "Email này đã tồn tại";
+    public static final String ACCOUNT_PHONENUMBER_ALREADY_EXIST = "Phone Number này đã tồn tại";
+    public static final String ACCOUNT_USERNAME_ALREADY_EXIST = "Username này đã tồn tại";
 
 }
