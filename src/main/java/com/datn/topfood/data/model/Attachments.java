@@ -1,7 +1,5 @@
 package com.datn.topfood.data.model;
 
-import java.sql.Timestamp;
-
 import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
@@ -14,6 +12,7 @@ import lombok.ToString;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@ToString
 @Entity
 public class Attachments extends Base{
 

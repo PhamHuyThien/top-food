@@ -1,7 +1,11 @@
 package com.datn.topfood.services.service;
 
 import com.datn.topfood.data.model.Account;
+import com.datn.topfood.data.repository.custom.impl.FriendshipCustomRepository;
+import com.datn.topfood.dto.request.PageRequest;
+import com.datn.topfood.dto.response.PageResponse;
 import com.datn.topfood.services.BaseService;
+import com.datn.topfood.util.PageUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -21,26 +25,30 @@ import com.datn.topfood.util.DateUtils;
 import com.datn.topfood.util.constant.Message;
 import com.datn.topfood.util.enums.FriendShipStatus;
 
+import java.util.List;
+
 @Service
 public class AccountServiceImpl extends BaseService implements AccountService {
 
-	@Autowired
-	ProfileRepository profileRepository;
-	@Autowired
-	AccountRepository accountRepository;
-	@Autowired
-	FriendShipRepository friendShipRepository;
+    @Autowired
+    ProfileRepository profileRepository;
+    @Autowired
+    AccountRepository accountRepository;
+    @Autowired
+    FriendShipRepository friendShipRepository;
+    @Autowired
+    FriendshipCustomRepository friendshipCustomRepository;
 
-	@Override
-	@Transactional
-	public FriendProfileResponse getFiendProfileByAccountId(Long id) {
-		return profileRepository.findFiendProfileByAccountId(id);
-	}
+    @Override
+    @Transactional
+    public FriendProfileResponse getFiendProfileByAccountId(Long id) {
+        return profileRepository.findFiendProfileByAccountId(id);
+    }
 
-	@Override
-	@Transactional
-	public Boolean sendFriendInvitations(SendFriendInvitationsRequest friendInvitationsRequest) {
-		Account itMe = itMe();
+    @Override
+    @Transactional
+    public Boolean sendFriendInvitations(SendFriendInvitationsRequest friendInvitationsRequest) {
+    	Account itMe = itMe();
 		Account friend = accountRepository.findByPhoneNumber(friendInvitationsRequest.getPhoneAddressee());
 		// số điện thoại không tồn tại
 		if (friend == null) {
@@ -60,13 +68,13 @@ public class AccountServiceImpl extends BaseService implements AccountService {
 		friendShip.setAccountAddressee(friend);
 		friendShip.setCreateAt(DateUtils.currentTimestamp());
 		friendShipRepository.save(friendShip);
-		return true;
-	}
+        return true;
+    }
 
-	@Override
-	@Transactional
-	public Boolean blockFriend(BlockFriendRequest blockFriendRequest) {
-		Account itMe = itMe();
+    @Override
+    @Transactional
+    public Boolean blockFriend(BlockFriendRequest blockFriendRequest) {
+    	Account itMe = itMe();
 		Account blockPerson = accountRepository.findByPhoneNumber(blockFriendRequest.getPhoneNumberBlockPerson());
 		// số điện thoại không tồn tại
 		if (blockPerson == null) {
@@ -93,13 +101,13 @@ public class AccountServiceImpl extends BaseService implements AccountService {
 
 		friendShip.setStatus(FriendShipStatus.BLOCK);
 		friendShipRepository.save(friendShip);
-		return true;
-	}
+        return true;
+    }
 
-	@Override
-	@Transactional
-	public Boolean replyFriend(ReplyInvitationFriendRequest replyInvitationFriendRequest) {
-		Account itMe = itMe();
+    @Override
+    @Transactional
+    public Boolean replyFriend(ReplyInvitationFriendRequest replyInvitationFriendRequest) {
+    	Account itMe = itMe();
 		FriendShip friendShip = friendShipRepository.findFriendByReplyPersonToRequestPerson(
 				itMe.getUsername(),
 				replyInvitationFriendRequest.getUsernameSendInvitaionPerson());
@@ -121,6 +129,22 @@ public class AccountServiceImpl extends BaseService implements AccountService {
 			// không chấp nhận kết bạn sẽ xóa luôn quan hệ tạm thời (SENDING)
 			friendShipRepository.delete(friendShip);
 		}
-		return true;
-	}
+        return true;
+    }
+
+    @Override
+    @Transactional
+    public PageResponse<FriendProfileResponse> getListFriends(PageRequest pageRequest) {
+        Account itMe = itMe();
+        pageRequest = PageUtils.ofDefault(pageRequest);
+        List<FriendProfileResponse> friendProfileResponseList = friendshipCustomRepository.findByListFriends(itMe.getId(), pageRequest);
+        PageResponse pageResponse = new PageResponse<>(
+                friendProfileResponseList,
+                friendshipCustomRepository.getTotalProfile(itMe.getId()),
+                pageRequest.getPageSize()
+        );
+        pageResponse.setStatus(true);
+        pageResponse.setMessage(Message.OTHER_SUCCESS);
+        return pageResponse;
+    }
 }

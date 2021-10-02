@@ -1,6 +1,5 @@
 package com.datn.topfood.data.model;
 
-import java.util.List;
 import java.util.Set;
 
 import javax.persistence.Entity;
@@ -8,18 +7,15 @@ import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.ManyToMany;
 
-import org.apache.commons.lang3.builder.ToStringExclude;
+import lombok.*;
 
 import com.datn.topfood.util.enums.FileType;
-
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
+import org.apache.commons.lang3.builder.ToStringExclude;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@ToString
 @Entity
 public class File extends Base{
 

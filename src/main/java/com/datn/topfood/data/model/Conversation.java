@@ -1,6 +1,5 @@
 package com.datn.topfood.data.model;
 
-import java.sql.Timestamp;
 import java.util.List;
 
 import javax.persistence.CascadeType;
@@ -18,6 +17,7 @@ import lombok.ToString;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@ToString
 @Entity
 public class Conversation extends Base{
 

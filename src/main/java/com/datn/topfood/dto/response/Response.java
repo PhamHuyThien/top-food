@@ -11,9 +11,9 @@ import lombok.ToString;
 @AllArgsConstructor
 @ToString
 public class Response<T> {
-    private boolean status;
-    private String message;
-    private T data;
+    boolean status;
+    String message;
+    T data;
 
     public Response(boolean status, String message) {
         this.status = status;
