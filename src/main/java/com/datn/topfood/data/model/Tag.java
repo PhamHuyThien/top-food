@@ -8,15 +8,15 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
+import lombok.*;
+import org.apache.commons.lang3.builder.ToStringExclude;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@ToString
 @Entity
 public class Tag extends Base{
 
@@ -26,7 +26,9 @@ public class Tag extends Base{
 	@JsonBackReference
 	@JoinColumn(name = "tag_id")
 	private Tag tag;
-	
+
+	@EqualsAndHashCode.Exclude
+	@ToStringExclude
 	@OneToMany(mappedBy = "tag",cascade = CascadeType.ALL)
 	private List<Favorite> favorites;
 	

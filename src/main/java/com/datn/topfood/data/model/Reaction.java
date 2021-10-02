@@ -8,13 +8,13 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToMany;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
+import org.apache.commons.lang3.builder.ToStringExclude;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@ToString
 @Entity
 public class Reaction {
 	@Id
@@ -22,10 +22,14 @@ public class Reaction {
 	private Long id;
 	
 	private String type;
-	
+
+	@EqualsAndHashCode.Exclude
+	@ToStringExclude
 	@ManyToMany(mappedBy = "reactions")
 	private Set<Post> posts;
-	
+
+	@EqualsAndHashCode.Exclude
+	@ToStringExclude
 	@ManyToMany(mappedBy = "reactions")
 	private Set<Comment> comments;
 }

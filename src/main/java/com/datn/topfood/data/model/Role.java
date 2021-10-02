@@ -10,15 +10,15 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToMany;
 
-import com.datn.topfood.util.enums.RoleName;
+import lombok.*;
+import org.apache.commons.lang3.builder.ToStringExclude;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import com.datn.topfood.util.enums.RoleName;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@ToString
 @Entity
 public class Role {
 	@Id
@@ -27,7 +27,9 @@ public class Role {
 	
 	@Enumerated(EnumType.STRING)
 	private RoleName role;
-	
+
+	@EqualsAndHashCode.Exclude
+	@ToStringExclude
 	@ManyToMany(mappedBy = "roles")
 	private Set<Account> accounts;
 }
