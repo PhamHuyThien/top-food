@@ -29,7 +29,7 @@ public class AuthController {
     @Operation(description = "API đăng ký tài khoản")
     @PostMapping("/register")
     public ResponseEntity<Response<Boolean>> register(@RequestBody RegisterRequest registerRequest) {
-		return ResponseEntity.ok(new Response<>(true, Message.OTHER_SUCCESS,authService.insertAccount(registerRequest)));
+		return ResponseEntity.ok(new Response<Boolean>(true, Message.OTHER_SUCCESS,authService.insertAccount(registerRequest)));
 	}
 
 }
