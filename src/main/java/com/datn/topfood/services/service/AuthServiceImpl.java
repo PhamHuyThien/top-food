@@ -58,7 +58,7 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     @Transactional
-    public void insertAccount(RegisterRequest registerRequest) {
+    public Boolean insertAccount(RegisterRequest registerRequest) {
         if (accountRepository.findByUsername(registerRequest.getUsername()) != null) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, Message.ACCOUNT_USERNAME_ALREADY_EXIST);
         }
@@ -81,5 +81,6 @@ public class AuthServiceImpl implements AuthService {
         profile.setAddress(registerRequest.getAddress());
         profile.setAccount(account);
         profileRepository.save(profile);
+		return true;
     }
 }

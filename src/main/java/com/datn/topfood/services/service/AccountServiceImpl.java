@@ -39,46 +39,80 @@ public class AccountServiceImpl extends BaseService implements AccountService {
 
 	@Override
 	@Transactional
-	public void sendFriendInvitations(SendFriendInvitationsRequest friendInvitationsRequest) {
+	public Boolean sendFriendInvitations(SendFriendInvitationsRequest friendInvitationsRequest) {
 		Account itMe = itMe();
 		Account friend = accountRepository.findByPhoneNumber(friendInvitationsRequest.getPhoneAddressee());
-		if(friend==null){
+		// số điện thoại không tồn tại
+		if (friend == null) {
 			throw new ResponseStatusException(HttpStatus.NOT_FOUND, Message.ACCOUNT_FRIEND_BY_PHONE_NOT_FOUND);
 		}
-
+		// mối quan hệ đã tồn tại không thể gửi lời mời tiếp
+		if (friendShipRepository.findFriendShipRelation(itMe.getUsername(), friend.getUsername()) != null) {
+			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, Message.ACCOUNT_FRIEND_SHIP_EXIST);
+		}
+		// không thể tự kết bạn với chính mình
+		if (friendInvitationsRequest.getPhoneAddressee().equals(itMe.getPhoneNumber())) {
+			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, Message.OTHER_ACTION_IS_DENIED);
+		}
 		FriendShip friendShip = new FriendShip();
 		friendShip.setStatus(FriendShipStatus.SENDING);
 		friendShip.setAccountRequest(itMe);
 		friendShip.setAccountAddressee(friend);
 		friendShip.setCreateAt(DateUtils.currentTimestamp());
 		friendShipRepository.save(friendShip);
+		return true;
 	}
 
 	@Override
 	@Transactional
-	public void blockFriend(BlockFriendRequest blockFriendRequest) {
-		FriendShip friendShip = friendShipRepository.findFriendShipRelation(
-				blockFriendRequest.getUsernameRequestPerson(), blockFriendRequest.getUsernameBlockPerson());
-		// nếu chưa là bạn bè sẽ từ chối block
-		if (friendShip == null) {
+	public Boolean blockFriend(BlockFriendRequest blockFriendRequest) {
+		Account itMe = itMe();
+		Account blockPerson = accountRepository.findByPhoneNumber(blockFriendRequest.getPhoneNumberBlockPerson());
+		// số điện thoại không tồn tại
+		if (blockPerson == null) {
+			throw new ResponseStatusException(HttpStatus.NOT_FOUND, Message.ACCOUNT_FRIEND_BY_PHONE_NOT_FOUND);
+		}
+		FriendShip friendShip = friendShipRepository.findFriendShipRelation(itMe.getUsername(),
+				blockPerson.getUsername());
+		// không thể tự block chính mình
+		if (blockFriendRequest.getPhoneNumberBlockPerson().equals(itMe.getPhoneNumber())) {
 			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, Message.OTHER_ACTION_IS_DENIED);
 		}
-		friendShip.setDeleteAt(DateUtils.currentTimestamp());
+		// nếu chưa có mối quan hệ trong database thì tạo mối quan hệ mới
+		if (friendShip == null) {
+			friendShip = new FriendShip();
+			friendShip.setAccountRequest(itMe);
+			friendShip.setAccountAddressee(blockPerson);
+			friendShip.setCreateAt(DateUtils.currentTimestamp());
+		} else {
+			// không thể block người mà mình đã block
+			if (friendShip.getStatus().compareTo(FriendShipStatus.BLOCK) == 0) {
+				throw new ResponseStatusException(HttpStatus.BAD_REQUEST, Message.OTHER_ACTION_IS_DENIED);
+			}
+		}
+
 		friendShip.setStatus(FriendShipStatus.BLOCK);
 		friendShipRepository.save(friendShip);
+		return true;
 	}
 
 	@Override
 	@Transactional
-	public void replyFriend(ReplyInvitationFriendRequest replyInvitationFriendRequest) {
+	public Boolean replyFriend(ReplyInvitationFriendRequest replyInvitationFriendRequest) {
+		Account itMe = itMe();
 		FriendShip friendShip = friendShipRepository.findFriendByReplyPersonToRequestPerson(
-				replyInvitationFriendRequest.getUsernameReplyPerson(),
-				replyInvitationFriendRequest.getUsernameRequestPerson());
-
+				itMe.getUsername(),
+				replyInvitationFriendRequest.getUsernameSendInvitaionPerson());
+		// lời mời kết bạn không tồn tại
 		if (friendShip == null) {
+			throw new ResponseStatusException(HttpStatus.NOT_FOUND, Message.ACCOUNT_FRIEND_INVITATION_NOT_EXIST);
+		}
+		
+		// hai người đã là bạn bè
+		if(friendShip.getStatus().compareTo(FriendShipStatus.FRIEND)==0) {
 			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, Message.OTHER_ACTION_IS_DENIED);
 		}
-
+		
 		if (replyInvitationFriendRequest.getStatusReply()) {
 			friendShip.setUpdateAt(DateUtils.currentTimestamp());
 			friendShip.setStatus(FriendShipStatus.FRIEND);
@@ -87,5 +121,6 @@ public class AccountServiceImpl extends BaseService implements AccountService {
 			// không chấp nhận kết bạn sẽ xóa luôn quan hệ tạm thời (SENDING)
 			friendShipRepository.delete(friendShip);
 		}
+		return true;
 	}
 }

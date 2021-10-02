@@ -7,5 +7,5 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 
 public interface AuthService extends UserDetailsService {
     LoginResponse loginWithUsername(LoginRequest loginRequest);
-    void insertAccount(RegisterRequest registerRequest);
+    Boolean insertAccount(RegisterRequest registerRequest);
 }

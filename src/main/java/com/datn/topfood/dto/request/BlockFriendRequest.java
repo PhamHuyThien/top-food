@@ -8,8 +8,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class BlockFriendRequest {
-
-	String usernameRequestPerson;
-	String usernameBlockPerson;
+	
+	String phoneNumberBlockPerson;
 	
 }

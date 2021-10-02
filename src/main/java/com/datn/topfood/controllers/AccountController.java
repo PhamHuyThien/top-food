@@ -35,25 +35,25 @@ public class AccountController {
 
 	@Operation(description = "API gửi lời mời kết bạn")
 	@PostMapping("/send-friend-invitations")
-	ResponseEntity<Response<String>> sendFriendInvitations(
+	ResponseEntity<Response<Boolean>> sendFriendInvitations(
 			@RequestBody SendFriendInvitationsRequest friendInvitationsRequest) {
-		friendServic.sendFriendInvitations(friendInvitationsRequest);
-		return ResponseEntity.ok(new Response<String>(true, Message.OTHER_SUCCESS));
+		return ResponseEntity.ok(new Response<Boolean>(true, Message.OTHER_SUCCESS,
+				friendServic.sendFriendInvitations(friendInvitationsRequest)));
 	}
 
 	@Operation(description = "API chặn bạn bè")
 	@PostMapping("/block-friend")
-	ResponseEntity<Response<String>> blockFriend(@RequestBody BlockFriendRequest blockFriendRequest) {
-		friendServic.blockFriend(blockFriendRequest);
-		return ResponseEntity.ok(new Response<String>(true, Message.OTHER_SUCCESS));
+	ResponseEntity<Response<Boolean>> blockFriend(@RequestBody BlockFriendRequest blockFriendRequest) {
+		return ResponseEntity
+				.ok(new Response<Boolean>(true, Message.OTHER_SUCCESS, friendServic.blockFriend(blockFriendRequest)));
 	}
 
 	@Operation(description = "API phản hồi lời mời kết bạn")
 	@PostMapping("/reply-friend")
-	ResponseEntity<Response<String>> replyFriend(
+	ResponseEntity<Response<Boolean>> replyFriend(
 			@RequestBody ReplyInvitationFriendRequest replyInvitationFriendRequest) {
-		friendServic.replyFriend(replyInvitationFriendRequest);
-		return ResponseEntity.ok(new Response<String>(true, Message.OTHER_SUCCESS));
+		return ResponseEntity.ok(new Response<Boolean>(true, Message.OTHER_SUCCESS,
+				friendServic.replyFriend(replyInvitationFriendRequest)));
 	}
 
 }

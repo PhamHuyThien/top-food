@@ -23,5 +23,5 @@ public class Base {
 	protected Long id;
 	protected Timestamp createAt;
 	protected Timestamp updateAt;
-	protected Timestamp deleteAt;
+	protected Timestamp disableAt;
 }
