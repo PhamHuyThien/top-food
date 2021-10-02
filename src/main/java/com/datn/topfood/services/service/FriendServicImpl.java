@@ -10,6 +10,7 @@ import com.datn.topfood.data.repository.jpa.AccountRepository;
 import com.datn.topfood.data.repository.jpa.FriendShipRepository;
 import com.datn.topfood.data.repository.jpa.ProfileRepository;
 import com.datn.topfood.dto.request.BlockFriendRequest;
+import com.datn.topfood.dto.request.ReplyInvitationFriendRequest;
 import com.datn.topfood.dto.request.SendFriendInvitationsRequest;
 import com.datn.topfood.dto.response.FriendProfileResponse;
 import com.datn.topfood.services.interf.FriendServic;
@@ -48,16 +49,36 @@ public class FriendServicImpl implements FriendServic {
 
 	@Override
 	public void blockFriend(BlockFriendRequest blockFriendRequest) {
-		// TODO Auto-generated method stub
-		FriendShip friendShip =  friendShipRepository.findFriendShipForBlock(blockFriendRequest.getUsernameRequestPerson(), 
-				blockFriendRequest.getUsernameBlockPerson());
+		FriendShip friendShip = friendShipRepository.findFriendShipRelation(
+				blockFriendRequest.getUsernameRequestPerson(), blockFriendRequest.getUsernameBlockPerson());
 		// nếu chưa là bạn bè sẽ từ chối block
-		if(friendShip==null) {
+		if (friendShip == null) {
 			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, Message.OTHER_ACTION_IS_DENIED);
 		}
 		
+		friendShip.setDeleteAt(DateUtils.currentTimestamp());
 		friendShip.setStatus(FriendShipStatus.BLOCK);
-		
+
 		friendShipRepository.save(friendShip);
+	}
+
+	@Override
+	public void replyFriend(ReplyInvitationFriendRequest replyInvitationFriendRequest) {
+		FriendShip friendShip = friendShipRepository.findFriendByReplyPersonToRequestPerson(
+				replyInvitationFriendRequest.getUsernameReplyPerson(),
+				replyInvitationFriendRequest.getUsernameRequestPerson());
+
+		if (friendShip == null) {
+			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, Message.OTHER_ACTION_IS_DENIED);
+		}
+
+		if (replyInvitationFriendRequest.getStatusReply()) {
+			friendShip.setUpdateAt(DateUtils.currentTimestamp());
+			friendShip.setStatus(FriendShipStatus.FRIEND);
+			friendShipRepository.save(friendShip);
+		} else {
+			// không chấp nhận kết bạn sẽ xóa luôn quan hệ tạm thời (SENDING)
+			friendShipRepository.delete(friendShip);
+		}
 	}
 }
