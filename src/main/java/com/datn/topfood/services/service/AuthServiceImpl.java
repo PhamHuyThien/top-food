@@ -15,6 +15,7 @@ import com.datn.topfood.util.constant.Message;
 import java.sql.Timestamp;
 import java.util.Date;
 
+import com.datn.topfood.util.enums.AccountRole;
 import com.datn.topfood.util.enums.AccountStatus;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,14 +41,20 @@ public class AuthServiceImpl implements AuthService {
     @Override
     public LoginResponse loginWithUsername(LoginRequest loginRequest) {
         UserDetails userDetails = loadUserByUsername(loginRequest.getUsername());
-        if (userDetails == null) {
+        Account account = (Account) userDetails;
+        if (account == null) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, Message.AUTH_LOGIN_USERNAME_WRONG);
         }
-        if (!passwordEncoder.matches(loginRequest.getPassword(), userDetails.getPassword())) {
+        if (!passwordEncoder.matches(loginRequest.getPassword(), account.getPassword())) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, Message.AUTH_LOGIN_PASSWORD_FAIL);
         }
+        if(account.getStatus() == AccountStatus.DEACTIVE){
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, Message.AUTH_ACCOUNT_IS_DISABLE);
+        }
+        account.setPassword(null);
+        Profile profile = profileRepository.findByAccountId(account.getId());
         String token = JwtTokenProvider.generateToken(userDetails);
-        return new LoginResponse(token);
+        return new LoginResponse(token, account, profile);
     }
 
     @Override
@@ -75,12 +82,11 @@ public class AuthServiceImpl implements AuthService {
         account.setEmail(registerRequest.getEmail());
         account.setCreateAt(DateUtils.currentTimestamp());
         account.setStatus(AccountStatus.ACTIVE);
+        account.setRole(AccountRole.ROLE_USER);
         accountRepository.save(account);
         Profile profile = new Profile();
-        profile.setAge(registerRequest.getAge());
-        profile.setAddress(registerRequest.getAddress());
         profile.setAccount(account);
         profileRepository.save(profile);
-		return true;
+        return true;
     }
 }

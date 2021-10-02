@@ -14,7 +14,9 @@ import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 
+import com.datn.topfood.util.enums.AccountRole;
 import com.datn.topfood.util.enums.AccountStatus;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -39,59 +41,65 @@ public class Account extends Base implements UserDetails {
 	private String email;
 	private AccountStatus status;
 
-	@EqualsAndHashCode.Exclude
-	@ToStringExclude
-	@ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-	@JoinTable(name = "account_role", joinColumns = @JoinColumn(name = "account_id"), inverseJoinColumns = @JoinColumn(name = "role_id"))
-	private Set<Role> roles;
+	private AccountRole role;
 
 	@EqualsAndHashCode.Exclude
 	@ToStringExclude
+	@JsonIgnore
 	@OneToMany(mappedBy = "account", cascade = CascadeType.ALL)
 	private List<Comment> comments;
 	
 	@EqualsAndHashCode.Exclude
 	@ToStringExclude
+	@JsonIgnore
 	@OneToMany(mappedBy = "accountRequest", cascade = CascadeType.ALL)
 	private List<FriendShip> friendShipsRequest;
 	
 	@EqualsAndHashCode.Exclude
 	@ToStringExclude
+	@JsonIgnore
 	@OneToMany(mappedBy = "accountAddressee", cascade = CascadeType.ALL)
 	private List<FriendShip> friendShipsAddressee;
 	
 	@EqualsAndHashCode.Exclude
 	@ToStringExclude
+	@JsonIgnore
 	@OneToMany(mappedBy = "account", cascade = CascadeType.ALL)
 	private List<Approach> approachs;
 	
 	@EqualsAndHashCode.Exclude
 	@ToStringExclude
+	@JsonIgnore
 	@OneToMany(mappedBy = "account", cascade = CascadeType.ALL)
 	private List<Intereact> intereacts;
 	
 	@EqualsAndHashCode.Exclude
 	@ToStringExclude
+	@JsonIgnore
 	@OneToMany(mappedBy = "account", cascade = CascadeType.ALL)
 	private List<Messages> messages;
 	
 	@EqualsAndHashCode.Exclude
 	@ToStringExclude
+	@JsonIgnore
 	@OneToMany(mappedBy = "account", cascade = CascadeType.ALL)
 	private List<Participants> participants;
 	
 	@EqualsAndHashCode.Exclude
 	@ToStringExclude
+	@JsonIgnore
 	@OneToMany(mappedBy = "account", cascade = CascadeType.ALL)
 	private List<Favorite> favorites;
 	
 	@EqualsAndHashCode.Exclude
 	@ToStringExclude
+	@JsonIgnore
 	@OneToMany(mappedBy = "account", cascade = CascadeType.ALL)
 	private List<CommentReply> commentReplys;
 	
 	@EqualsAndHashCode.Exclude
 	@ToStringExclude
+	@JsonIgnore
 	@OneToMany(mappedBy = "account", cascade = CascadeType.ALL)
 	private List<AccountFollow> accountFollow;
 

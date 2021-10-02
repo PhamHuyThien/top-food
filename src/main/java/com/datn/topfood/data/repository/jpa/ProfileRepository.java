@@ -11,4 +11,6 @@ public interface ProfileRepository extends JpaRepository<Profile, Long>{
 	@Query("select new com.datn.topfood.dto.response.FriendProfileResponse(pr.account.phoneNumber, pr.account.email, pr) "
 			+ "from Profile pr where pr.account.id = ?1")
 	FriendProfileResponse findFiendProfileByAccountId(Long id);
+
+	Profile findByAccountId(long profileId);
 }

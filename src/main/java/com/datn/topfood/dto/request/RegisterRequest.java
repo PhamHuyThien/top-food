@@ -14,7 +14,4 @@ public class RegisterRequest {
 	String phoneNumber;
 	String email;
 	String name;
-	Integer age;
-	String address;
-	
 }
