@@ -13,5 +13,4 @@ public interface FriendShipRepository extends JpaRepository<FriendShip, Long>{
 	
 	@Query("select fs from FriendShip as fs where fs.accountAddressee.username = ?1 and fs.accountRequest.username = ?2")
 	FriendShip findFriendByReplyPersonToRequestPerson(String replyUsername,String requestUsername);
-	
 }
