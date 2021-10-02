@@ -1,6 +1,5 @@
 package com.datn.topfood.data.model;
 
-import java.sql.Timestamp;
 import java.util.List;
 import java.util.Set;
 
@@ -24,6 +23,7 @@ import lombok.ToString;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@ToString
 @Entity
 public class Comment extends Base{
 

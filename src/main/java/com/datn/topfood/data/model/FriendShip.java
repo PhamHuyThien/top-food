@@ -1,7 +1,5 @@
 package com.datn.topfood.data.model;
 
-import java.util.List;
-
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
@@ -13,10 +11,12 @@ import com.datn.topfood.util.enums.FriendShipStatus;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@ToString
 @Entity
 public class FriendShip extends Base{
 

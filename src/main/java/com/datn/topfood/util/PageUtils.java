@@ -16,16 +16,16 @@ public class PageUtils {
     }
 
     public static PageRequest ofDefault(PageRequest pageRequest) {
-        if (pageRequest.getPage() == null) {
+        if (pageRequest.getPage() == null || pageRequest.getPage() < 1) {
             pageRequest.setPage(1);
         }
-        if (pageRequest.getPageSize() == null) {
+        if (pageRequest.getPageSize() == null || pageRequest.getPageSize() < 1) {
             pageRequest.setPageSize(10);
         }
-        if (pageRequest.getOrder() == null) {
+        if (pageRequest.getOrder() == null || (!pageRequest.getOrder().equals("DESC") && !pageRequest.getOrder().equals("ASC"))) {
             pageRequest.setOrder("DESC");
         }
-        if (pageRequest.getOrderBy() == null) {
+        if (pageRequest.getOrderBy() == null || pageRequest.getOrderBy().trim().length() == 0) {
             pageRequest.setOrderBy("id");
         }
         return pageRequest;
