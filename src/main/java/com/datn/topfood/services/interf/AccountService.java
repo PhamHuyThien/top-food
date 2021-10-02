@@ -5,7 +5,7 @@ import com.datn.topfood.dto.request.ReplyInvitationFriendRequest;
 import com.datn.topfood.dto.request.SendFriendInvitationsRequest;
 import com.datn.topfood.dto.response.FriendProfileResponse;
 
-public interface FriendServic {
+public interface AccountService {
 
 	FriendProfileResponse getFiendProfileByAccountId(Long id);
 	void sendFriendInvitations(SendFriendInvitationsRequest friendInvitationsRequest);

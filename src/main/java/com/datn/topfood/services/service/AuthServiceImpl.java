@@ -15,12 +15,15 @@ import com.datn.topfood.util.constant.Message;
 import java.sql.Timestamp;
 import java.util.Date;
 
+import com.datn.topfood.util.enums.AccountStatus;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
 @Service
@@ -31,14 +34,16 @@ public class AuthServiceImpl implements AuthService {
     ProfileRepository profileRepository;
     @Autowired
     ModelMapper modelMapper;
+    @Autowired
+    PasswordEncoder passwordEncoder;
 
     @Override
     public LoginResponse loginWithUsername(LoginRequest loginRequest) {
         UserDetails userDetails = loadUserByUsername(loginRequest.getUsername());
-        if(userDetails == null){
+        if (userDetails == null) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, Message.AUTH_LOGIN_USERNAME_WRONG);
         }
-        if(!userDetails.getPassword().equals(loginRequest.getPassword())){
+        if (!passwordEncoder.matches(loginRequest.getPassword(), userDetails.getPassword())) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, Message.AUTH_LOGIN_PASSWORD_FAIL);
         }
         String token = JwtTokenProvider.generateToken(userDetails);
@@ -51,23 +56,30 @@ public class AuthServiceImpl implements AuthService {
         return account;
     }
 
-	@Override
-	public void insertAccount(RegisterRequest registerRequest) {
-		// TODO Auto-generated method stub
-		if(accountRepository.findByUsername(registerRequest.getUsername())!=null) {
-			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, Message.ACCOUNT_USERNAME_ALREADY_EXIST);
-		}
-		if(accountRepository.findByEmail(registerRequest.getEmail())!=null) {
-			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, Message.ACCOUNT_EMAIL_ALREADY_EXIST);
-		}
-		if(accountRepository.findByPhoneNumber(registerRequest.getPhoneNumber())!=null){
-			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, Message.ACCOUNT_PHONENUMBER_ALREADY_EXIST);
-		}
-		
-		Account account = modelMapper.map(registerRequest, Account.class);
-		account.setCreateAt(DateUtils.currentTimestamp());
-		Profile profile = profileRepository.save(modelMapper.map(registerRequest, Profile.class));
-		// lưu ý ở đây chưa set account cho profile nên khi nối bẳng chỉ có thể nối từ account đến profile
-		account = accountRepository.save(account);
-	}
+    @Override
+    @Transactional
+    public void insertAccount(RegisterRequest registerRequest) {
+        if (accountRepository.findByUsername(registerRequest.getUsername()) != null) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, Message.ACCOUNT_USERNAME_ALREADY_EXIST);
+        }
+        if (accountRepository.findByEmail(registerRequest.getEmail()) != null) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, Message.ACCOUNT_EMAIL_ALREADY_EXIST);
+        }
+        if (accountRepository.findByPhoneNumber(registerRequest.getPhoneNumber()) != null) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, Message.ACCOUNT_PHONENUMBER_ALREADY_EXIST);
+        }
+        Account account = new Account();
+        account.setUsername(registerRequest.getUsername());
+        account.setPassword(passwordEncoder.encode(registerRequest.getPassword()));
+        account.setPhoneNumber(registerRequest.getPhoneNumber());
+        account.setEmail(registerRequest.getEmail());
+        account.setCreateAt(DateUtils.currentTimestamp());
+        account.setStatus(AccountStatus.ACTIVE);
+        accountRepository.save(account);
+        Profile profile = new Profile();
+        profile.setAge(registerRequest.getAge());
+        profile.setAddress(registerRequest.getAddress());
+        profile.setAccount(account);
+        profileRepository.save(profile);
+    }
 }

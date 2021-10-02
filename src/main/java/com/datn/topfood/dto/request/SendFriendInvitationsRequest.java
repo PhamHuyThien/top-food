@@ -8,8 +8,5 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class SendFriendInvitationsRequest {
-
-	String usernameRequest;
-	String phoneAddressee;
-	
+    String phoneAddressee;
 }

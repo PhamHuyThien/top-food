@@ -5,7 +5,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -15,17 +14,17 @@ import com.datn.topfood.dto.request.ReplyInvitationFriendRequest;
 import com.datn.topfood.dto.request.SendFriendInvitationsRequest;
 import com.datn.topfood.dto.response.FriendProfileResponse;
 import com.datn.topfood.dto.response.Response;
-import com.datn.topfood.services.interf.FriendServic;
+import com.datn.topfood.services.interf.AccountService;
 import com.datn.topfood.util.constant.Message;
 
 import io.swagger.v3.oas.annotations.Operation;
 
 @RestController
-@RequestMapping("/friend")
-public class FriendController {
+@RequestMapping("/account")
+public class AccountController {
 
 	@Autowired
-	FriendServic friendServic;
+	AccountService friendServic;
 
 	@Operation(description = "API xem thông tin profile bạn bè")
 	@GetMapping("/profile/{accountId}")

@@ -11,5 +11,5 @@ public class Message {
     public static final String ACCOUNT_EMAIL_ALREADY_EXIST = "Email này đã tồn tại";
     public static final String ACCOUNT_PHONENUMBER_ALREADY_EXIST = "Phone Number này đã tồn tại";
     public static final String ACCOUNT_USERNAME_ALREADY_EXIST = "Username này đã tồn tại";
-
+    public  static final String ACCOUNT_FRIEND_BY_PHONE_NOT_FOUND = "Số điện thoại này không tồn tại trên hệ thống.";
 }
