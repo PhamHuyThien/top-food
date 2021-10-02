@@ -29,9 +29,8 @@ public class AuthController {
     @Operation(description = "API đăng ký tài khoản")
     @PostMapping("/register")
     public ResponseEntity<Response<String>> register(@RequestBody RegisterRequest registerRequest) {
-		// TODO Auto-generated method stub
     	authService.insertAccount(registerRequest);
-		return ResponseEntity.ok(new Response<>(true, Message.OTHER_SUCCESS,""));
+		return ResponseEntity.ok(new Response<>(true, Message.OTHER_SUCCESS,null));
 	}
 
 }

@@ -39,12 +39,6 @@ public class Account extends Base implements UserDetails {
 	private String email;
 	private AccountStatus status;
 
-	@OneToOne
-	private AccountOtp accountOtp;
-
-	@OneToOne
-	private Profile profile;
-
 	@EqualsAndHashCode.Exclude
 	@ToStringExclude
 	@ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
