@@ -9,8 +9,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class ReplyInvitationFriendRequest {
 
-	String usernameReplyPerson;
-	String usernameRequestPerson;
+	String usernameSendInvitaionPerson;
 	Boolean statusReply;
 	
 }

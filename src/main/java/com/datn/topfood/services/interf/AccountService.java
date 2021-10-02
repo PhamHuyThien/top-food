@@ -10,8 +10,8 @@ import com.datn.topfood.dto.response.PageResponse;
 public interface AccountService {
 
 	FriendProfileResponse getFiendProfileByAccountId(Long id);
-	void sendFriendInvitations(SendFriendInvitationsRequest friendInvitationsRequest);
-	void blockFriend(BlockFriendRequest blockFriendRequest);
-	void replyFriend(ReplyInvitationFriendRequest replyInvitationFriendRequest);
+	Boolean sendFriendInvitations(SendFriendInvitationsRequest friendInvitationsRequest);
+	Boolean blockFriend(BlockFriendRequest blockFriendRequest);
+	Boolean replyFriend(ReplyInvitationFriendRequest replyInvitationFriendRequest);
 	PageResponse<FriendProfileResponse> getListFriends(PageRequest pageRequest);
 }
