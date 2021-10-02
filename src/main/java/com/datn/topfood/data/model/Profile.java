@@ -14,6 +14,8 @@ import javax.persistence.OneToOne;
 
 import org.apache.commons.lang3.builder.ToStringExclude;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -37,15 +39,18 @@ public class Profile {
 	private Timestamp updateAt;
 	
 	@OneToOne
+	@JsonIgnore
 	private Account account;
 
 	@EqualsAndHashCode.Exclude
 	@ToStringExclude
 	@OneToMany(mappedBy = "profile",cascade = CascadeType.ALL)
+	@JsonIgnore
 	private List<Post> posts;
 
 	@EqualsAndHashCode.Exclude
 	@ToStringExclude
 	@OneToMany(mappedBy = "profile",cascade = CascadeType.ALL)
+	@JsonIgnore
 	private List<Food> foods;
 }

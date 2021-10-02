@@ -1,6 +1,7 @@
 package com.datn.topfood.controllers;
 
 import com.datn.topfood.dto.request.LoginRequest;
+import com.datn.topfood.dto.request.RegisterRequest;
 import com.datn.topfood.dto.response.LoginResponse;
 import com.datn.topfood.dto.response.Response;
 import com.datn.topfood.services.interf.AuthService;
@@ -24,4 +25,13 @@ public class AuthController {
     public ResponseEntity<Response<LoginResponse>> loginWithUsername(@RequestBody LoginRequest loginRequest) {
         return ResponseEntity.ok(new Response<>(true, Message.OTHER_SUCCESS, authService.loginWithUsername(loginRequest)));
     }
+    
+    @Operation(description = "API đăng ký tài khoản")
+    @PostMapping("/register")
+    public ResponseEntity<Response<String>> register(@RequestBody RegisterRequest registerRequest) {
+		// TODO Auto-generated method stub
+    	authService.insertAccount(registerRequest);
+		return ResponseEntity.ok(new Response<>(true, Message.OTHER_SUCCESS,""));
+	}
+
 }
