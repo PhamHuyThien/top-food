@@ -17,4 +17,6 @@ public class ProfileResponse {
   String address;
   String name;
   Integer age;
+  String phone;
+  String email;
 }
