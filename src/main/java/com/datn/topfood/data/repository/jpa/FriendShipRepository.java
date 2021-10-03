@@ -1,5 +1,7 @@
 package com.datn.topfood.data.repository.jpa;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
@@ -13,4 +15,8 @@ public interface FriendShipRepository extends JpaRepository<FriendShip, Long>{
 	
 	@Query("select fs from FriendShip as fs where fs.accountAddressee.username = ?1 and fs.accountRequest.username = ?2")
 	FriendShip findFriendByReplyPersonToRequestPerson(String replyUsername,String requestUsername);
+
+	@Query("select fs from FriendShip fs where fs.accountAddressee.id = ?1 and fs.status = 'SENDING'")
+	Page<FriendShip> findByAccountAddresseeAndStatus(long profileId, Pageable pageable);
+
 }

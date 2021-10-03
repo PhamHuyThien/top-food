@@ -40,14 +40,14 @@ public class AccountController {
     ResponseEntity<Response<Boolean>> sendFriendInvitations(
             @RequestBody SendFriendInvitationsRequest friendInvitationsRequest) {
         return ResponseEntity.ok(new Response<Boolean>(true, Message.OTHER_SUCCESS,
-        		accountService.sendFriendInvitations(friendInvitationsRequest)));
+                accountService.sendFriendInvitations(friendInvitationsRequest)));
     }
 
     @Operation(description = "API chặn bạn bè")
     @PostMapping("/block-friend")
     ResponseEntity<Response<Boolean>> blockFriend(@RequestBody BlockFriendRequest blockFriendRequest) {
         return ResponseEntity.ok(new Response<Boolean>(true, Message.OTHER_SUCCESS
-        		, accountService.blockFriend(blockFriendRequest)));
+                , accountService.blockFriend(blockFriendRequest)));
     }
 
     @Operation(description = "API phản hồi lời mời kết bạn")
@@ -55,7 +55,7 @@ public class AccountController {
     ResponseEntity<Response<Boolean>> replyFriend(
             @RequestBody ReplyInvitationFriendRequest replyInvitationFriendRequest) {
         return ResponseEntity.ok(new Response<Boolean>(true, Message.OTHER_SUCCESS
-        		,accountService.replyFriend(replyInvitationFriendRequest)));
+                , accountService.replyFriend(replyInvitationFriendRequest)));
     }
 
     @Operation(description = "API Lấy danh sách bạn bè")
@@ -64,4 +64,9 @@ public class AccountController {
         return ResponseEntity.ok(accountService.getListFriends(pageRequest));
     }
 
+    @Operation(description = "API danh sách lời mời kết bạn")
+    @GetMapping("/list-friends-request")
+    ResponseEntity<PageResponse<FriendProfileResponse>> getListFriendsRequest(PageRequest pageRequest) {
+        return ResponseEntity.ok(accountService.getListFriendsRequest(pageRequest));
+    }
 }

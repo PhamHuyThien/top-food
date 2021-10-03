@@ -14,4 +14,5 @@ public interface AccountService {
 	Boolean blockFriend(BlockFriendRequest blockFriendRequest);
 	Boolean replyFriend(ReplyInvitationFriendRequest replyInvitationFriendRequest);
 	PageResponse<FriendProfileResponse> getListFriends(PageRequest pageRequest);
+	PageResponse<FriendProfileResponse> getListFriendsRequest(PageRequest pageRequest);
 }

@@ -23,6 +23,6 @@ public class PageResponse<T> extends Response<T> {
         this.total = data.size();
         this.totalElements = totalElements;
         this.pageSize = pageSize;
-        this.pageTotal = totalElements / (pageSize == 0 ? totalElements : pageSize) + 1;
+        this.pageTotal = totalElements / (pageSize == 0 ? totalElements : pageSize);
     }
 }
