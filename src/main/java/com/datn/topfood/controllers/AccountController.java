@@ -33,7 +33,7 @@ public class AccountController {
     }
 
     @Operation(description = "API đổi mật khẩu")
-    @PostMapping("/change-password")
+    @PutMapping("/change-password")
     public ResponseEntity<Response<?>> changePassword(@RequestBody ChangePasswordRequest changePasswordRequest) {
         accountService.changePassword(changePasswordRequest);
         return ResponseEntity.ok(new Response<>(true, Message.OTHER_SUCCESS));
