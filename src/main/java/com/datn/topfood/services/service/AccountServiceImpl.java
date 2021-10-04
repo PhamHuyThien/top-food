@@ -32,10 +32,8 @@ import com.datn.topfood.util.DateUtils;
 import com.datn.topfood.util.constant.Message;
 import com.datn.topfood.util.enums.FriendShipStatus;
 
-import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 
 @Service
 public class AccountServiceImpl extends BaseService implements AccountService {
@@ -50,11 +48,6 @@ public class AccountServiceImpl extends BaseService implements AccountService {
     FriendshipCustomRepository friendshipCustomRepository;
     @Autowired
     AccountOtpRepository accountOtpRepository;
-    @Autowired
-    MailService mailService;
-
-    @Value("${toopfood.otp.expired}")
-    private long otpTimeExpired;
 
     @Override
     @Transactional
@@ -188,38 +181,5 @@ public class AccountServiceImpl extends BaseService implements AccountService {
         pageResponse.setStatus(true);
         pageResponse.setMessage(Message.OTHER_SUCCESS);
         return pageResponse;
-    }
-
-    @Override
-    @Transactional
-    public void getOtp() {
-        Account itMe = itMe();
-        if (itMe.getEmail() == null) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, Message.ACCOUNT_OTP_EMAIL_IS_NULL);
-        }
-        final Timestamp currentTime = DateUtils.currentTimestamp();
-        AccountOtp accountOtp = accountOtpRepository.findByAccountId(itMe.getId()).orElse(null);
-        if (accountOtp != null) {
-            Timestamp timestampExpired = new Timestamp(accountOtp.getCreateAt().getTime() + otpTimeExpired);
-            if (DateUtils.currentDate().before(DateUtils.timestampToDate(timestampExpired))) {
-                int second = DateUtils.secondsBetweenTwoDates(currentTime, timestampExpired);
-                String message = String.format(Message.ACCOUNT_OTP_IS_EXISTS, second);
-                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, message);
-            }
-            accountOtpRepository.delete(accountOtp);
-        }
-        final String otp = createOtp();
-        mailService.sendOtp(otp, itMe.getEmail());
-        accountOtp = new AccountOtp(null, otp, currentTime, itMe);
-        accountOtpRepository.save(accountOtp);
-    }
-
-    public String createOtp() {
-        StringBuilder otp = new StringBuilder();
-        Random rand = new Random();
-        for (int i = 0; i < 6; i++) {
-            otp.append(rand.nextInt(10));
-        }
-        return otp.toString();
     }
 }
