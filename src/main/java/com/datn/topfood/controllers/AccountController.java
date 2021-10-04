@@ -69,4 +69,11 @@ public class AccountController {
     ResponseEntity<PageResponse<FriendProfileResponse>> getListFriendsRequest(PageRequest pageRequest) {
         return ResponseEntity.ok(accountService.getListFriendsRequest(pageRequest));
     }
+
+    @Operation(description = "API lấy OTP")
+    @GetMapping("/get-otp")
+    ResponseEntity<Response<?>> getOtp() {
+        accountService.getOtp();
+        return ResponseEntity.ok(new Response<>(true, Message.OTHER_SUCCESS));
+    }
 }
