@@ -12,4 +12,5 @@ import lombok.ToString;
 public class ForgotPasswordRequest {
     String email;
     String otp;
+    String newPassword;
 }

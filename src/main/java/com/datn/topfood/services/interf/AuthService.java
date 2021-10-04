@@ -11,7 +11,7 @@ public interface AuthService extends UserDetailsService {
 
     void register(RegisterRequest registerRequest);
 
-    String forgotPassword(ForgotPasswordRequest forgotPasswordRequest);
+    void forgotPassword(ForgotPasswordRequest forgotPasswordRequest);
 
     void getOtp(String email);
 }

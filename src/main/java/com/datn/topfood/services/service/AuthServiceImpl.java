@@ -105,29 +105,15 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     @Transactional
-    public String forgotPassword(ForgotPasswordRequest forgotPasswordRequest) {
+    public void forgotPassword(ForgotPasswordRequest forgotPasswordRequest) {
         Account account = accountRepository.findByEmail(forgotPasswordRequest.getEmail());
         if (account == null) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, Message.AUTH_EMAIL_NOT_EXISTS);
         }
         accountService.checkOtp(account.getId(), forgotPasswordRequest.getOtp());
-        String newPassword = generateRandomPassword(10);
-        account.setPassword(passwordEncoder.encode(newPassword));
+        account.setPassword(passwordEncoder.encode(forgotPasswordRequest.getNewPassword()));
         account.setUpdateAt(DateUtils.currentTimestamp());
         accountRepository.save(account);
-        return newPassword;
-    }
-
-
-    private String generateRandomPassword(int len) {
-        final String BASE_STRING = "QWERTYUIOPASDFGHJKLZXCVBNM[]/-=!@#$%^&*()_+";
-        final char[] BASE_CHAR = BASE_STRING.toCharArray();
-        StringBuilder passwordRand = new StringBuilder();
-        Random random = new Random();
-        for (int i = 0; i < len; i++) {
-            passwordRand.append(BASE_CHAR[random.nextInt(BASE_CHAR.length)]);
-        }
-        return passwordRand.toString();
     }
 
     @Override

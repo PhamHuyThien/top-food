@@ -33,8 +33,9 @@ public class AuthController {
 
     @Operation(description = "API quên mật khẩu")
     @PostMapping("/forgot-password")
-    public ResponseEntity<Response<String>> forgotPassword(@RequestBody ForgotPasswordRequest forgotPasswordRequest) {
-        return ResponseEntity.ok(new Response<>(true, Message.OTHER_SUCCESS, authService.forgotPassword(forgotPasswordRequest)));
+    public ResponseEntity<Response<?>> forgotPassword(@RequestBody ForgotPasswordRequest forgotPasswordRequest) {
+        authService.forgotPassword(forgotPasswordRequest);
+        return ResponseEntity.ok(new Response<>(true, Message.OTHER_SUCCESS));
     }
 
     @Operation(description = "API lấy OTP")
