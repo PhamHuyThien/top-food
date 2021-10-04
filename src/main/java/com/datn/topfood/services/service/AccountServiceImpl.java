@@ -5,7 +5,7 @@ import com.datn.topfood.data.model.AccountOtp;
 import com.datn.topfood.data.model.Profile;
 import com.datn.topfood.data.repository.custom.impl.FriendshipCustomRepository;
 import com.datn.topfood.data.repository.jpa.AccountOtpRepository;
-import com.datn.topfood.dto.request.PageRequest;
+import com.datn.topfood.dto.request.*;
 import com.datn.topfood.dto.response.PageResponse;
 import com.datn.topfood.services.BaseService;
 import com.datn.topfood.services.interf.MailService;
@@ -15,6 +15,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
@@ -23,9 +24,6 @@ import com.datn.topfood.data.model.FriendShip;
 import com.datn.topfood.data.repository.jpa.AccountRepository;
 import com.datn.topfood.data.repository.jpa.FriendShipRepository;
 import com.datn.topfood.data.repository.jpa.ProfileRepository;
-import com.datn.topfood.dto.request.BlockFriendRequest;
-import com.datn.topfood.dto.request.ReplyInvitationFriendRequest;
-import com.datn.topfood.dto.request.SendFriendInvitationsRequest;
 import com.datn.topfood.dto.response.FriendProfileResponse;
 import com.datn.topfood.services.interf.AccountService;
 import com.datn.topfood.util.DateUtils;
@@ -48,6 +46,8 @@ public class AccountServiceImpl extends BaseService implements AccountService {
     FriendshipCustomRepository friendshipCustomRepository;
     @Autowired
     AccountOtpRepository accountOtpRepository;
+    @Autowired
+    PasswordEncoder passwordEncoder;
 
     @Override
     @Transactional
@@ -181,5 +181,16 @@ public class AccountServiceImpl extends BaseService implements AccountService {
         pageResponse.setStatus(true);
         pageResponse.setMessage(Message.OTHER_SUCCESS);
         return pageResponse;
+    }
+
+    @Override
+    @Transactional
+    public void changePassword(ChangePasswordRequest changePasswordRequest) {
+        Account itMe = itMe();
+        if (!passwordEncoder.matches(changePasswordRequest.getOldPassword(), itMe.getPassword())) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, Message.ACCOUNT_OLD_PASSWORD_WRONG);
+        }
+        itMe.setPassword(passwordEncoder.encode(changePasswordRequest.getNewPassword()));
+        accountRepository.save(itMe);
     }
 }

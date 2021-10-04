@@ -1,6 +1,7 @@
 package com.datn.topfood.controllers;
 
-import com.datn.topfood.dto.request.PageRequest;
+import com.datn.topfood.data.model.Account;
+import com.datn.topfood.dto.request.*;
 import com.datn.topfood.dto.response.PageResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -11,9 +12,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.datn.topfood.dto.request.BlockFriendRequest;
-import com.datn.topfood.dto.request.ReplyInvitationFriendRequest;
-import com.datn.topfood.dto.request.SendFriendInvitationsRequest;
 import com.datn.topfood.dto.response.FriendProfileResponse;
 import com.datn.topfood.dto.response.Response;
 import com.datn.topfood.services.interf.AccountService;
@@ -70,5 +68,11 @@ public class AccountController {
         return ResponseEntity.ok(accountService.getListFriendsRequest(pageRequest));
     }
 
+    @Operation(description = "API đổi mật khẩu")
+    @PostMapping("/change-password")
+    ResponseEntity<Response<?>> changePassword(@RequestBody ChangePasswordRequest changePasswordRequest) {
+        accountService.changePassword(changePasswordRequest);
+        return ResponseEntity.ok(new Response<>(true, Message.OTHER_SUCCESS));
+    }
 
 }

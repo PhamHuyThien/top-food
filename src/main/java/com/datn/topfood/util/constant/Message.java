@@ -22,6 +22,7 @@ public class Message {
     public static final String ACCOUNT_FRIEND_BY_PHONE_NOT_FOUND = "Số điện thoại này không tồn tại trên hệ thống.";
     public static final String ACCOUNT_FRIEND_SHIP_EXIST = "Mối quan hệ đã tồn tại";
     public static final String ACCOUNT_FRIEND_INVITATION_NOT_EXIST = "Lời mời kết bạn không tồn tại";
+    public static final String ACCOUNT_OLD_PASSWORD_WRONG = "Mật khẩu cũ không chính xác.";
 
 
     public static final String MAIL_SEND_OTP_SUBJECT = "[TOPFOOD] Mã OTP nóng hỏi đâyyyy";
