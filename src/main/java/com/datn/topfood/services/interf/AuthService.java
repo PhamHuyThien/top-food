@@ -8,7 +8,10 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 
 public interface AuthService extends UserDetailsService {
     LoginResponse loginWithUsername(LoginRequest loginRequest);
-    Boolean insertAccount(RegisterRequest registerRequest);
+
+    void register(RegisterRequest registerRequest);
+
     String forgotPassword(ForgotPasswordRequest forgotPasswordRequest);
+
     void getOtp(String email);
 }

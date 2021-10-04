@@ -24,6 +24,7 @@ public class Message {
     public static final String ACCOUNT_FRIEND_INVITATION_NOT_EXIST = "Lời mời kết bạn không tồn tại";
     public static final String ACCOUNT_OLD_PASSWORD_WRONG = "Mật khẩu cũ không chính xác.";
     public static final String ACCOUNT_IS_ACTIVE = "Tài khoản này đã kích hoạt.";
+    public static final String ACCOUNT_NOT_ACTIVE = "Tài khoản phải kích hoạt mới dùng được tính năng này.";
 
 
     public static final String MAIL_SEND_OTP_SUBJECT = "[TOPFOOD] Mã OTP nóng hỏi đâyyyy";

@@ -9,5 +9,5 @@ public interface AccountService {
 
     void changePassword(ChangePasswordRequest changePasswordRequest);
 
-    void active(String otp);
+    void active(ActiveRequest activeRequest);
 }

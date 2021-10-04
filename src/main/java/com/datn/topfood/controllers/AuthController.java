@@ -26,8 +26,9 @@ public class AuthController {
 
     @Operation(description = "API đăng ký tài khoản")
     @PostMapping("/register")
-    public ResponseEntity<Response<Boolean>> register(@RequestBody RegisterRequest registerRequest) {
-        return ResponseEntity.ok(new Response<>(true, Message.OTHER_SUCCESS, authService.insertAccount(registerRequest)));
+    public ResponseEntity<Response<?>> register(@RequestBody RegisterRequest registerRequest) {
+        authService.register(registerRequest);
+        return ResponseEntity.ok(new Response<>(true, Message.OTHER_SUCCESS));
     }
 
     @Operation(description = "API quên mật khẩu")

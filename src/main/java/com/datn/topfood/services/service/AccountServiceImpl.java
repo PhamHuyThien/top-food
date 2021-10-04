@@ -57,7 +57,7 @@ public class AccountServiceImpl extends BaseService implements AccountService {
 
     @Override
     @Transactional
-    public void active(String otp) {
+    public void active(ActiveRequest activeRequest) {
         Account itMe = itMe();
         if (itMe.getStatus() != AccountStatus.WAIT_ACTIVE) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, Message.ACCOUNT_IS_ACTIVE);
@@ -66,7 +66,7 @@ public class AccountServiceImpl extends BaseService implements AccountService {
         if (accountOtp == null) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, Message.AUTH_OTP_NOT_EXISTS);
         }
-        if (!accountOtp.getOtp().equals(otp)) {
+        if (!accountOtp.getOtp().equals(activeRequest.getOtp())) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, Message.AUTH_OTP_WRONG);
         }
         accountOtpRepository.delete(accountOtp);
