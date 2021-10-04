@@ -31,7 +31,7 @@ public class FriendshipCustomRepositoryImpl implements FriendshipCustomRepositor
         TypedQuery<FriendShip> friendShipTypedQuery = entityManager.createQuery(sql, FriendShip.class);
         friendShipTypedQuery.setParameter(1, profileId);
         friendShipTypedQuery.setParameter(2, profileId);
-        friendShipTypedQuery.setFirstResult((pageRequest.getPage() - 1) * pageRequest.getPageSize());
+        friendShipTypedQuery.setFirstResult(pageRequest.getPage() * pageRequest.getPageSize());
         friendShipTypedQuery.setMaxResults(pageRequest.getPageSize());
         List<FriendShip> friendShipList = friendShipTypedQuery.getResultList();
         List<FriendProfileResponse> friendResponseList = new ArrayList<>();

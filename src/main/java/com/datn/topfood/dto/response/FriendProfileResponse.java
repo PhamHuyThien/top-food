@@ -10,9 +10,9 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class FriendProfileResponse {
+    long accountId;
+    String phoneNumber;
+    String email;
+    Profile profile;
 
-	String phoneNumber;
-	String email;
-	Profile profile;
-	
 }

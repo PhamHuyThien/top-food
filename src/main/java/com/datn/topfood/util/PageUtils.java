@@ -17,7 +17,7 @@ public class PageUtils {
 
     public static PageRequest ofDefault(PageRequest pageRequest) {
         if (pageRequest.getPage() == null || pageRequest.getPage() < 1) {
-            pageRequest.setPage(1);
+            pageRequest.setPage(0);
         }
         if (pageRequest.getPageSize() == null || pageRequest.getPageSize() < 1) {
             pageRequest.setPageSize(10);
