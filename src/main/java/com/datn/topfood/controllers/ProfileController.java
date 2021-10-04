@@ -2,7 +2,6 @@ package com.datn.topfood.controllers;
 
 import com.datn.topfood.dto.request.ProfileRequest;
 import com.datn.topfood.dto.request.RegisterRequest;
-import com.datn.topfood.dto.request.SearchFriendRequest;
 import com.datn.topfood.dto.response.ProfileResponse;
 import com.datn.topfood.services.interf.ProfileService;
 import org.springframework.beans.factory.annotation.Autowired;
