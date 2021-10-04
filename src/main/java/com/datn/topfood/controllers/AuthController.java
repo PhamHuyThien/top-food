@@ -38,7 +38,7 @@ public class AuthController {
 
     @Operation(description = "API lấy OTP")
     @GetMapping("/get-otp")
-    ResponseEntity<Response<?>> getOtp(String email) {
+    public ResponseEntity<Response<?>> getOtp(String email) {
         authService.getOtp(email);
         return ResponseEntity.ok(new Response<>(true, Message.OTHER_SUCCESS));
     }

@@ -7,6 +7,4 @@ import java.util.Optional;
 
 public interface AccountOtpRepository extends JpaRepository<AccountOtp, Long> {
     Optional<AccountOtp> findByAccountId(long accountId);
-
-    Optional<AccountOtp> findByAccountIdAndOtp(long accountId, String otp);
 }
