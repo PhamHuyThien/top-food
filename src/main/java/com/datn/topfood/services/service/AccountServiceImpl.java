@@ -8,10 +8,9 @@ import com.datn.topfood.data.repository.jpa.AccountOtpRepository;
 import com.datn.topfood.dto.request.*;
 import com.datn.topfood.dto.response.PageResponse;
 import com.datn.topfood.services.BaseService;
-import com.datn.topfood.services.interf.MailService;
 import com.datn.topfood.util.PageUtils;
+import com.datn.topfood.util.enums.AccountStatus;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -191,6 +190,26 @@ public class AccountServiceImpl extends BaseService implements AccountService {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, Message.ACCOUNT_OLD_PASSWORD_WRONG);
         }
         itMe.setPassword(passwordEncoder.encode(changePasswordRequest.getNewPassword()));
+        accountRepository.save(itMe);
+    }
+
+    @Override
+    @Transactional
+    public void active(String otp) {
+        Account itMe = itMe();
+        if (itMe.getStatus() != AccountStatus.WAIT_ACTIVE) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, Message.ACCOUNT_IS_ACTIVE);
+        }
+        AccountOtp accountOtp = accountOtpRepository.findByAccountId(itMe.getId()).orElse(null);
+        if (accountOtp == null) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, Message.AUTH_OTP_NOT_EXISTS);
+        }
+        if (!accountOtp.getOtp().equals(otp)) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, Message.AUTH_OTP_WRONG);
+        }
+        accountOtpRepository.delete(accountOtp);
+        itMe.setStatus(AccountStatus.ACTIVE);
+        itMe.setUpdateAt(DateUtils.currentTimestamp());
         accountRepository.save(itMe);
     }
 }

@@ -75,4 +75,10 @@ public class AccountController {
         return ResponseEntity.ok(new Response<>(true, Message.OTHER_SUCCESS));
     }
 
+    @Operation(description = "API kích hoạt tài khoản")
+    @PostMapping("active")
+    ResponseEntity<Response<?>> active(@RequestBody String otp) {
+        accountService.active(otp);
+        return ResponseEntity.ok(new Response<>(true, Message.OTHER_SUCCESS));
+    }
 }

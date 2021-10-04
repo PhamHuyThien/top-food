@@ -13,4 +13,5 @@ public interface AccountService {
 	PageResponse<FriendProfileResponse> getListFriends(PageRequest pageRequest);
 	PageResponse<FriendProfileResponse> getListFriendsRequest(PageRequest pageRequest);
 	void changePassword(ChangePasswordRequest changePasswordRequest);
+	void active(String otp);
 }

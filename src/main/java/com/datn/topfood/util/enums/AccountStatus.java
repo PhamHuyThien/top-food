@@ -1,5 +1,5 @@
 package com.datn.topfood.util.enums;
 
 public enum AccountStatus {
-    ACTIVE, DEACTIVE;
+    ACTIVE, DISABLE, WAIT_ACTIVE;
 }

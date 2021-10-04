@@ -13,9 +13,9 @@ public class Message {
     public static final String AUTH_OTP_IS_EXISTS = "OTP đã được gửi, vui lòng chờ %d s nữa để thử lại.";
     public static final String AUTH_OTP_EMAIL_IS_NULL = "Tài khoản phải gắn email để nhận mã kích hoạt.";
 
-
     public static final String OTHER_SUCCESS = "Thành công!";
     public static final String OTHER_API_NOT_FOUND = "Api này không tồn tại.";
+
     public static final String ACCOUNT_EMAIL_ALREADY_EXIST = "Email này đã tồn tại";
     public static final String ACCOUNT_PHONENUMBER_ALREADY_EXIST = "Phone Number này đã tồn tại";
     public static final String ACCOUNT_USERNAME_ALREADY_EXIST = "Username này đã tồn tại";
@@ -23,6 +23,7 @@ public class Message {
     public static final String ACCOUNT_FRIEND_SHIP_EXIST = "Mối quan hệ đã tồn tại";
     public static final String ACCOUNT_FRIEND_INVITATION_NOT_EXIST = "Lời mời kết bạn không tồn tại";
     public static final String ACCOUNT_OLD_PASSWORD_WRONG = "Mật khẩu cũ không chính xác.";
+    public static final String ACCOUNT_IS_ACTIVE = "Tài khoản này đã kích hoạt.";
 
 
     public static final String MAIL_SEND_OTP_SUBJECT = "[TOPFOOD] Mã OTP nóng hỏi đâyyyy";

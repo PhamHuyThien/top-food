@@ -59,7 +59,7 @@ public class AuthServiceImpl implements AuthService {
         if (!passwordEncoder.matches(loginRequest.getPassword(), account.getPassword())) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, Message.AUTH_LOGIN_PASSWORD_FAIL);
         }
-        if (account.getStatus() == AccountStatus.DEACTIVE) {
+        if (account.getStatus() == AccountStatus.DISABLE) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, Message.AUTH_ACCOUNT_IS_DISABLE);
         }
         account.setPassword(null);
@@ -92,7 +92,7 @@ public class AuthServiceImpl implements AuthService {
         account.setPhoneNumber(registerRequest.getPhoneNumber());
         account.setEmail(registerRequest.getEmail());
         account.setCreateAt(DateUtils.currentTimestamp());
-        account.setStatus(AccountStatus.ACTIVE);
+        account.setStatus(AccountStatus.WAIT_ACTIVE);
         account.setRole(AccountRole.ROLE_USER);
         accountRepository.save(account);
         Profile profile = new Profile();
@@ -102,6 +102,7 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
+    @Transactional
     public String forgotPassword(ForgotPasswordRequest forgotPasswordRequest) {
         Account account = accountRepository.findByEmail(forgotPasswordRequest.getEmail());
         if (account == null) {
@@ -114,6 +115,7 @@ public class AuthServiceImpl implements AuthService {
         if (!accountOtp.getOtp().equals(forgotPasswordRequest.getOtp())) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, Message.AUTH_OTP_WRONG);
         }
+        accountOtpRepository.delete(accountOtp);
         String newPassword = generateRandomPassword(10);
         account.setPassword(passwordEncoder.encode(newPassword));
         account.setUpdateAt(DateUtils.currentTimestamp());

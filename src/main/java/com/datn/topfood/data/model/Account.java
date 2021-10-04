@@ -40,7 +40,6 @@ public class Account extends Base implements UserDetails {
 	@Column(unique = true)
 	private String email;
 	private AccountStatus status;
-
 	private AccountRole role;
 
 	@EqualsAndHashCode.Exclude
