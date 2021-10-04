@@ -6,6 +6,9 @@ import org.springframework.data.jpa.repository.Query;
 import com.datn.topfood.data.model.Profile;
 import com.datn.topfood.dto.response.FriendProfileResponse;
 
+import java.util.List;
+import java.util.Optional;
+
 public interface ProfileRepository extends JpaRepository<Profile, Long>{
 
 	@Query("select new com.datn.topfood.dto.response.FriendProfileResponse(pr.account.id, pr.account.phoneNumber, pr.account.email, pr) "
@@ -13,4 +16,7 @@ public interface ProfileRepository extends JpaRepository<Profile, Long>{
 	FriendProfileResponse findFiendProfileByAccountId(Long id);
 
 	Profile findByAccountId(long profileId);
+	Optional<Profile> findByName(String name);
+	//@Query("select pr from Profile pr where pr.name = ?1")
+	List<Profile> findByNameIsContaining(String name);
 }
