@@ -27,7 +27,7 @@ public class Message {
     public static final String ACCOUNT_NOT_ACTIVE = "Tài khoản phải kích hoạt mới dùng được tính năng này.";
 
 
-    public static final String MAIL_SEND_OTP_SUBJECT = "[TOPFOOD] Mã OTP nóng hỏi đâyyyy";
+    public static final String MAIL_SEND_OTP_SUBJECT = "[TOPFOOD] Mã OTP nóng hổi đâyyyy";
     public static final String MAIL_SEND_OTP_TEXT = "Mã xác nhận của bạn là %s, nhập ngay cho nóng nhá <3.";
 
 }

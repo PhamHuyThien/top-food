@@ -11,6 +11,7 @@ import com.datn.topfood.dto.request.ForgotPasswordRequest;
 import com.datn.topfood.dto.request.LoginRequest;
 import com.datn.topfood.dto.request.RegisterRequest;
 import com.datn.topfood.dto.response.LoginResponse;
+import com.datn.topfood.services.interf.AccountService;
 import com.datn.topfood.services.interf.AuthService;
 import com.datn.topfood.services.interf.MailService;
 import com.datn.topfood.util.DateUtils;
@@ -42,6 +43,8 @@ public class AuthServiceImpl implements AuthService {
     ProfileRepository profileRepository;
     @Autowired
     AccountOtpRepository accountOtpRepository;
+    @Autowired
+    AccountService accountService;
     @Autowired
     ModelMapper modelMapper;
     @Autowired
@@ -107,14 +110,7 @@ public class AuthServiceImpl implements AuthService {
         if (account == null) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, Message.AUTH_EMAIL_NOT_EXISTS);
         }
-        AccountOtp accountOtp = accountOtpRepository.findByAccountId(account.getId()).orElse(null);
-        if (account == null) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, Message.AUTH_OTP_NOT_EXISTS);
-        }
-        if (!accountOtp.getOtp().equals(forgotPasswordRequest.getOtp())) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, Message.AUTH_OTP_WRONG);
-        }
-        accountOtpRepository.delete(accountOtp);
+        accountService.checkOtp(account.getId(), forgotPasswordRequest.getOtp());
         String newPassword = generateRandomPassword(10);
         account.setPassword(passwordEncoder.encode(newPassword));
         account.setUpdateAt(DateUtils.currentTimestamp());
@@ -124,7 +120,7 @@ public class AuthServiceImpl implements AuthService {
 
 
     private String generateRandomPassword(int len) {
-        final String BASE_STRING = "QWERTYUIOPASDFGHJKLZXCVBNM[];',./-=!@#$%^&*()_+";
+        final String BASE_STRING = "QWERTYUIOPASDFGHJKLZXCVBNM[]/-=!@#$%^&*()_+";
         final char[] BASE_CHAR = BASE_STRING.toCharArray();
         StringBuilder passwordRand = new StringBuilder();
         Random random = new Random();

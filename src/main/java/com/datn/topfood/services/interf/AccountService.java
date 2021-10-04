@@ -10,4 +10,6 @@ public interface AccountService {
     void changePassword(ChangePasswordRequest changePasswordRequest);
 
     void active(ActiveRequest activeRequest);
+
+    void checkOtp(long profileId, String otp);
 }

@@ -10,6 +10,10 @@ public class DateUtils {
         return new Date(time);
     }
 
+    public static Timestamp longTimeToTimestamp(long time) {
+        return new Timestamp(time);
+    }
+
     public static Date timestampToDate(Timestamp timestamp) {
         return new Date(timestamp.getTime());
     }

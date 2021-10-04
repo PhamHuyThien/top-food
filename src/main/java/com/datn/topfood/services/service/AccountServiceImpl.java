@@ -62,16 +62,21 @@ public class AccountServiceImpl extends BaseService implements AccountService {
         if (itMe.getStatus() != AccountStatus.WAIT_ACTIVE) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, Message.ACCOUNT_IS_ACTIVE);
         }
-        AccountOtp accountOtp = accountOtpRepository.findByAccountId(itMe.getId()).orElse(null);
-        if (accountOtp == null) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, Message.AUTH_OTP_NOT_EXISTS);
-        }
-        if (!accountOtp.getOtp().equals(activeRequest.getOtp())) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, Message.AUTH_OTP_WRONG);
-        }
-        accountOtpRepository.delete(accountOtp);
+        checkOtp(itMe.getId(), activeRequest.getOtp());
         itMe.setStatus(AccountStatus.ACTIVE);
         itMe.setUpdateAt(DateUtils.currentTimestamp());
         accountRepository.save(itMe);
+    }
+
+    @Override
+    public void checkOtp(long profileId, String otp) {
+        AccountOtp accountOtp = accountOtpRepository.findByAccountId(profileId).orElse(null);
+        if (accountOtp == null) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, Message.AUTH_OTP_NOT_EXISTS);
+        }
+        if (!accountOtp.getOtp().equals(otp)) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, Message.AUTH_OTP_WRONG);
+        }
+        accountOtpRepository.delete(accountOtp);
     }
 }

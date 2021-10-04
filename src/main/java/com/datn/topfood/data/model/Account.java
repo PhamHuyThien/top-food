@@ -4,15 +4,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
-import javax.persistence.ManyToMany;
-import javax.persistence.OneToMany;
-import javax.persistence.OneToOne;
+import javax.persistence.*;
 
 import com.datn.topfood.util.enums.AccountRole;
 import com.datn.topfood.util.enums.AccountStatus;
@@ -32,114 +24,56 @@ import org.springframework.security.core.userdetails.UserDetails;
 @AllArgsConstructor
 @Entity
 public class Account extends Base implements UserDetails {
-	@Column(unique = true)
-	private String username;
-	private String password;
-	@Column(unique = true)
-	private String phoneNumber;
-	@Column(unique = true)
-	private String email;
-	private AccountStatus status;
-	private AccountRole role;
+    @Column(unique = true)
+    private String username;
+    private String password;
+    @Column(unique = true)
+    private String phoneNumber;
+    @Column(unique = true)
+    private String email;
+    @Enumerated(EnumType.STRING)
+    private AccountStatus status;
+    @Enumerated(EnumType.STRING)
+    private AccountRole role;
 
-	@EqualsAndHashCode.Exclude
-	@ToStringExclude
-	@JsonIgnore
-	@OneToMany(mappedBy = "account", cascade = CascadeType.ALL)
-	private List<Comment> comments;
-	
-	@EqualsAndHashCode.Exclude
-	@ToStringExclude
-	@JsonIgnore
-	@OneToMany(mappedBy = "accountRequest", cascade = CascadeType.ALL)
-	private List<FriendShip> friendShipsRequest;
-	
-	@EqualsAndHashCode.Exclude
-	@ToStringExclude
-	@JsonIgnore
-	@OneToMany(mappedBy = "accountAddressee", cascade = CascadeType.ALL)
-	private List<FriendShip> friendShipsAddressee;
-	
-	@EqualsAndHashCode.Exclude
-	@ToStringExclude
-	@JsonIgnore
-	@OneToMany(mappedBy = "account", cascade = CascadeType.ALL)
-	private List<Approach> approachs;
-	
-	@EqualsAndHashCode.Exclude
-	@ToStringExclude
-	@JsonIgnore
-	@OneToMany(mappedBy = "account", cascade = CascadeType.ALL)
-	private List<Intereact> intereacts;
-	
-	@EqualsAndHashCode.Exclude
-	@ToStringExclude
-	@JsonIgnore
-	@OneToMany(mappedBy = "account", cascade = CascadeType.ALL)
-	private List<Messages> messages;
-	
-	@EqualsAndHashCode.Exclude
-	@ToStringExclude
-	@JsonIgnore
-	@OneToMany(mappedBy = "account", cascade = CascadeType.ALL)
-	private List<Participants> participants;
-	
-	@EqualsAndHashCode.Exclude
-	@ToStringExclude
-	@JsonIgnore
-	@OneToMany(mappedBy = "account", cascade = CascadeType.ALL)
-	private List<Favorite> favorites;
-	
-	@EqualsAndHashCode.Exclude
-	@ToStringExclude
-	@JsonIgnore
-	@OneToMany(mappedBy = "account", cascade = CascadeType.ALL)
-	private List<CommentReply> commentReplys;
-	
-	@EqualsAndHashCode.Exclude
-	@ToStringExclude
-	@JsonIgnore
-	@OneToMany(mappedBy = "account", cascade = CascadeType.ALL)
-	private List<AccountFollow> accountFollow;
+    public Account(String username, String password) {
+        super();
+        this.username = username;
+        this.password = password;
+    }
 
-	public Account(String username, String password) {
-		super();
-		this.username = username;
-		this.password = password;
-	}
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return null;
+    }
 
-	@Override
-	public Collection<? extends GrantedAuthority> getAuthorities() {
-		return null;
-	}
+    @Override
+    public String getPassword() {
+        return password;
+    }
 
-	@Override
-	public String getPassword() {
-		return password;
-	}
+    @Override
+    public String getUsername() {
+        return username;
+    }
 
-	@Override
-	public String getUsername() {
-		return username;
-	}
+    @Override
+    public boolean isAccountNonExpired() {
+        return false;
+    }
 
-	@Override
-	public boolean isAccountNonExpired() {
-		return false;
-	}
+    @Override
+    public boolean isAccountNonLocked() {
+        return false;
+    }
 
-	@Override
-	public boolean isAccountNonLocked() {
-		return false;
-	}
+    @Override
+    public boolean isCredentialsNonExpired() {
+        return false;
+    }
 
-	@Override
-	public boolean isCredentialsNonExpired() {
-		return false;
-	}
-
-	@Override
-	public boolean isEnabled() {
-		return false;
-	}
+    @Override
+    public boolean isEnabled() {
+        return false;
+    }
 }
