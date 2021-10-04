@@ -17,4 +17,8 @@ public class Message {
     public static final String ACCOUNT_FRIEND_INVITATION_NOT_EXIST = "Lời mời kết bạn không tồn tại";
     public static final String ACCOUNT_OTP_IS_EXISTS = "OTP đã được gửi, vui lòng chờ %d s nữa để thử lại.";
     public static final String ACCOUNT_OTP_EMAIL_IS_NULL = "Tài khoản phải gắn email để nhận mã kích hoạt.";
+
+    public static final String MAIL_SEND_OTP_SUBJECT = "[TOPFOOD] Mã OTP nóng hỏi đâyyyy";
+    public static final String MAIL_SEND_OTP_TEXT = "Mã xác nhận của bạn là %s, nhập ngay cho nóng nhá <3.";
+
 }

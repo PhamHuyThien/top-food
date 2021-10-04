@@ -8,6 +8,7 @@ import com.datn.topfood.data.repository.jpa.AccountOtpRepository;
 import com.datn.topfood.dto.request.PageRequest;
 import com.datn.topfood.dto.response.PageResponse;
 import com.datn.topfood.services.BaseService;
+import com.datn.topfood.services.interf.MailService;
 import com.datn.topfood.util.PageUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -49,6 +50,9 @@ public class AccountServiceImpl extends BaseService implements AccountService {
     FriendshipCustomRepository friendshipCustomRepository;
     @Autowired
     AccountOtpRepository accountOtpRepository;
+    @Autowired
+    MailService mailService;
+
     @Value("${toopfood.otp.expired}")
     private long otpTimeExpired;
 
@@ -205,6 +209,7 @@ public class AccountServiceImpl extends BaseService implements AccountService {
             accountOtpRepository.delete(accountOtp);
         }
         final String otp = createOtp();
+        mailService.sendOtp(otp, itMe.getEmail());
         accountOtp = new AccountOtp(null, otp, currentTime, itMe);
         accountOtpRepository.save(accountOtp);
     }
