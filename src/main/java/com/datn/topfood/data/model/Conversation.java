@@ -5,6 +5,7 @@ import java.util.List;
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
 
 import org.apache.commons.lang3.builder.ToStringExclude;
 
@@ -22,6 +23,9 @@ import lombok.ToString;
 public class Conversation extends Base{
 
 	private String title;
+
+	@OneToOne
+	private Account createBy;
 
 	@EqualsAndHashCode.Exclude
 	@ToStringExclude
