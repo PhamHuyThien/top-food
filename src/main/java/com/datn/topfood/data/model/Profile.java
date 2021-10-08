@@ -1,6 +1,7 @@
 package com.datn.topfood.data.model;
 
 import java.sql.Timestamp;
+import java.util.Date;
 import java.util.List;
 
 import javax.persistence.CascadeType;
@@ -31,7 +32,7 @@ public class Profile {
 	private String bio;
 	private String address;
 	private String name;
-	private Integer age;
+	private Date birthday;
 	private Timestamp updateAt;
 	
 	@OneToOne
