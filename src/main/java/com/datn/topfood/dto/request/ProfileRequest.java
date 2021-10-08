@@ -12,5 +12,6 @@ public class ProfileRequest {
   String bio;
   String name;
   String address;
+  String avatar;
   Integer age;
 }

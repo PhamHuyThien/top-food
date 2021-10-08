@@ -40,6 +40,7 @@ public class ProfileServiceImpl implements ProfileService {
     profile.setAge(request.getAge());
     profile.setBio(request.getBio());
     profile.setCover(request.getCover());
+    profile.setAvatar(request.getAvatar());
     profileRepository.save(profile);
     ProfileResponse profileResponse = mapper.map(profile, ProfileResponse.class);
     profileResponse.setEmail(profile.getAccount().getEmail());
