@@ -12,6 +12,9 @@ public class ProfileRequest {
   String bio;
   String name;
   String address;
+<<<<<<< HEAD
   String avatar;
+=======
+>>>>>>> 3801423e6b56c4878c562a60d3505420761a76e9
   Integer age;
 }
