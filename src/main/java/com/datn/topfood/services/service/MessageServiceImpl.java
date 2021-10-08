@@ -3,13 +3,20 @@ package com.datn.topfood.services.service;
 import com.datn.topfood.data.model.*;
 import com.datn.topfood.data.repository.jpa.*;
 import com.datn.topfood.dto.request.CreateConversationRequest;
+import com.datn.topfood.dto.request.PageRequest;
 import com.datn.topfood.dto.request.SendMessageRequest;
+import com.datn.topfood.dto.response.AccountProfileResponse;
+import com.datn.topfood.dto.response.ConversationResponse;
+import com.datn.topfood.dto.response.PageResponse;
 import com.datn.topfood.services.BaseService;
 import com.datn.topfood.services.interf.MessageService;
 import com.datn.topfood.util.DateUtils;
+import com.datn.topfood.util.PageUtils;
 import com.datn.topfood.util.constant.Message;
 import com.datn.topfood.util.enums.ParticipantsStatus;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -36,53 +43,56 @@ public class MessageServiceImpl extends BaseService implements MessageService {
     @Transactional
     public Conversation createConversation(CreateConversationRequest createConversationRequest) {
         Account itMe = itMe();
-        List<Profile> profileList = getProfileList(createConversationRequest.getProfileId());
+        AccountProfileResponse accountProfileMe = getAccountProfile(itMe.getId());
+        AccountProfileResponse accountProfileRec = getAccountProfile(createConversationRequest.getAccountId());
         Timestamp presentTimestamp = DateUtils.currentTimestamp();
         Conversation conversation = new Conversation();
-        conversation.setTitle(buildNameConversation(createConversationRequest.getName(), profileList));
+        conversation.setTitle(buildNameConversation(
+                createConversationRequest.getName(),
+                accountProfileMe.getProfile().getName(),
+                accountProfileRec.getProfile().getName())
+        );
         conversation.setCreateAt(presentTimestamp);
+        conversation.setUpdateAt(presentTimestamp);
         conversation.setCreateBy(itMe);
         conversation = conversationRepsitory.save(conversation);
-        for (Profile profile : profileList) {
-            Participants participants = new Participants();
-            participants.setConversation(conversation);
-            participants.setCreateAt(presentTimestamp);
-            participants.setAccount(profile.getAccount());
-            participants.setStatus(ParticipantsStatus.JOIN);
-            participantsRepository.save(participants);
-        }
-        conversation.setCreateBy(null);
+        saveParticipants(conversation, presentTimestamp, accountProfileMe.getAccount());
+        saveParticipants(conversation, presentTimestamp, accountProfileRec.getAccount());
+        itMe.setPassword(null);
+        conversation.setCreateBy(itMe);
         return conversation;
     }
 
-    private String buildNameConversation(String name, List<Profile> profileList) {
+    private void saveParticipants(Conversation conversation,Timestamp presentTimestamp, Account account){
+        Participants participants = new Participants();
+        participants.setConversation(conversation);
+        participants.setCreateAt(presentTimestamp);
+        participants.setAccount(account);
+        participants.setStatus(ParticipantsStatus.JOIN);
+        participantsRepository.save(participants);
+    }
+
+    private String buildNameConversation(String name, String nameA, String nameB) {
         if (name == null) {
-            for (Profile profile : profileList) {
-                name += profile.getName() + ", ";
-            }
+            return nameA + ", " + nameB;
         }
         return name;
     }
 
-    private List<Profile> getProfileList(List<Long> profileId) {
-        List<Profile> profileList = new ArrayList<>();
-        for (Long aLong : profileId) {
-            Profile profile = profileRepository.findById(aLong).orElse(null);
-            if (profile != null) {
-                profileList.add(profile);
-            }
-        }
-        return profileList;
+    private AccountProfileResponse getAccountProfile(Long accountId) {
+        return accountRepository.getAccountProfileFrivate(accountId);
     }
 
     @Override
+    @Transactional
     public void sendMessage(SendMessageRequest sendMessageRequest) {
         Account itMe = itMe();
-        Conversation conversation = conversationRepsitory.findById(sendMessageRequest.getIdConversation()).orElse(null);
-        Messages quoteMessage = null;
+        Timestamp presentTimestamp = DateUtils.currentTimestamp();
+        Conversation conversation = conversationRepsitory.findById(sendMessageRequest.getConversationId()).orElse(null);
         if (conversation == null) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, Message.MESSAGE_CONVERSATION_NOT_FOUND);
         }
+        Messages quoteMessage = null;
         if (sendMessageRequest.getQuoteMessageId() != null) {
             quoteMessage = messagesRepository.findById(sendMessageRequest.getQuoteMessageId()).orElse(null);
         }
@@ -90,8 +100,25 @@ public class MessageServiceImpl extends BaseService implements MessageService {
         messages.setMessage(sendMessageRequest.getMessage());
         messages.setAccount(itMe);
         messages.setConversation(conversation);
-        messages.setCreateAt(DateUtils.currentTimestamp());
+        messages.setCreateAt(presentTimestamp);
         messages.setMessages(quoteMessage);
         messagesRepository.save(messages);
+        conversation.setUpdateAt(presentTimestamp);
+        conversationRepsitory.save(conversation);
+    }
+
+    @Override
+    public PageResponse<ConversationResponse> getListConversation(PageRequest pageRequest) {
+        Account itMe = itMe();
+        Pageable pageable = PageUtils.toPageable(pageRequest);
+        Page<ConversationResponse> conversationResponsePage = conversationRepsitory.getAllConversation(itMe.getId(), pageable);
+        PageResponse<ConversationResponse> conversationResponsePageResponse = new PageResponse<>(
+                conversationResponsePage.toList(),
+                conversationResponsePage.getTotalElements(),
+                pageable.getPageSize()
+        );
+        conversationResponsePageResponse.setStatus(true);
+        conversationResponsePageResponse.setMessage(Message.OTHER_SUCCESS);
+        return conversationResponsePageResponse;
     }
 }

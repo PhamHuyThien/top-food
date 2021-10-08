@@ -2,10 +2,7 @@ package com.datn.topfood.data.model;
 
 import java.util.List;
 
-import javax.persistence.Entity;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToOne;
+import javax.persistence.*;
 
 import com.datn.topfood.util.enums.ParticipantsStatus;
 import lombok.AllArgsConstructor;
@@ -18,6 +15,7 @@ import lombok.NoArgsConstructor;
 @Entity
 public class Participants extends Base{
 
+	@Enumerated(EnumType.STRING)
 	private ParticipantsStatus status;
 	
 	@ManyToOne

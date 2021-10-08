@@ -31,7 +31,7 @@ public class Profile {
 	private String bio;
 	private String address;
 	private String name;
-	private Integer age;
+	private Timestamp birthday;
 	private Timestamp updateAt;
 	
 	@OneToOne

@@ -5,7 +5,7 @@ import com.datn.topfood.data.model.FriendShip;
 import com.datn.topfood.data.repository.custom.impl.FriendshipCustomRepository;
 import com.datn.topfood.data.repository.jpa.ProfileRepository;
 import com.datn.topfood.dto.request.PageRequest;
-import com.datn.topfood.dto.response.FriendProfileResponse;
+import com.datn.topfood.dto.response.ProfileResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
@@ -25,7 +25,7 @@ public class FriendshipCustomRepositoryImpl implements FriendshipCustomRepositor
     ProfileRepository profileRepository;
 
     @Override
-    public List<FriendProfileResponse> findByListFriends(long profileId, PageRequest pageRequest) {
+    public List<ProfileResponse> findByListFriends(long profileId, PageRequest pageRequest) {
         String sql = "SELECT fs FROM FriendShip fs " +
                 "WHERE (fs.accountRequest.id =?1 OR  fs.accountAddressee.id = ?2) AND fs.status = 'FRIEND' ";
         TypedQuery<FriendShip> friendShipTypedQuery = entityManager.createQuery(sql, FriendShip.class);
@@ -34,7 +34,7 @@ public class FriendshipCustomRepositoryImpl implements FriendshipCustomRepositor
         friendShipTypedQuery.setFirstResult(pageRequest.getPage() * pageRequest.getPageSize());
         friendShipTypedQuery.setMaxResults(pageRequest.getPageSize());
         List<FriendShip> friendShipList = friendShipTypedQuery.getResultList();
-        List<FriendProfileResponse> friendResponseList = new ArrayList<>();
+        List<ProfileResponse> friendResponseList = new ArrayList<>();
         friendShipList.stream().forEach((friendShip) -> {
             Account account = null;
             if (friendShip.getAccountAddressee().getId() == profileId) {
@@ -42,7 +42,7 @@ public class FriendshipCustomRepositoryImpl implements FriendshipCustomRepositor
             } else {
                 account = friendShip.getAccountAddressee();
             }
-            FriendProfileResponse friendProfileResponse = profileRepository.findFiendProfileByAccountId(account.getId());
+            ProfileResponse friendProfileResponse = profileRepository.findFiendProfileByAccountId(account.getId());
             friendResponseList.add(friendProfileResponse);
         });
         return friendResponseList;

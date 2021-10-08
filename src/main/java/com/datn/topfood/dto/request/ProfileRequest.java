@@ -4,6 +4,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.sql.Timestamp;
+
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
@@ -12,6 +14,6 @@ public class ProfileRequest {
   String bio;
   String name;
   String address;
+  Timestamp birthday;
   String avatar;
-  Integer age;
 }

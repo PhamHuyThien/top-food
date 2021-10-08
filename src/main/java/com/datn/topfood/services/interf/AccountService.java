@@ -1,11 +1,9 @@
 package com.datn.topfood.services.interf;
 
 import com.datn.topfood.dto.request.*;
-import com.datn.topfood.dto.response.FriendProfileResponse;
-import com.datn.topfood.dto.response.PageResponse;
+import com.datn.topfood.dto.response.ProfileResponse;
 
 public interface AccountService {
-    FriendProfileResponse getFiendProfileByAccountId(Long id);
 
     void changePassword(ChangePasswordRequest changePasswordRequest);
 

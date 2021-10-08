@@ -10,7 +10,7 @@ import lombok.ToString;
 @AllArgsConstructor
 @ToString
 public class SendMessageRequest {
-    Long idConversation;
+    Long conversationId;
     String message;
     Long quoteMessageId;
 }
