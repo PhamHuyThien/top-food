@@ -35,7 +35,9 @@ public class ProfileServiceImpl extends BaseService implements ProfileService {
 
     @Override
     public ProfileResponse getFiendProfileByAccountId(Long id) {
-        return profileRepository.findFiendProfileByAccountId(id);
+        return profileRepository.findFiendProfileByAccountId(id).orElseThrow(()->{
+        	throw new ResponseStatusException(HttpStatus.NOT_FOUND,Message.PROFILE_NOT_EXISTS);
+        });
     }
 
     @Override
