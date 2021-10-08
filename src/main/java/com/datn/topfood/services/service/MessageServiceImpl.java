@@ -3,13 +3,20 @@ package com.datn.topfood.services.service;
 import com.datn.topfood.data.model.*;
 import com.datn.topfood.data.repository.jpa.*;
 import com.datn.topfood.dto.request.CreateConversationRequest;
+import com.datn.topfood.dto.request.PageRequest;
 import com.datn.topfood.dto.request.SendMessageRequest;
+import com.datn.topfood.dto.response.AccountProfileResponse;
+import com.datn.topfood.dto.response.ConversationResponse;
+import com.datn.topfood.dto.response.PageResponse;
 import com.datn.topfood.services.BaseService;
 import com.datn.topfood.services.interf.MessageService;
 import com.datn.topfood.util.DateUtils;
+import com.datn.topfood.util.PageUtils;
 import com.datn.topfood.util.constant.Message;
 import com.datn.topfood.util.enums.ParticipantsStatus;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -51,7 +58,8 @@ public class MessageServiceImpl extends BaseService implements MessageService {
             participants.setStatus(ParticipantsStatus.JOIN);
             participantsRepository.save(participants);
         }
-        conversation.setCreateBy(null);
+        itMe.setPassword(null);
+        conversation.setCreateBy(itMe);
         return conversation;
     }
 
@@ -93,5 +101,29 @@ public class MessageServiceImpl extends BaseService implements MessageService {
         messages.setCreateAt(DateUtils.currentTimestamp());
         messages.setMessages(quoteMessage);
         messagesRepository.save(messages);
+    }
+
+    @Override
+    public PageResponse<ConversationResponse> getListConversation(PageRequest pageRequest) {
+        Account itMe = itMe();
+        Pageable pageable = PageUtils.toPageable(pageRequest);
+        Page<Conversation> conversationPage = conversationRepsitory.listConversation(itMe.getId(), pageable);
+        List<ConversationResponse> conversationResponseList = new ArrayList<>();
+        for (Conversation conversation : conversationPage.toList()) {
+            ConversationResponse conversationResponse = new ConversationResponse();
+            conversationResponse.setTitle(conversation.getTitle());
+            conversationResponse.setCreateAt(conversation.getCreateAt());
+            AccountProfileResponse accountProfileResponse = accountRepository.getAccountProfileFrivate(conversation.getCreateBy().getId());
+            conversationResponse.setCreateBy(accountProfileResponse);
+            conversationResponseList.add(conversationResponse);
+        }
+        PageResponse<ConversationResponse> pageResponse = new PageResponse<>(
+                conversationResponseList,
+                conversationPage.getTotalElements(),
+                pageable.getPageSize()
+        );
+        pageResponse.setStatus(true);
+        pageResponse.setMessage(Message.OTHER_SUCCESS);
+        return pageResponse;
     }
 }

@@ -37,7 +37,7 @@ public class ProfileServiceImpl implements ProfileService {
     Profile profile = profileRepository.findById(id).orElseThrow(() -> new RuntimeException("profile not found" + id));
     profile.setName(request.getName());
     profile.setAddress(request.getAddress());
-    profile.setAge(request.getAge());
+    profile.setBirthday(request.getBirthday());
     profile.setBio(request.getBio());
     profile.setCover(request.getCover());
     profileRepository.save(profile);
