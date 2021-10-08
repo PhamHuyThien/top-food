@@ -12,7 +12,7 @@ import com.datn.topfood.dto.request.PageRequest;
 import com.datn.topfood.dto.request.RemoveFriendRequest;
 import com.datn.topfood.dto.request.ReplyInvitationFriendRequest;
 import com.datn.topfood.dto.request.SendFriendInvitationsRequest;
-import com.datn.topfood.dto.response.FriendProfileResponse;
+import com.datn.topfood.dto.response.ProfileResponse;
 import com.datn.topfood.dto.response.PageResponse;
 import com.datn.topfood.services.BaseService;
 import com.datn.topfood.services.interf.FriendsService;
@@ -128,10 +128,10 @@ public class FriendsServiceImpl extends BaseService implements FriendsService {
 	}
 
 	@Override
-	public PageResponse<FriendProfileResponse> getListFriends(PageRequest pageRequest) {
+	public PageResponse<ProfileResponse> getListFriends(PageRequest pageRequest) {
 		Account itMe = itMe();
 		pageRequest = PageUtils.ofDefault(pageRequest);
-		List<FriendProfileResponse> friendProfileResponseList = friendshipCustomRepository
+		List<ProfileResponse> friendProfileResponseList = friendshipCustomRepository
 				.findByListFriends(itMe.getId(), pageRequest);
 		PageResponse pageResponse = new PageResponse<>(friendProfileResponseList,
 				friendshipCustomRepository.getTotalProfile(itMe.getId()), pageRequest.getPageSize());
@@ -141,15 +141,15 @@ public class FriendsServiceImpl extends BaseService implements FriendsService {
 	}
 
 	@Override
-	public PageResponse<FriendProfileResponse> getListFriendsRequest(PageRequest pageRequest) {
+	public PageResponse<ProfileResponse> getListFriendsRequest(PageRequest pageRequest) {
 		Account itMe = itMe();
 		Pageable pageable = PageUtils.toPageable(pageRequest);
 		Page<FriendShip> friendShipList = friendShipRepository.findByAccountAddresseeAndStatus(itMe.getId(), pageable);
-		List<FriendProfileResponse> friendProfileResponseList = new ArrayList<>();
+		List<ProfileResponse> friendProfileResponseList = new ArrayList<>();
 		friendShipList.forEach((friendShip) -> {
 			Account accountRequest = friendShip.getAccountRequest();
 			Profile profile = profileRepository.findByAccountId(accountRequest.getId());
-			friendProfileResponseList.add(new FriendProfileResponse(accountRequest.getId(),
+			friendProfileResponseList.add(new ProfileResponse(accountRequest.getId(),
 					accountRequest.getPhoneNumber(), accountRequest.getEmail(), profile));
 		});
 		PageResponse pageResponse = new PageResponse(friendProfileResponseList, friendShipList.getTotalElements(),
