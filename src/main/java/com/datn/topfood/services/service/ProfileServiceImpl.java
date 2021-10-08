@@ -4,77 +4,75 @@ import com.datn.topfood.data.model.Account;
 import com.datn.topfood.data.model.Profile;
 import com.datn.topfood.data.repository.jpa.AccountRepository;
 import com.datn.topfood.data.repository.jpa.ProfileRepository;
+import com.datn.topfood.dto.request.PageRequest;
 import com.datn.topfood.dto.request.ProfileRequest;
 import com.datn.topfood.dto.request.RegisterRequest;
+import com.datn.topfood.dto.response.PageResponse;
 import com.datn.topfood.dto.response.ProfileResponse;
+import com.datn.topfood.services.BaseService;
 import com.datn.topfood.services.interf.ProfileService;
+import com.datn.topfood.util.DateUtils;
+import com.datn.topfood.util.PageUtils;
+import com.datn.topfood.util.constant.Message;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.server.ResponseStatusException;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
-public class ProfileServiceImpl implements ProfileService {
-  @Autowired
-  ProfileRepository profileRepository;
-  @Autowired
-  AccountRepository accountRepository;
+public class ProfileServiceImpl extends BaseService implements ProfileService {
+    @Autowired
+    ProfileRepository profileRepository;
+    @Autowired
+    AccountRepository accountRepository;
 
-  @Override
-  public void createProfile(RegisterRequest create) {
-    Account account = accountRepository.findByPhoneNumber(create.getPhoneNumber());
-    Profile profile = new Profile();
-    profile.setName(create.getName());
-    profile.setAccount(account);
-    profile.setAvatar("https://fakeimg.pl/400x400/ff0000/000");
-    profileRepository.save(profile);
-  }
-
-  @Override
-  public ProfileResponse updateProfile(ProfileRequest request, Long id) {
-    ModelMapper mapper = new ModelMapper();
-    Profile profile = profileRepository.findById(id).orElseThrow(() -> new RuntimeException("profile not found" + id));
-    profile.setName(request.getName());
-    profile.setAddress(request.getAddress());
-    profile.setAge(request.getAge());
-    profile.setBio(request.getBio());
-    profile.setCover(request.getCover());
-    profile.setAvatar(request.getAvatar());
-    profileRepository.save(profile);
-    ProfileResponse profileResponse = mapper.map(profile, ProfileResponse.class);
-    profileResponse.setEmail(profile.getAccount().getEmail());
-    profileResponse.setPhoneNumber(profile.getAccount().getPhoneNumber());
-    return profileResponse;
-  }
-
-  @Override
-  public ProfileResponse findById(Long id) {
-    ModelMapper mapper = new ModelMapper();
-    Profile profile = profileRepository.findById(id).orElseThrow(() -> new RuntimeException("profile not found" + id));
-    ProfileResponse profileResponse = mapper.map(profile, ProfileResponse.class);
-    profileResponse.setEmail(profile.getAccount().getEmail());
-    profileResponse.setPhoneNumber(profile.getAccount().getPhoneNumber());
-    return profileResponse;
-  }
-
-  @Override
-  public ProfileResponse findByName(String name) {
-    Profile profile = profileRepository.findByName(name).orElseThrow(() -> new RuntimeException("profile not found" + name));
-    return new ModelMapper().map(profile, ProfileResponse.class);
-  }
-
-  @Override
-  public List<ProfileResponse> SearchByNameAndPhone(String name ) {
-    ModelMapper mapper = new ModelMapper();
-    List<ProfileResponse> profileResponses = null;
-    List<Profile> profiles = profileRepository.findByNameIsContaining(name);
-    for (Profile x : profiles) {
-      ProfileResponse profileResponse = mapper.map(x, ProfileResponse.class);
-      profileResponse.setPhoneNumber(x.getAccount().getPhoneNumber());
-      profileResponse.setEmail(x.getAccount().getEmail());
-      profileResponses.add(profileResponse);
+    @Override
+    public ProfileResponse getFiendProfileByAccountId(Long id) {
+        return profileRepository.findFiendProfileByAccountId(id);
     }
-    return profileResponses;
-  }
+
+    @Override
+    public void updateProfile(ProfileRequest profileRequest) {
+        Account itMe = itMe();
+        Profile profile = profileRepository.findByAccountId(itMe.getId());
+        profile.setName(profileRequest.getName());
+        profile.setAddress(profileRequest.getAddress());
+        profile.setBirthday(profileRequest.getBirthday());
+        profile.setBio(profileRequest.getBio());
+        profile.setCover(profileRequest.getCover());
+        profile.setAvatar(profileRequest.getAvatar());
+        profile.setUpdateAt(DateUtils.currentTimestamp());
+        profileRepository.save(profile);
+    }
+
+    @Override
+    public PageResponse<ProfileResponse> search(String search, PageRequest pageRequest) {
+        Pageable pageable = PageUtils.toPageable(pageRequest);
+        List<ProfileResponse> profileResponses = new ArrayList<>();
+        search = "%" + search + "%";
+        Page<Profile> profilePage = profileRepository.findByNameLikeOrPhoneLike(search, search, pageable);
+        for (Profile profile : profilePage) {
+            ProfileResponse profileResponse = new ProfileResponse();
+            profileResponse.setAccountId(profile.getAccount().getId());
+            profileResponse.setPhoneNumber(profile.getAccount().getPhoneNumber());
+            profileResponse.setEmail(profile.getAccount().getEmail());
+            profileResponse.setProfile(profile);
+            profileResponses.add(profileResponse);
+        }
+        PageResponse<ProfileResponse> profileResponsePageResponse = new PageResponse<>(
+                profileResponses,
+                profilePage.getTotalElements(),
+                pageable.getPageSize()
+        );
+        profileResponsePageResponse.setStatus(true);
+        profileResponsePageResponse.setMessage(Message.OTHER_SUCCESS);
+        return profileResponsePageResponse;
+    }
 }

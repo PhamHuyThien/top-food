@@ -13,5 +13,5 @@ import java.util.List;
 @ToString
 public class CreateConversationRequest {
     String name;
-    List<Long> profileId;
+    Long accountId;
 }

@@ -17,7 +17,7 @@ import org.springframework.web.server.ResponseStatusException;
 import com.datn.topfood.data.repository.jpa.AccountRepository;
 import com.datn.topfood.data.repository.jpa.FriendShipRepository;
 import com.datn.topfood.data.repository.jpa.ProfileRepository;
-import com.datn.topfood.dto.response.FriendProfileResponse;
+import com.datn.topfood.dto.response.ProfileResponse;
 import com.datn.topfood.services.interf.AccountService;
 import com.datn.topfood.util.DateUtils;
 import com.datn.topfood.util.constant.Message;
@@ -37,12 +37,6 @@ public class AccountServiceImpl extends BaseService implements AccountService {
     AccountOtpRepository accountOtpRepository;
     @Autowired
     PasswordEncoder passwordEncoder;
-
-    @Override
-    @Transactional
-    public FriendProfileResponse getFiendProfileByAccountId(Long id) {
-        return profileRepository.findFiendProfileByAccountId(id);
-    }
 
     @Override
     @Transactional

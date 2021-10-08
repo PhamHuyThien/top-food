@@ -5,7 +5,7 @@ import com.datn.topfood.dto.request.PageRequest;
 import com.datn.topfood.dto.request.RemoveFriendRequest;
 import com.datn.topfood.dto.request.ReplyInvitationFriendRequest;
 import com.datn.topfood.dto.request.SendFriendInvitationsRequest;
-import com.datn.topfood.dto.response.FriendProfileResponse;
+import com.datn.topfood.dto.response.ProfileResponse;
 import com.datn.topfood.dto.response.PageResponse;
 import com.datn.topfood.dto.response.Response;
 import com.datn.topfood.services.interf.FriendsService;
@@ -48,13 +48,13 @@ public class FriendController {
 
     @Operation(description = "API Lấy danh sách bạn bè")
     @GetMapping("/list-friends")
-    public ResponseEntity<PageResponse<FriendProfileResponse>> getListFriends(PageRequest pageRequest) {
+    public ResponseEntity<PageResponse<ProfileResponse>> getListFriends(PageRequest pageRequest) {
         return ResponseEntity.ok(friendsService.getListFriends(pageRequest));
     }
 
     @Operation(description = "API danh sách lời mời kết bạn")
     @GetMapping("/list-friends-request")
-    public ResponseEntity<PageResponse<FriendProfileResponse>> getListFriendsRequest(PageRequest pageRequest) {
+    public ResponseEntity<PageResponse<ProfileResponse>> getListFriendsRequest(PageRequest pageRequest) {
         return ResponseEntity.ok(friendsService.getListFriendsRequest(pageRequest));
     }
     
