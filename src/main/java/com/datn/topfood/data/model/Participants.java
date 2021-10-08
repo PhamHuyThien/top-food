@@ -7,6 +7,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
 
+import com.datn.topfood.util.enums.ParticipantsStatus;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -17,7 +18,7 @@ import lombok.NoArgsConstructor;
 @Entity
 public class Participants extends Base{
 
-	private String status;
+	private ParticipantsStatus status;
 	
 	@ManyToOne
 	@JoinColumn(name = "conversation_id")

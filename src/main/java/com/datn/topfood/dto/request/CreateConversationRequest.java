@@ -5,12 +5,13 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 
+import java.util.List;
+
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @ToString
-public class SendMessageRequest {
-    Long idConversation;
-    String message;
-    Long quoteMessageId;
+public class CreateConversationRequest {
+    String name;
+    List<Long> profileId;
 }
