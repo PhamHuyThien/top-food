@@ -15,4 +15,6 @@ public interface StoreProfileServic {
 	PageResponse<StoreWallResponse> listStoreFollow(PageRequest pageRequest);
 	void unFollowStore(Long storeId);
 	void deleteFood(Long foodId);
+	PageResponse<FoodDetailResponse> listFood(PageRequest pageRequest);
+	
 }

@@ -159,4 +159,20 @@ public class StoreProfileServicImpl extends BaseService implements StoreProfileS
 		}));
 	}
 
+	@Override
+	public PageResponse<FoodDetailResponse> listFood(PageRequest pageRequest) {
+		Account ime = itMe();
+		if (ime.getRole().compareTo(AccountRole.ROLE_STORE) != 0) {
+			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, Message.OTHER_ACTION_IS_DENIED);
+		}
+		Pageable pageable = PageUtils.toPageable(pageRequest);
+		Page<Food> foods = foodRepository.findByAccountUsername(ime.getUsername(), pageable);
+		return new PageResponse<FoodDetailResponse>(foods.stream().map((food)->{
+			return new FoodDetailResponse(food.getName(), food.getPrice(), food.getContent(),
+					food.getFiles().stream().map((file) -> {
+						return new FileRequest(file.getPath(), file.getType().name);
+					}).collect(Collectors.toList()));
+		}).collect(Collectors.toList()), foods.getTotalElements(), pageRequest.getPageSize());
+	}
+
 }

@@ -53,10 +53,16 @@ public class StoreProfileController {
 		return ResponseEntity.ok(new Response<>(true, Message.OTHER_SUCCESS,profileServic.storeProfile(storeProfileId)));
 	}
 	
-	@Operation(description = "API danh sách cửa hàng follow")
+	@Operation(description = "API danh sách cửa hàng follow của account")
 	@GetMapping("/list-store-follow")
 	public ResponseEntity<?> listStoreFollow(PageRequest pageRequest){
 		return ResponseEntity.ok(new Response<>(true, Message.OTHER_SUCCESS,profileServic.listStoreFollow(pageRequest)));
+	}
+	
+	@Operation(description = "API danh sách cửa hàng follow")
+	@GetMapping("/list-food")
+	public ResponseEntity<?> listFood(PageRequest pageRequest){
+		return ResponseEntity.ok(new Response<>(true, Message.OTHER_SUCCESS,profileServic.listFood(pageRequest)));
 	}
 	
 	@Operation(description = "API hủy follow cửa hàng")
@@ -66,7 +72,7 @@ public class StoreProfileController {
 		return ResponseEntity.ok(new Response<>(true, Message.OTHER_SUCCESS));
 	}
 	
-	@Operation(description = "API hủy follow cửa hàng")
+	@Operation(description = "API xóa món ăn")
 	@DeleteMapping("/food/delete/{foodId}")
 	public ResponseEntity<?> deleteFood(@PathVariable Long foodId){
 		profileServic.deleteFood(foodId);
