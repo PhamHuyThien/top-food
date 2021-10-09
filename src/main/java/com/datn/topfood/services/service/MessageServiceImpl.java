@@ -23,6 +23,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.sql.Time;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
@@ -69,7 +70,6 @@ public class MessageServiceImpl extends BaseService implements MessageService {
         participants.setConversation(conversation);
         participants.setCreateAt(presentTimestamp);
         participants.setAccount(account);
-        participants.setStatus(ParticipantsStatus.JOIN);
         participantsRepository.save(participants);
     }
 
@@ -127,15 +127,34 @@ public class MessageServiceImpl extends BaseService implements MessageService {
     public PageResponse<MessagesResponse> getListMessages(Long conversationId, PageRequest pageRequest) {
         Account itMe = itMe();
         Pageable pageable = PageUtils.toPageable(pageRequest);
-        Page<MessagesResponse> messagesResponsePage = messagesRepository.getListMessages(itMe.getId(), conversationId, pageable);
+//        Page<MessagesResponse> messagesResponsePage = messagesRepository.getListMessages(itMe.getId(), conversationId, pageable);
+        Page<Messages> messagesPage = messagesRepository.getListMessages(itMe.getId(), conversationId, pageable);
+        List<MessagesResponse> messagesResponseList = new ArrayList<>();
+        for (Messages messages : messagesPage) {
+            MessagesResponse messagesResponse = toMessagesResponse(messages);
+            messagesResponseList.add(messagesResponse);
+        }
         PageResponse<MessagesResponse> messagesResponsePageResponse = new PageResponse<>(
-                messagesResponsePage.toList(),
-                messagesResponsePage.getTotalElements(),
+                messagesResponseList,
+                messagesPage.getTotalElements(),
                 pageable.getPageSize()
         );
         messagesResponsePageResponse.setStatus(true);
         messagesResponsePageResponse.setMessage(Message.OTHER_SUCCESS);
         return messagesResponsePageResponse;
+    }
+
+    private MessagesResponse toMessagesResponse(Messages messages) {
+        MessagesResponse messagesResponse = new MessagesResponse();
+        messagesResponse.setId(messages.getId());
+        messagesResponse.setMessage(messages.getMessage());
+        messagesResponse.setCreateAt(messages.getCreateAt());
+        messagesResponse.setUpdateAt(messages.getUpdateAt());
+        messagesResponse.setCreateBy(profileRepository.findByAccountId(messages.getAccount().getId()));
+        if (messages.getMessages() != null) {
+            messagesResponse.setQuoteMessage(toMessagesResponse(messages.getMessages()));
+        }
+        return messagesResponse;
     }
 
     @Override
@@ -148,5 +167,18 @@ public class MessageServiceImpl extends BaseService implements MessageService {
         }
         messages.setDisableAt(DateUtils.currentTimestamp());
         messagesRepository.save(messages);
+    }
+
+    @Override
+    @Transactional
+    public void deleteConversation(Long conversationId) {
+        Account itMe = itMe();
+        Participants participants = participantsRepository.getParticipantsFromAccount(itMe.getId(), conversationId);
+        if (participants == null) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, Message.MESSAGE_CONVERSATION_NOT_EXISTS);
+        }
+        Timestamp presentTimestamp = DateUtils.currentTimestamp();
+        participants.setDisableAt(presentTimestamp);
+        participantsRepository.save(participants);
     }
 }

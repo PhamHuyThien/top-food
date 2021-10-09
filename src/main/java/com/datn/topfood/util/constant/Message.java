@@ -33,4 +33,5 @@ public class Message {
 
     public static final String MESSAGE_CONVERSATION_NOT_FOUND = "Cuộc hội thoại này không tồn tại.";
     public static final String MESSAGE_NOT_EXISTS = "Tin nhắn này không tồn tại.";
+    public static final String MESSAGE_CONVERSATION_NOT_EXISTS = "Cuộc trò chuyện này không tồn tại.";
 }

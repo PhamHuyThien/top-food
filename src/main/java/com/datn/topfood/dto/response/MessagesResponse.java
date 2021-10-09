@@ -1,5 +1,6 @@
 package com.datn.topfood.dto.response;
 
+import com.datn.topfood.data.model.Messages;
 import com.datn.topfood.data.model.Profile;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -17,5 +18,6 @@ public class MessagesResponse {
     Date createAt;
     Date updateAt;
     String message;
+    MessagesResponse quoteMessage;
     Profile createBy;
 }
