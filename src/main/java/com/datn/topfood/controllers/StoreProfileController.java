@@ -4,6 +4,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -29,5 +31,11 @@ public class StoreProfileController {
 	public ResponseEntity<?> createFood(@RequestBody FoodRequest foodRequest){
 		profileServic.createFood(foodRequest);
 		return ResponseEntity.ok(new Response<>(true, Message.OTHER_SUCCESS));
+	}
+	
+	@Operation(description = "API xem chi tiết món ăn")
+	@GetMapping("/food/{foodId}")
+	public ResponseEntity<?> foodDetail(@PathVariable Long foodId){
+		return ResponseEntity.ok(new Response<>(true, Message.OTHER_SUCCESS,profileServic.foodDetail(foodId)));
 	}
 }
