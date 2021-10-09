@@ -62,4 +62,11 @@ public class MessageController {
         messageService.deleteConversation(conversationId);
         return ResponseEntity.ok(new Response<>(true, Message.OTHER_SUCCESS));
     }
+
+    @Operation(description = "API thả tim tin nhắn")
+    @PostMapping("/react-heart")
+    public ResponseEntity<Response<?>> reactHeart(@RequestParam Long messageId){
+        messageService.reactHeart(messageId);
+        return ResponseEntity.ok(new Response<>(true, Message.OTHER_SUCCESS));
+    }
 }

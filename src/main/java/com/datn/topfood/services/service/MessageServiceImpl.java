@@ -148,6 +148,7 @@ public class MessageServiceImpl extends BaseService implements MessageService {
         MessagesResponse messagesResponse = new MessagesResponse();
         messagesResponse.setId(messages.getId());
         messagesResponse.setMessage(messages.getMessage());
+        messagesResponse.setHeart(messages.getHeart());
         messagesResponse.setCreateAt(messages.getCreateAt());
         messagesResponse.setUpdateAt(messages.getUpdateAt());
         messagesResponse.setCreateBy(profileRepository.findByAccountId(messages.getAccount().getId()));
@@ -180,5 +181,21 @@ public class MessageServiceImpl extends BaseService implements MessageService {
         Timestamp presentTimestamp = DateUtils.currentTimestamp();
         participants.setDisableAt(presentTimestamp);
         participantsRepository.save(participants);
+    }
+
+    @Override
+    @Transactional
+    public void reactHeart(Long messageId) {
+        Account itMe = itMe();
+        Messages messages = messagesRepository.findById(messageId).orElse(null);
+        if (messages == null || messages.getDisableAt() != null) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, Message.MESSAGE_NOT_EXISTS);
+        }
+        Conversation conversation = conversationRepsitory.findByIdFromAccountId(itMe.getId(), messages.getConversation().getId());
+        if (conversation == null) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, Message.MESSAGE_NOT_EXISTS);
+        }
+        messages.setHeart(messages.getHeart() + 1);
+        messagesRepository.save(messages);
     }
 }

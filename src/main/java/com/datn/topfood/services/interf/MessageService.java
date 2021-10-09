@@ -15,4 +15,5 @@ public interface MessageService {
     PageResponse<MessagesResponse> getListMessages(Long conversationId, PageRequest pageRequest);
     void deleteMessage(Long messageId);
     void deleteConversation(Long conversationId);
+    void reactHeart(Long messageId);
 }

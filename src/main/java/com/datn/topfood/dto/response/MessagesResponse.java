@@ -18,6 +18,7 @@ public class MessagesResponse {
     Date createAt;
     Date updateAt;
     String message;
+    int heart;
     MessagesResponse quoteMessage;
     Profile createBy;
 }
