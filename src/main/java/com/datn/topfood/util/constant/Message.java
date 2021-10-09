@@ -32,5 +32,5 @@ public class Message {
     public static final String MAIL_SEND_OTP_TEXT = "Mã xác nhận của bạn là %s, nhập ngay cho nóng nhá <3.";
 
     public static final String MESSAGE_CONVERSATION_NOT_FOUND = "Cuộc hội thoại này không tồn tại.";
-    public static final String MESSAGES_ACCOUNT_NOT_FOUND = "Người nhận không tồn tại.";
+    public static final String MESSAGE_NOT_EXISTS = "Tin nhắn này không tồn tại.";
 }

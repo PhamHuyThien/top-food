@@ -137,4 +137,16 @@ public class MessageServiceImpl extends BaseService implements MessageService {
         messagesResponsePageResponse.setMessage(Message.OTHER_SUCCESS);
         return messagesResponsePageResponse;
     }
+
+    @Override
+    @Transactional
+    public void deleteMessage(Long messageId) {
+        Account itMe = itMe();
+        Messages messages = messagesRepository.getMessageFromAccount(itMe.getId(), messageId);
+        if (messages == null) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, Message.MESSAGE_NOT_EXISTS);
+        }
+        messages.setDisableAt(DateUtils.currentTimestamp());
+        messagesRepository.save(messages);
+    }
 }

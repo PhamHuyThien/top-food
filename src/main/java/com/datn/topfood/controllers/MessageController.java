@@ -48,4 +48,11 @@ public class MessageController {
     public  ResponseEntity<PageResponse<MessagesResponse>> getListMessage(@RequestParam Long conversationId, PageRequest pageRequest){
         return ResponseEntity.ok(messageService.getListMessages(conversationId, pageRequest));
     }
+
+    @Operation(description = "API gỡ tin nhắn")
+    @DeleteMapping("/delete-message")
+    public ResponseEntity<Response<?>> deleteMessage(@RequestParam Long messageId){
+        messageService.deleteMessage(messageId);
+        return ResponseEntity.ok(new Response<>(true, Message.OTHER_SUCCESS));
+    }
 }
