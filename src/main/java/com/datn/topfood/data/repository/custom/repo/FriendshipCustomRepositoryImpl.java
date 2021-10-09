@@ -42,7 +42,7 @@ public class FriendshipCustomRepositoryImpl implements FriendshipCustomRepositor
             } else {
                 account = friendShip.getAccountAddressee();
             }
-            ProfileResponse friendProfileResponse = profileRepository.findFiendProfileByAccountId(account.getId());
+            ProfileResponse friendProfileResponse = profileRepository.findFiendProfileByAccountId(account.getId()).get();
             friendResponseList.add(friendProfileResponse);
         });
         return friendResponseList;

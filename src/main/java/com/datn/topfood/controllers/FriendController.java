@@ -59,7 +59,7 @@ public class FriendController {
     }
     
     @Operation(description = "API hủy kết bạn")
-    @PostMapping("/remove-friend")
+    @DeleteMapping("/remove-friend")
     public ResponseEntity<Response<?>> removeFriend(@RequestBody RemoveFriendRequest removeFriendRequest) {
         friendsService.removeFriend(removeFriendRequest);
         return ResponseEntity.ok(new Response<>(true, Message.OTHER_SUCCESS));
