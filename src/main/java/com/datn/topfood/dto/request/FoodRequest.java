@@ -11,6 +11,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class FoodRequest {
 
+	Long id;
 	Double price;
 	String name;
 	String content;

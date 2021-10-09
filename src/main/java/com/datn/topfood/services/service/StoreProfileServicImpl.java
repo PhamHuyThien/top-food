@@ -6,6 +6,8 @@ import java.util.stream.Collectors;
 import javax.transaction.Transactional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
@@ -19,11 +21,14 @@ import com.datn.topfood.data.repository.jpa.FoodRepository;
 import com.datn.topfood.data.repository.jpa.ProfileRepository;
 import com.datn.topfood.dto.request.FileRequest;
 import com.datn.topfood.dto.request.FoodRequest;
+import com.datn.topfood.dto.request.PageRequest;
 import com.datn.topfood.dto.response.FoodDetailResponse;
+import com.datn.topfood.dto.response.PageResponse;
 import com.datn.topfood.dto.response.StoreWallResponse;
 import com.datn.topfood.services.BaseService;
 import com.datn.topfood.services.interf.StoreProfileServic;
 import com.datn.topfood.util.ConvertUtils;
+import com.datn.topfood.util.PageUtils;
 import com.datn.topfood.util.constant.Message;
 import com.datn.topfood.util.enums.AccountRole;
 
@@ -36,6 +41,8 @@ public class StoreProfileServicImpl extends BaseService implements StoreProfileS
 	ProfileRepository profileRepository;
 	@Autowired
 	AccountFollowRepository followRepository;
+	
+	public final int MAX_SIZE_FOOD = 20;
 
 	@Override
 	@Transactional
@@ -44,9 +51,13 @@ public class StoreProfileServicImpl extends BaseService implements StoreProfileS
 		if (ime.getRole().compareTo(AccountRole.ROLE_STORE) != 0) {
 			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, Message.OTHER_ACTION_IS_DENIED);
 		}
+		if (foodRepository.countFoodByProfileAccountUsername(ime.getUsername()) >= MAX_SIZE_FOOD) {
+			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, Message.MAX_SIZE_FOOD_MESSAGE+MAX_SIZE_FOOD+" món.");
+		}
 		Food f = new Food(foodRequest.getName(), foodRequest.getPrice(), foodRequest.getContent(), "active",
 				profileRepository.findByAccountId(ime.getId()),
 				ConvertUtils.convertArrFileReqToSetFile(foodRequest.getFiles()));
+
 		foodRepository.save(f);
 	}
 
@@ -105,10 +116,11 @@ public class StoreProfileServicImpl extends BaseService implements StoreProfileS
 	}
 
 	@Override
-	public List<StoreWallResponse> listStoreFollow() {
+	public PageResponse<StoreWallResponse> listStoreFollow(PageRequest pageRequest) {
 		Account ime = itMe();
-		List<AccountFollow> accountFollow = followRepository.listStoreFollow(ime.getUsername());
-		return accountFollow.stream().map((al)->{
+		Pageable pageable = PageUtils.toPageable(pageRequest);
+		Page<AccountFollow> accountFollow = followRepository.listStoreFollow(ime.getUsername(),pageable);
+		return new PageResponse<StoreWallResponse>(accountFollow.stream().map((al) -> {
 			StoreWallResponse swr = new StoreWallResponse();
 			swr.setAddress(al.getProfile().getAddress());
 			swr.setAvatar(al.getProfile().getAvatar());
@@ -118,16 +130,28 @@ public class StoreProfileServicImpl extends BaseService implements StoreProfileS
 			swr.setName(al.getProfile().getName());
 			swr.setStoreId(al.getProfile().getId());
 			return swr;
-		}).collect(Collectors.toList());
+		}).collect(Collectors.toList()), accountFollow.getTotalElements(), pageRequest.getPageSize());
 	}
 
 	@Override
 	public void unFollowStore(Long storeId) {
 		// TODO Auto-generated method stub
 		Account ime = itMe();
-		followRepository.delete(followRepository.findByAccountUsernameAndProfileId(ime.getUsername(), storeId).orElseThrow(()->{
-			throw new ResponseStatusException(HttpStatus.NOT_FOUND,Message.OTHER_ACTION_IS_DENIED);
+		followRepository.delete(
+				followRepository.findByAccountUsernameAndProfileId(ime.getUsername(), storeId).orElseThrow(() -> {
+					throw new ResponseStatusException(HttpStatus.NOT_FOUND, Message.OTHER_ACTION_IS_DENIED);
+				}));
+	}
+
+	@Override
+	public void deleteFood(Long foodId) {
+		Account ime = itMe();
+		if (ime.getRole().compareTo(AccountRole.ROLE_STORE) != 0) {
+			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, Message.OTHER_ACTION_IS_DENIED);
+		}
+		foodRepository.delete(foodRepository.findById(foodId).orElseThrow(()->{
+			throw new ResponseStatusException(HttpStatus.NOT_FOUND, Message.FOOD_NOT_EXISTS);
 		}));
 	}
-	
+
 }

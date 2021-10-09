@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.datn.topfood.dto.request.FoodRequest;
+import com.datn.topfood.dto.request.PageRequest;
 import com.datn.topfood.dto.response.Response;
 import com.datn.topfood.services.interf.StoreProfileServic;
 import com.datn.topfood.util.constant.Message;
@@ -55,8 +56,8 @@ public class StoreProfileController {
 	
 	@Operation(description = "API danh sách cửa hàng follow")
 	@GetMapping("/list-store-follow")
-	public ResponseEntity<?> listStoreFollow(){
-		return ResponseEntity.ok(new Response<>(true, Message.OTHER_SUCCESS,profileServic.listStoreFollow()));
+	public ResponseEntity<?> listStoreFollow(PageRequest pageRequest){
+		return ResponseEntity.ok(new Response<>(true, Message.OTHER_SUCCESS,profileServic.listStoreFollow(pageRequest)));
 	}
 	
 	@Operation(description = "API hủy follow cửa hàng")
