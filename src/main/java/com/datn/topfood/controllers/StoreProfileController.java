@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -50,5 +51,18 @@ public class StoreProfileController {
 	@GetMapping("/wall/{storeProfileId}")
 	public ResponseEntity<?> storeProfile(@PathVariable Long storeProfileId){
 		return ResponseEntity.ok(new Response<>(true, Message.OTHER_SUCCESS,profileServic.storeProfile(storeProfileId)));
+	}
+	
+	@Operation(description = "API danh sách cửa hàng follow")
+	@GetMapping("/list-store-follow")
+	public ResponseEntity<?> listStoreFollow(){
+		return ResponseEntity.ok(new Response<>(true, Message.OTHER_SUCCESS,profileServic.listStoreFollow()));
+	}
+	
+	@Operation(description = "API hủy follow cửa hàng")
+	@DeleteMapping("/un-follow/{storeProfileId}")
+	public ResponseEntity<?> unFollowStore(@PathVariable Long storeProfileId){
+		profileServic.unFollowStore(storeProfileId);
+		return ResponseEntity.ok(new Response<>(true, Message.OTHER_SUCCESS));
 	}
 }

@@ -1,5 +1,6 @@
 package com.datn.topfood.services.service;
 
+import java.util.List;
 import java.util.stream.Collectors;
 
 import javax.transaction.Transactional;
@@ -51,7 +52,6 @@ public class StoreProfileServicImpl extends BaseService implements StoreProfileS
 
 	@Override
 	public FoodDetailResponse foodDetail(Long foodId) {
-		// TODO Auto-generated method stub
 		Food f = foodRepository.findById(foodId).orElseThrow(() -> {
 			throw new ResponseStatusException(HttpStatus.NOT_FOUND, Message.OTHER_ACTION_IS_DENIED);
 		});
@@ -68,7 +68,6 @@ public class StoreProfileServicImpl extends BaseService implements StoreProfileS
 	@Override
 	@Transactional
 	public void followStore(Long storeProfileId) {
-		// TODO Auto-generated method stub
 		Profile p = profileRepository.findByAccountId(storeProfileId);
 		if (p == null) {
 			throw new ResponseStatusException(HttpStatus.NOT_FOUND, Message.OTHER_ACTION_IS_DENIED);
@@ -105,4 +104,30 @@ public class StoreProfileServicImpl extends BaseService implements StoreProfileS
 		return swr;
 	}
 
+	@Override
+	public List<StoreWallResponse> listStoreFollow() {
+		Account ime = itMe();
+		List<AccountFollow> accountFollow = followRepository.listStoreFollow(ime.getUsername());
+		return accountFollow.stream().map((al)->{
+			StoreWallResponse swr = new StoreWallResponse();
+			swr.setAddress(al.getProfile().getAddress());
+			swr.setAvatar(al.getProfile().getAvatar());
+			swr.setBio(al.getProfile().getBio());
+			swr.setCover(al.getProfile().getCover());
+			swr.setFollower(followRepository.countFollowOfProfile(al.getProfile().getId()));
+			swr.setName(al.getProfile().getName());
+			swr.setStoreId(al.getProfile().getId());
+			return swr;
+		}).collect(Collectors.toList());
+	}
+
+	@Override
+	public void unFollowStore(Long storeId) {
+		// TODO Auto-generated method stub
+		Account ime = itMe();
+		followRepository.delete(followRepository.findByAccountUsernameAndProfileId(ime.getUsername(), storeId).orElseThrow(()->{
+			throw new ResponseStatusException(HttpStatus.NOT_FOUND,Message.OTHER_ACTION_IS_DENIED);
+		}));
+	}
+	
 }
