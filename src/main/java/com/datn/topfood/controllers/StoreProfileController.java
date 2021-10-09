@@ -1,7 +1,6 @@
 package com.datn.topfood.controllers;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -64,6 +63,13 @@ public class StoreProfileController {
 	@DeleteMapping("/un-follow/{storeProfileId}")
 	public ResponseEntity<?> unFollowStore(@PathVariable Long storeProfileId){
 		profileServic.unFollowStore(storeProfileId);
+		return ResponseEntity.ok(new Response<>(true, Message.OTHER_SUCCESS));
+	}
+	
+	@Operation(description = "API hủy follow cửa hàng")
+	@DeleteMapping("/food/delete/{foodId}")
+	public ResponseEntity<?> deleteFood(@PathVariable Long foodId){
+		profileServic.deleteFood(foodId);
 		return ResponseEntity.ok(new Response<>(true, Message.OTHER_SUCCESS));
 	}
 }

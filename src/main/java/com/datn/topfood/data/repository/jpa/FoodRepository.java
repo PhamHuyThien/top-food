@@ -14,4 +14,7 @@ public interface FoodRepository extends JpaRepository<Food, Long>{
 	
 	@Query("select count(f) from Food as f where f.profile.account.username = ?1")
 	long countFoodByProfileAccountUsername(String username);
+	
+	@Query("select f from Food as f where f.id = ?1 and f.profile.account.username = ?2")
+	Food findByIdAndAccountUsername(Long foodId,String username);
 }

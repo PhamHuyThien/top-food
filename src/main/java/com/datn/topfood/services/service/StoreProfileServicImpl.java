@@ -1,6 +1,5 @@
 package com.datn.topfood.services.service;
 
-import java.util.List;
 import java.util.stream.Collectors;
 
 import javax.transaction.Transactional;
@@ -28,6 +27,7 @@ import com.datn.topfood.dto.response.StoreWallResponse;
 import com.datn.topfood.services.BaseService;
 import com.datn.topfood.services.interf.StoreProfileServic;
 import com.datn.topfood.util.ConvertUtils;
+import com.datn.topfood.util.DateUtils;
 import com.datn.topfood.util.PageUtils;
 import com.datn.topfood.util.constant.Message;
 import com.datn.topfood.util.enums.AccountRole;
@@ -41,7 +41,7 @@ public class StoreProfileServicImpl extends BaseService implements StoreProfileS
 	ProfileRepository profileRepository;
 	@Autowired
 	AccountFollowRepository followRepository;
-	
+
 	public final int MAX_SIZE_FOOD = 20;
 
 	@Override
@@ -52,12 +52,13 @@ public class StoreProfileServicImpl extends BaseService implements StoreProfileS
 			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, Message.OTHER_ACTION_IS_DENIED);
 		}
 		if (foodRepository.countFoodByProfileAccountUsername(ime.getUsername()) >= MAX_SIZE_FOOD) {
-			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, Message.MAX_SIZE_FOOD_MESSAGE+MAX_SIZE_FOOD+" món.");
+			throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+					Message.MAX_SIZE_FOOD_MESSAGE + MAX_SIZE_FOOD + " món.");
 		}
 		Food f = new Food(foodRequest.getName(), foodRequest.getPrice(), foodRequest.getContent(), "active",
 				profileRepository.findByAccountId(ime.getId()),
 				ConvertUtils.convertArrFileReqToSetFile(foodRequest.getFiles()));
-
+		f.setCreateAt(DateUtils.currentTimestamp());
 		foodRepository.save(f);
 	}
 
@@ -119,7 +120,7 @@ public class StoreProfileServicImpl extends BaseService implements StoreProfileS
 	public PageResponse<StoreWallResponse> listStoreFollow(PageRequest pageRequest) {
 		Account ime = itMe();
 		Pageable pageable = PageUtils.toPageable(pageRequest);
-		Page<AccountFollow> accountFollow = followRepository.listStoreFollow(ime.getUsername(),pageable);
+		Page<AccountFollow> accountFollow = followRepository.listStoreFollow(ime.getUsername(), pageable);
 		return new PageResponse<StoreWallResponse>(accountFollow.stream().map((al) -> {
 			StoreWallResponse swr = new StoreWallResponse();
 			swr.setAddress(al.getProfile().getAddress());
@@ -149,7 +150,11 @@ public class StoreProfileServicImpl extends BaseService implements StoreProfileS
 		if (ime.getRole().compareTo(AccountRole.ROLE_STORE) != 0) {
 			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, Message.OTHER_ACTION_IS_DENIED);
 		}
-		foodRepository.delete(foodRepository.findById(foodId).orElseThrow(()->{
+		// kiểm tra món ăn có phải đúng của cửa hàng đang yêu cầu xóa hay không
+		if (foodRepository.findByIdAndAccountUsername(foodId, ime.getUsername()) == null) {
+			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, Message.OTHER_ACTION_IS_DENIED);
+		}
+		foodRepository.delete(foodRepository.findById(foodId).orElseThrow(() -> {
 			throw new ResponseStatusException(HttpStatus.NOT_FOUND, Message.FOOD_NOT_EXISTS);
 		}));
 	}
