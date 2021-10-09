@@ -7,6 +7,7 @@ import com.datn.topfood.dto.request.PageRequest;
 import com.datn.topfood.dto.request.SendMessageRequest;
 import com.datn.topfood.dto.response.AccountProfileResponse;
 import com.datn.topfood.dto.response.ConversationResponse;
+import com.datn.topfood.dto.response.MessagesResponse;
 import com.datn.topfood.dto.response.PageResponse;
 import com.datn.topfood.services.BaseService;
 import com.datn.topfood.services.interf.MessageService;
@@ -63,7 +64,7 @@ public class MessageServiceImpl extends BaseService implements MessageService {
         return conversation;
     }
 
-    private void saveParticipants(Conversation conversation,Timestamp presentTimestamp, Account account){
+    private void saveParticipants(Conversation conversation, Timestamp presentTimestamp, Account account) {
         Participants participants = new Participants();
         participants.setConversation(conversation);
         participants.setCreateAt(presentTimestamp);
@@ -88,7 +89,7 @@ public class MessageServiceImpl extends BaseService implements MessageService {
     public void sendMessage(SendMessageRequest sendMessageRequest) {
         Account itMe = itMe();
         Timestamp presentTimestamp = DateUtils.currentTimestamp();
-        Conversation conversation = conversationRepsitory.findById(sendMessageRequest.getConversationId()).orElse(null);
+        Conversation conversation = conversationRepsitory.findByIdFromAccountId(itMe.getId(), sendMessageRequest.getConversationId());
         if (conversation == null) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, Message.MESSAGE_CONVERSATION_NOT_FOUND);
         }
@@ -120,5 +121,20 @@ public class MessageServiceImpl extends BaseService implements MessageService {
         conversationResponsePageResponse.setStatus(true);
         conversationResponsePageResponse.setMessage(Message.OTHER_SUCCESS);
         return conversationResponsePageResponse;
+    }
+
+    @Override
+    public PageResponse<MessagesResponse> getListMessages(Long conversationId, PageRequest pageRequest) {
+        Account itMe = itMe();
+        Pageable pageable = PageUtils.toPageable(pageRequest);
+        Page<MessagesResponse> messagesResponsePage = messagesRepository.getListMessages(itMe.getId(), conversationId, pageable);
+        PageResponse<MessagesResponse> messagesResponsePageResponse = new PageResponse<>(
+                messagesResponsePage.toList(),
+                messagesResponsePage.getTotalElements(),
+                pageable.getPageSize()
+        );
+        messagesResponsePageResponse.setStatus(true);
+        messagesResponsePageResponse.setMessage(Message.OTHER_SUCCESS);
+        return messagesResponsePageResponse;
     }
 }

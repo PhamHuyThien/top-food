@@ -12,9 +12,10 @@ import java.util.Date;
 @NoArgsConstructor
 @AllArgsConstructor
 @ToString
-public class ConversationResponse {
+public class MessagesResponse {
     Long id;
-    String title;
     Date createAt;
+    Date updateAt;
+    String message;
     Profile createBy;
 }

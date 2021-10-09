@@ -5,6 +5,7 @@ import com.datn.topfood.dto.request.CreateConversationRequest;
 import com.datn.topfood.dto.request.PageRequest;
 import com.datn.topfood.dto.request.SendMessageRequest;
 import com.datn.topfood.dto.response.ConversationResponse;
+import com.datn.topfood.dto.response.MessagesResponse;
 import com.datn.topfood.dto.response.PageResponse;
 import com.datn.topfood.dto.response.Response;
 import com.datn.topfood.services.interf.MessageService;
@@ -40,5 +41,11 @@ public class MessageController {
     @GetMapping("/list-conversation")
     public ResponseEntity<PageResponse<ConversationResponse>> getListConversation(PageRequest pageRequest) {
         return ResponseEntity.ok(messageService.getListConversation(pageRequest));
+    }
+
+    @Operation(description = "API lấy danh sách tin nhắn cuộc trò chuyện")
+    @GetMapping("/list-messages")
+    public  ResponseEntity<PageResponse<MessagesResponse>> getListMessage(@RequestParam Long conversationId, PageRequest pageRequest){
+        return ResponseEntity.ok(messageService.getListMessages(conversationId, pageRequest));
     }
 }

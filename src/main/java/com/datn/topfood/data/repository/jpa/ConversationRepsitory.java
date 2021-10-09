@@ -3,6 +3,8 @@ package com.datn.topfood.data.repository.jpa;
 
 import com.datn.topfood.data.model.Conversation;
 import com.datn.topfood.dto.response.ConversationResponse;
+import com.datn.topfood.dto.response.MessagesResponse;
+import com.datn.topfood.util.constant.Message;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -10,7 +12,14 @@ import org.springframework.data.jpa.repository.Query;
 
 public interface ConversationRepsitory extends JpaRepository<Conversation, Long> {
 
+    @Query("SELECT con FROM Conversation con " +
+            "JOIN Participants par ON par.conversation = con " +
+            "JOIN Account acc ON par.account = acc " +
+            "WHERE acc.id = ?1 AND con.id = ?2")
+    Conversation findByIdFromAccountId(Long profileId, Long conversationId);
+
     @Query("SELECT new com.datn.topfood.dto.response.ConversationResponse( " +
+            "con.id, " +
             "con.title," +
             "con.createAt," +
             "prof " +
