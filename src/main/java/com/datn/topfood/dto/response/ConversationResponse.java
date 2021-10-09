@@ -16,5 +16,6 @@ public class ConversationResponse {
     Long id;
     String title;
     Date createAt;
+    Date updateAt;
     Profile createBy;
 }

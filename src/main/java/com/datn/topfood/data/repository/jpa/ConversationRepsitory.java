@@ -21,7 +21,8 @@ public interface ConversationRepsitory extends JpaRepository<Conversation, Long>
     @Query("SELECT new com.datn.topfood.dto.response.ConversationResponse( " +
             "con.id, " +
             "con.title," +
-            "con.createAt," +
+            "con.createAt, " +
+            "con.updateAt," +
             "prof " +
             ") FROM Conversation con " +
             "JOIN Participants par ON con = par.conversation " +
