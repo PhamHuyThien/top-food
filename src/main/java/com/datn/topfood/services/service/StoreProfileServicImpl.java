@@ -41,6 +41,12 @@ public class StoreProfileServicImpl extends BaseService implements StoreProfileS
 				profileRepository.findByAccountId(ime.getId()), convertArrFileReqToSetFile(foodRequest.getFiles()));
 		foodRepository.save(f);
 	}
+	
+	@Override
+	public Food foodDetail(Long foodId) {
+		// TODO Auto-generated method stub
+		return null;
+	}
 
 	public Set<File> convertArrFileReqToSetFile(ArrayList<FoodRequest.File> arrFile){
 		Set<File> files = new HashSet<>();
