@@ -59,7 +59,7 @@ public class StoreProfileController {
 		return ResponseEntity.ok(new Response<>(true, Message.OTHER_SUCCESS,profileServic.listStoreFollow(pageRequest)));
 	}
 	
-	@Operation(description = "API danh sách cửa hàng follow")
+	@Operation(description = "API danh sách món ăn của cửa hàng")
 	@GetMapping("/list-food")
 	public ResponseEntity<?> listFood(PageRequest pageRequest){
 		return ResponseEntity.ok(new Response<>(true, Message.OTHER_SUCCESS,profileServic.listFood(pageRequest)));
