@@ -16,6 +16,7 @@ public interface ProfileRepository extends JpaRepository<Profile, Long> {
             "acc.id, " +
             "acc.phoneNumber, " +
             "acc.email, " +
+            "acc.role, " +
             "prof " +
             ") " +
             "from Profile prof " +

@@ -1,8 +1,6 @@
 package com.datn.topfood.controllers;
 
 import com.datn.topfood.dto.request.*;
-import com.datn.topfood.dto.response.ProfileResponse;
-import com.datn.topfood.services.interf.ProfileService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -12,8 +10,6 @@ import com.datn.topfood.services.interf.AccountService;
 import com.datn.topfood.util.constant.Message;
 
 import io.swagger.v3.oas.annotations.Operation;
-
-import java.util.List;
 
 @RestController
 @CrossOrigin
