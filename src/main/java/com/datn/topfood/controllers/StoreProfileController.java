@@ -38,4 +38,17 @@ public class StoreProfileController {
 	public ResponseEntity<?> foodDetail(@PathVariable Long foodId){
 		return ResponseEntity.ok(new Response<>(true, Message.OTHER_SUCCESS,profileServic.foodDetail(foodId)));
 	}
+	
+	@Operation(description = "API follow cửa hàng")
+	@PostMapping("/follow/{storeProfileId}")
+	public ResponseEntity<?> follow(@PathVariable Long storeProfileId){
+		profileServic.followStore(storeProfileId);
+		return ResponseEntity.ok(new Response<>(true, Message.OTHER_SUCCESS));
+	}
+	
+	@Operation(description = "API chi tiết profile cửa hàng")
+	@GetMapping("/wall/{storeProfileId}")
+	public ResponseEntity<?> storeProfile(@PathVariable Long storeProfileId){
+		return ResponseEntity.ok(new Response<>(true, Message.OTHER_SUCCESS,profileServic.storeProfile(storeProfileId)));
+	}
 }

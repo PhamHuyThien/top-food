@@ -10,16 +10,21 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
 import com.datn.topfood.data.model.Account;
+import com.datn.topfood.data.model.AccountFollow;
 import com.datn.topfood.data.model.Food;
+import com.datn.topfood.data.model.Profile;
+import com.datn.topfood.data.repository.jpa.AccountFollowRepository;
 import com.datn.topfood.data.repository.jpa.FoodRepository;
 import com.datn.topfood.data.repository.jpa.ProfileRepository;
 import com.datn.topfood.dto.request.FileRequest;
 import com.datn.topfood.dto.request.FoodRequest;
 import com.datn.topfood.dto.response.FoodDetailResponse;
+import com.datn.topfood.dto.response.StoreWallResponse;
 import com.datn.topfood.services.BaseService;
 import com.datn.topfood.services.interf.StoreProfileServic;
 import com.datn.topfood.util.ConvertUtils;
 import com.datn.topfood.util.constant.Message;
+import com.datn.topfood.util.enums.AccountRole;
 
 @Service
 public class StoreProfileServicImpl extends BaseService implements StoreProfileServic {
@@ -28,13 +33,16 @@ public class StoreProfileServicImpl extends BaseService implements StoreProfileS
 	FoodRepository foodRepository;
 	@Autowired
 	ProfileRepository profileRepository;
+	@Autowired
+	AccountFollowRepository followRepository;
 
 	@Override
 	@Transactional
 	public void createFood(FoodRequest foodRequest) {
 		Account ime = itMe();
-//		if (ime.getRole().compareTo(AccountRole.ROLE_STORE) != 0)
-//			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, Message.OTHER_ACTION_IS_DENIED);
+		if (ime.getRole().compareTo(AccountRole.ROLE_STORE) != 0) {
+			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, Message.OTHER_ACTION_IS_DENIED);
+		}
 		Food f = new Food(foodRequest.getName(), foodRequest.getPrice(), foodRequest.getContent(), "active",
 				profileRepository.findByAccountId(ime.getId()),
 				ConvertUtils.convertArrFileReqToSetFile(foodRequest.getFiles()));
@@ -55,6 +63,46 @@ public class StoreProfileServicImpl extends BaseService implements StoreProfileS
 		detailResponse.setName(f.getName());
 		detailResponse.setPrice(f.getPrice());
 		return detailResponse;
+	}
+
+	@Override
+	@Transactional
+	public void followStore(Long storeProfileId) {
+		// TODO Auto-generated method stub
+		Profile p = profileRepository.findByAccountId(storeProfileId);
+		if (p == null) {
+			throw new ResponseStatusException(HttpStatus.NOT_FOUND, Message.OTHER_ACTION_IS_DENIED);
+		}
+		if (p.getAccount().getRole().compareTo(AccountRole.ROLE_STORE) != 0) {
+			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, Message.OTHER_ACTION_IS_DENIED);
+		}
+		AccountFollow afl = new AccountFollow();
+		afl.setProfile(p);
+		afl.setAccount(itMe());
+		followRepository.save(afl);
+	}
+
+	@Override
+	public StoreWallResponse storeProfile(Long storeProfileId) {
+		Profile p = profileRepository.findByAccountId(storeProfileId);
+		if (p == null) {
+			throw new ResponseStatusException(HttpStatus.NOT_FOUND, Message.OTHER_ACTION_IS_DENIED);
+		}
+		StoreWallResponse swr = new StoreWallResponse();
+		swr.setAddress(p.getAddress());
+		swr.setAvatar(p.getAvatar());
+		swr.setBio(p.getBio());
+		swr.setCover(p.getCover());
+		swr.setFollower(followRepository.countFollowOfProfile(storeProfileId));
+		swr.setFoods(foodRepository.findByProfileId(storeProfileId).stream().map((food) -> {
+			return new FoodDetailResponse(food.getName(), food.getPrice(), food.getContent(),
+					food.getFiles().stream().map((file) -> {
+						return new FileRequest(file.getPath(), file.getType().name);
+					}).collect(Collectors.toList()));
+		}).collect(Collectors.toList()));
+		swr.setName(p.getName());
+		swr.setStoreId(p.getId());
+		return swr;
 	}
 
 }
