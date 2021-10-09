@@ -15,9 +15,6 @@ import lombok.NoArgsConstructor;
 @Entity
 public class Participants extends Base{
 
-	@Enumerated(EnumType.STRING)
-	private ParticipantsStatus status;
-	
 	@ManyToOne
 	@JoinColumn(name = "conversation_id")
 	private Conversation conversation;

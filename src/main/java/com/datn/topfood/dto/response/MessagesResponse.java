@@ -1,5 +1,6 @@
 package com.datn.topfood.dto.response;
 
+import com.datn.topfood.data.model.Messages;
 import com.datn.topfood.data.model.Profile;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -12,10 +13,12 @@ import java.util.Date;
 @NoArgsConstructor
 @AllArgsConstructor
 @ToString
-public class ConversationResponse {
+public class MessagesResponse {
     Long id;
-    String title;
     Date createAt;
     Date updateAt;
+    String message;
+    int heart;
+    MessagesResponse quoteMessage;
     Profile createBy;
 }

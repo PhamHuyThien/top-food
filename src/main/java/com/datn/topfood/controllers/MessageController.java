@@ -5,6 +5,7 @@ import com.datn.topfood.dto.request.CreateConversationRequest;
 import com.datn.topfood.dto.request.PageRequest;
 import com.datn.topfood.dto.request.SendMessageRequest;
 import com.datn.topfood.dto.response.ConversationResponse;
+import com.datn.topfood.dto.response.MessagesResponse;
 import com.datn.topfood.dto.response.PageResponse;
 import com.datn.topfood.dto.response.Response;
 import com.datn.topfood.services.interf.MessageService;
@@ -40,5 +41,32 @@ public class MessageController {
     @GetMapping("/list-conversation")
     public ResponseEntity<PageResponse<ConversationResponse>> getListConversation(PageRequest pageRequest) {
         return ResponseEntity.ok(messageService.getListConversation(pageRequest));
+    }
+
+    @Operation(description = "API lấy danh sách tin nhắn cuộc trò chuyện")
+    @GetMapping("/list-messages")
+    public ResponseEntity<PageResponse<MessagesResponse>> getListMessage(@RequestParam Long conversationId, PageRequest pageRequest) {
+        return ResponseEntity.ok(messageService.getListMessages(conversationId, pageRequest));
+    }
+
+    @Operation(description = "API gỡ tin nhắn")
+    @DeleteMapping("/delete-message")
+    public ResponseEntity<Response<?>> deleteMessage(@RequestParam Long messageId) {
+        messageService.deleteMessage(messageId);
+        return ResponseEntity.ok(new Response<>(true, Message.OTHER_SUCCESS));
+    }
+
+    @Operation(description = "API xóa cuộc trò chuyện")
+    @DeleteMapping("/delete-conversation")
+    public ResponseEntity<Response<?>> deleteConversation(@RequestParam Long conversationId) {
+        messageService.deleteConversation(conversationId);
+        return ResponseEntity.ok(new Response<>(true, Message.OTHER_SUCCESS));
+    }
+
+    @Operation(description = "API thả tim tin nhắn")
+    @PostMapping("/react-heart")
+    public ResponseEntity<Response<?>> reactHeart(@RequestParam Long messageId){
+        messageService.reactHeart(messageId);
+        return ResponseEntity.ok(new Response<>(true, Message.OTHER_SUCCESS));
     }
 }

@@ -19,10 +19,11 @@ import lombok.*;
 @AllArgsConstructor
 @ToString
 @Entity
-public class Messages extends Base{
+public class Messages extends Base {
 
 	private String message;
-	
+	private int heart;
+
 	@ManyToOne
 	@JsonBackReference
 	@JoinColumn(name = "messages_id")
