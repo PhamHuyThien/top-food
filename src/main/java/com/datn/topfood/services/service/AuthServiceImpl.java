@@ -99,6 +99,8 @@ public class AuthServiceImpl implements AuthService {
         account.setRole(AccountRole.ROLE_USER);
         accountRepository.save(account);
         Profile profile = new Profile();
+        profile.setName(registerRequest.getName());
+        profile.setBirthday(registerRequest.getBirthday());
         profile.setAccount(account);
         profileRepository.save(profile);
     }
