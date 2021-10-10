@@ -5,6 +5,8 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
+import java.util.Date;
+
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
@@ -16,7 +18,7 @@ public class ProfileResponse {
   String bio;
   String address;
   String name;
-  Integer age;
+  Date birthday;
   String phoneNumber;
   String email;
 }
