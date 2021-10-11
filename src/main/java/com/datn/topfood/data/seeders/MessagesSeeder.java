@@ -81,7 +81,8 @@ public class MessagesSeeder implements Seeder {
         messages.setMessage("Hế lô mọi người");
         messages.setConversation(conversation);
         messages.setAccount(thien);
-        messagesRepository.save(messages);
+        messages = messagesRepository.save(messages);
+        messages.setId(3L);
         messages.setMessages(messages);
         messages.setId(4L);
         messages.setMessage("Hế lô thiên");
