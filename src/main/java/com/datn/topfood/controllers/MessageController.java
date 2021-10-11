@@ -1,6 +1,7 @@
 package com.datn.topfood.controllers;
 
 import com.datn.topfood.data.model.Conversation;
+import com.datn.topfood.dto.request.AddMemeberRequest;
 import com.datn.topfood.dto.request.CreateConversationRequest;
 import com.datn.topfood.dto.request.PageRequest;
 import com.datn.topfood.dto.request.SendMessageRequest;
@@ -67,6 +68,13 @@ public class MessageController {
     @PostMapping("/react-heart")
     public ResponseEntity<Response<?>> reactHeart(@RequestParam Long messageId){
         messageService.reactHeart(messageId);
+        return ResponseEntity.ok(new Response<>(true, Message.OTHER_SUCCESS));
+    }
+
+    @Operation(description = "API Thêm thành viên vào nhóm")
+    @PostMapping("/add-member")
+    public ResponseEntity<Response<?>> addMember(@RequestBody AddMemeberRequest addMemeberRequest){
+        messageService.addMember(addMemeberRequest);
         return ResponseEntity.ok(new Response<>(true, Message.OTHER_SUCCESS));
     }
 }
