@@ -1,10 +1,7 @@
 package com.datn.topfood.controllers;
 
 import com.datn.topfood.data.model.Conversation;
-import com.datn.topfood.dto.request.AddMemeberRequest;
-import com.datn.topfood.dto.request.CreateConversationRequest;
-import com.datn.topfood.dto.request.PageRequest;
-import com.datn.topfood.dto.request.SendMessageRequest;
+import com.datn.topfood.dto.request.*;
 import com.datn.topfood.dto.response.ConversationResponse;
 import com.datn.topfood.dto.response.MessagesResponse;
 import com.datn.topfood.dto.response.PageResponse;
@@ -75,6 +72,13 @@ public class MessageController {
     @PostMapping("/add-member")
     public ResponseEntity<Response<?>> addMember(@RequestBody AddMemeberRequest addMemeberRequest){
         messageService.addMember(addMemeberRequest);
+        return ResponseEntity.ok(new Response<>(true, Message.OTHER_SUCCESS));
+    }
+
+    @Operation(description = "API kích thành viên khỏi nhóm")
+    @DeleteMapping("/delete-member")
+    public  ResponseEntity<Response<?>> deleteMember(@RequestBody DeleteMemeberRequest deleteMemeberRequest){
+        messageService.deleteMember(deleteMemeberRequest);
         return ResponseEntity.ok(new Response<>(true, Message.OTHER_SUCCESS));
     }
 }
