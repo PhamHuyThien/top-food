@@ -19,14 +19,10 @@ import com.fasterxml.jackson.annotation.JsonBackReference;
 @ToString
 @Entity
 public class Tag extends Base{
-
-	private String code;
-	private String name;
-	@ManyToOne
-	@JsonBackReference
-	@JoinColumn(name = "tag_id")
-	private Tag tag;
-
+	Long id;
+	String tagName;
+	@OneToMany(mappedBy = "tag",cascade = CascadeType.ALL)
+	private List<SubTag> subTags;
 	@EqualsAndHashCode.Exclude
 	@ToStringExclude
 	@OneToMany(mappedBy = "tag",cascade = CascadeType.ALL)

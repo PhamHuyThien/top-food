@@ -1,6 +1,8 @@
 package com.datn.topfood.controllers;
 
 import com.datn.topfood.dto.request.*;
+import com.datn.topfood.dto.response.AccountResponse;
+import com.datn.topfood.dto.response.PageResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -30,6 +32,14 @@ public class AccountController {
     public ResponseEntity<Response<?>> active(@RequestBody ActiveRequest activeRequest) {
         accountService.active(activeRequest);
         return ResponseEntity.ok(new Response<>(true, Message.OTHER_SUCCESS));
+    }
+    @GetMapping("")
+    public PageResponse<AccountResponse> searchByPhoneNumber(@RequestParam String phoneNumber,PageRequest pageRequest){
+        return accountService.searchByPhoneNumber(phoneNumber,pageRequest);
+    }
+    @PutMapping("/enable/{id}")
+    public void updateEnable(@PathVariable("id") Long id){
+        accountService.updateEnable(id);
     }
 
 }
