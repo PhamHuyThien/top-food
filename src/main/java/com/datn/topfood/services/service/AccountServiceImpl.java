@@ -110,7 +110,7 @@ public class AccountServiceImpl extends BaseService implements AccountService {
       throw new RuntimeException("account not found"+id);
     }
     Account account=accountOptional.get();
-    account.setDisable(!account.isDisable());
+    account.setDisableAt(DateUtils.currentTimestamp());
     accountRepository.save(account);
   }
 }
