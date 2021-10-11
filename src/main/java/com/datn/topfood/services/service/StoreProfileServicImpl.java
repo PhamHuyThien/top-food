@@ -48,7 +48,7 @@ public class StoreProfileServicImpl extends BaseService implements StoreProfileS
 	@Transactional
 	public void createFood(FoodRequest foodRequest) {
 		Account ime = itMe();
-		if (foodRequest.getId()!=null) {
+		if (foodRequest.getId() != null) {
 			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, Message.OTHER_ACTION_IS_DENIED);
 		}
 		if (ime.getRole().compareTo(AccountRole.ROLE_STORE) != 0) {
@@ -186,28 +186,29 @@ public class StoreProfileServicImpl extends BaseService implements StoreProfileS
 	}
 
 	@Override
-    public FoodDetailResponse updateFood(FoodRequest foodRequest) {
-    	 Account ime = itMe();
-         if (ime.getRole().compareTo(AccountRole.ROLE_STORE) != 0) {
-             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, Message.OTHER_ACTION_IS_DENIED);
-         }
-        // kiểm tra món ăn có phải đúng của cửa hàng này hay không
-        if (foodRepository.findByIdAndAccountUsername(foodRequest.getId(),ime.getUsername()) == null) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, Message.OTHER_ACTION_IS_DENIED);
-        }
-        Food food = foodRepository.findById(foodRequest.getId()).orElse(null);
-        if(food == null){
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, Message.FOOD_NOT_EXISTS);
-        }
-        food.setUpdateAt(DateUtils.currentTimestamp());
-        food.setContent(foodRequest.getContent());
-        food.setFiles(ConvertUtils.convertArrFileReqToSetFile(foodRequest.getFiles()));
-        food.setName(foodRequest.getName());
-        food.setPrice(foodRequest.getPrice());
-        food = foodRepository.save(food);
-        
-        return new FoodDetailResponse(food.getId(),food.getName(),food.getPrice(),food.getContent(),food.getFiles().stream().map((file) -> {
-			return new FileRequest(file.getPath(), file.getType().name);
-		}).collect(Collectors.toList()));   
+	public FoodDetailResponse updateFood(FoodRequest foodRequest) {
+		Account ime = itMe();
+		if (ime.getRole().compareTo(AccountRole.ROLE_STORE) != 0) {
+			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, Message.OTHER_ACTION_IS_DENIED);
+		}
+		// kiểm tra món ăn có phải đúng của cửa hàng này hay không
+		if (foodRepository.findByIdAndAccountUsername(foodRequest.getId(), ime.getUsername()) == null) {
+			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, Message.OTHER_ACTION_IS_DENIED);
+		}
+		Food food = foodRepository.findById(foodRequest.getId()).orElse(null);
+		if (food == null) {
+			throw new ResponseStatusException(HttpStatus.NOT_FOUND, Message.FOOD_NOT_EXISTS);
+		}
+		food.setUpdateAt(DateUtils.currentTimestamp());
+		food.setContent(foodRequest.getContent());
+		food.setFiles(ConvertUtils.convertArrFileReqToSetFile(foodRequest.getFiles()));
+		food.setName(foodRequest.getName());
+		food.setPrice(foodRequest.getPrice());
+		food = foodRepository.save(food);
+
+		return new FoodDetailResponse(food.getId(), food.getName(), food.getPrice(), food.getContent(),
+				food.getFiles().stream().map((file) -> {
+					return new FileRequest(file.getPath(), file.getType().name);
+				}).collect(Collectors.toList()));
 	}
 }
