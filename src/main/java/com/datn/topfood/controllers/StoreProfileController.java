@@ -98,4 +98,11 @@ public class StoreProfileController {
 	public ResponseEntity<?> createPost(@RequestBody PostRequest postRequest){
 		return ResponseEntity.ok(new Response<>(true, Message.OTHER_SUCCESS, profileServic.createPost(postRequest)));
 	}
+	
+	@Operation(description = "API thêm bài viết")
+	@DeleteMapping("/post/delete/{postId}")
+	public ResponseEntity<?> deletePost(@PathVariable("postId") Long id){
+		profileServic.deletePost(id);
+		return ResponseEntity.ok(new Response<>(true, Message.OTHER_SUCCESS ));
+	}
 }

@@ -47,7 +47,7 @@ public class StoreProfileServicImpl extends BaseService implements StoreProfileS
 	@Autowired
 	AccountFollowRepository followRepository;
 	@Autowired
-	PostRepository postRepository; 
+	PostRepository postRepository;
 
 	public final int MAX_SIZE_FOOD = 20;
 
@@ -145,7 +145,7 @@ public class StoreProfileServicImpl extends BaseService implements StoreProfileS
 			return swr;
 		}).collect(Collectors.toList()), accountFollow.getTotalElements(), pageRequest.getPageSize());
 	}
-	
+
 	@Override
 	public PageResponse<SimpleAccountResponse> listFollowStore(PageRequest pageRequest) {
 		Account ime = itMe();
@@ -240,11 +240,11 @@ public class StoreProfileServicImpl extends BaseService implements StoreProfileS
 					return new FileRequest(file.getPath(), file.getType().name);
 				}).collect(Collectors.toList()));
 	}
-	
+
 	@Override
 	@Transactional
 	public PostResponse createPost(PostRequest postRequest) {
-		Account ime= itMe();
+		Account ime = itMe();
 		if (postRequest.getId() != null) {
 			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, Message.OTHER_ACTION_IS_DENIED);
 		}
@@ -258,7 +258,19 @@ public class StoreProfileServicImpl extends BaseService implements StoreProfileS
 		p.setStatus("active");
 		p.setProfile(profileRepository.findByAccountId(ime.getId()));
 		p = postRepository.save(p);
-		PostResponse pr = new PostResponse(p.getId(),p.getContent(),ConvertUtils.convertSetToArrFile(p.getFiles()));
+		PostResponse pr = new PostResponse(p.getId(), p.getContent(), ConvertUtils.convertSetToArrFile(p.getFiles()));
 		return pr;
+	}
+
+	@Override
+	@Transactional
+	public void deletePost(Long postId) {
+		Account ime = itMe();
+		Post p = postRepository.findByAccountAndPostId(ime.getUsername(),postId).orElse(null);
+		if (p == null) {
+			throw new ResponseStatusException(HttpStatus.NOT_FOUND, Message.OTHER_ACTION_IS_DENIED);
+		}
+		p.setDisableAt(DateUtils.currentTimestamp());
+		postRepository.save(p);
 	}
 }

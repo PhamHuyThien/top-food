@@ -22,4 +22,5 @@ public interface StoreProfileServic {
 	PageResponse<FoodDetailResponse> listFood(PageRequest pageRequest);
 	FoodDetailResponse updateFood(FoodRequest foodRequest);
 	PostResponse createPost(PostRequest postRequest);
+	void deletePost(Long postId);
 }
