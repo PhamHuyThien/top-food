@@ -11,6 +11,10 @@ import com.datn.topfood.util.constant.Message;
 import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.messaging.handler.annotation.MessageMapping;
+import org.springframework.messaging.handler.annotation.Payload;
+import org.springframework.messaging.handler.annotation.SendTo;
+import org.springframework.messaging.simp.SimpMessageSendingOperations;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
@@ -21,6 +25,15 @@ public class MessageController {
 
     @Autowired
     MessageService messageService;
+
+    @Autowired
+    SimpMessageSendingOperations simpMessageSendingOperations;
+
+    @MessageMapping("send/{token}")
+    @SendTo("/messages/inbox/{token}")
+    public String send(@Payload String content) {
+        return content;
+    }
 
     @Operation(description = "API tạo cuộc trò chuyện")
     @PostMapping("/create")
