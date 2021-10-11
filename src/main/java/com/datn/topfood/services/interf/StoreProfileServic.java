@@ -16,5 +16,6 @@ public interface StoreProfileServic {
 	void unFollowStore(Long storeId);
 	void deleteFood(Long foodId);
 	PageResponse<FoodDetailResponse> listFood(PageRequest pageRequest);
+	FoodDetailResponse updateFood(FoodRequest foodRequest);
 	
 }

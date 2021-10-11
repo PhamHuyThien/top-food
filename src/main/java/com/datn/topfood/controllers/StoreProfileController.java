@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -77,5 +78,11 @@ public class StoreProfileController {
 	public ResponseEntity<?> deleteFood(@PathVariable Long foodId){
 		profileServic.deleteFood(foodId);
 		return ResponseEntity.ok(new Response<>(true, Message.OTHER_SUCCESS));
+	}
+	
+	@Operation(description =  "API sửa món ăn")
+	@PutMapping("/food/update")
+	public ResponseEntity<?> updateFood(@RequestBody FoodRequest foodRequest){
+		return ResponseEntity.ok(new Response<>(true, Message.OTHER_SUCCESS, profileServic.updateFood(foodRequest)));
 	}
 }

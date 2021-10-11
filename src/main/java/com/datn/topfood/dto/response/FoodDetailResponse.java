@@ -12,8 +12,9 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class FoodDetailResponse {
-	 String name;
-	 Double price;
-	 String content;
-	 List<FileRequest> files;
+	Long id;
+	String name;
+	Double price;
+	String content;
+	List<FileRequest> files;
 }
