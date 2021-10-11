@@ -2,9 +2,7 @@ package com.datn.topfood.services.service;
 
 import com.datn.topfood.data.model.*;
 import com.datn.topfood.data.repository.jpa.*;
-import com.datn.topfood.dto.request.CreateConversationRequest;
-import com.datn.topfood.dto.request.PageRequest;
-import com.datn.topfood.dto.request.SendMessageRequest;
+import com.datn.topfood.dto.request.*;
 import com.datn.topfood.dto.response.AccountProfileResponse;
 import com.datn.topfood.dto.response.ConversationResponse;
 import com.datn.topfood.dto.response.MessagesResponse;
@@ -21,11 +19,13 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.sql.Time;
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 @Service
@@ -197,5 +197,49 @@ public class MessageServiceImpl extends BaseService implements MessageService {
         }
         messages.setHeart(messages.getHeart() + 1);
         messagesRepository.save(messages);
+    }
+
+    @Override
+    @Transactional
+    public void addMember(AddMemeberRequest addMemeberRequest) {
+        Account youAdd = accountRepository.findById(addMemeberRequest.getAccountId()).orElse(null);
+        if (youAdd == null) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, Message.AUTH_LOGIN_USERNAME_WRONG);
+        }
+        Conversation conversation = conversationRepsitory.findByIdAndCreateBy(addMemeberRequest.getConversationId(), itMe());
+        if (conversation == null) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, Message.MESSAGE_CONVERSATION_NOT_FOUND_OR_NOT_ADMIN);
+        }
+        Participants participants = participantsRepository.findByConversationAndAccount(conversation, youAdd);
+        if (participants != null && participants.getDisableAt() == null) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, Message.MESSAGE_CONVERSATION_MEMBER_IS_EXISTS);
+        }
+        if (participants == null) {
+            participants = new Participants();
+        }
+        participants.setConversation(conversation);
+        participants.setAccount(youAdd);
+        participants.setCreateAt(DateUtils.currentTimestamp());
+        participants.setDisableAt(null);
+        participantsRepository.save(participants);
+    }
+
+    @Override
+    @Transactional
+    public void deleteMember(DeleteMemeberRequest deleteMemeberRequest) {
+        Account youAdd = accountRepository.findById(deleteMemeberRequest.getAccountId()).orElse(null);
+        if (youAdd == null) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, Message.AUTH_LOGIN_USERNAME_WRONG);
+        }
+        Conversation conversation = conversationRepsitory.findByIdAndCreateBy(deleteMemeberRequest.getConversationId(), itMe());
+        if (conversation == null) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, Message.MESSAGE_CONVERSATION_NOT_FOUND_OR_NOT_ADMIN);
+        }
+        Participants participants = participantsRepository.findByConversationAndAccount(conversation, youAdd);
+        if (participants == null) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, Message.MESSAGE_CONVERSATION_MEMBER_NOT_EXISTS);
+        }
+        participants.setDisableAt(DateUtils.currentTimestamp());
+        participantsRepository.save(participants);
     }
 }

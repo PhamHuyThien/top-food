@@ -1,9 +1,7 @@
 package com.datn.topfood.controllers;
 
 import com.datn.topfood.data.model.Conversation;
-import com.datn.topfood.dto.request.CreateConversationRequest;
-import com.datn.topfood.dto.request.PageRequest;
-import com.datn.topfood.dto.request.SendMessageRequest;
+import com.datn.topfood.dto.request.*;
 import com.datn.topfood.dto.response.ConversationResponse;
 import com.datn.topfood.dto.response.MessagesResponse;
 import com.datn.topfood.dto.response.PageResponse;
@@ -13,6 +11,10 @@ import com.datn.topfood.util.constant.Message;
 import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.messaging.handler.annotation.MessageMapping;
+import org.springframework.messaging.handler.annotation.Payload;
+import org.springframework.messaging.handler.annotation.SendTo;
+import org.springframework.messaging.simp.SimpMessageSendingOperations;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
@@ -23,6 +25,15 @@ public class MessageController {
 
     @Autowired
     MessageService messageService;
+
+    @Autowired
+    SimpMessageSendingOperations simpMessageSendingOperations;
+
+    @MessageMapping("send/{token}")
+    @SendTo("/messages/inbox/{token}")
+    public String send(@Payload String content) {
+        return content;
+    }
 
     @Operation(description = "API tạo cuộc trò chuyện")
     @PostMapping("/create")
@@ -67,6 +78,20 @@ public class MessageController {
     @PostMapping("/react-heart")
     public ResponseEntity<Response<?>> reactHeart(@RequestParam Long messageId){
         messageService.reactHeart(messageId);
+        return ResponseEntity.ok(new Response<>(true, Message.OTHER_SUCCESS));
+    }
+
+    @Operation(description = "API Thêm thành viên vào nhóm")
+    @PostMapping("/add-member")
+    public ResponseEntity<Response<?>> addMember(@RequestBody AddMemeberRequest addMemeberRequest){
+        messageService.addMember(addMemeberRequest);
+        return ResponseEntity.ok(new Response<>(true, Message.OTHER_SUCCESS));
+    }
+
+    @Operation(description = "API kích thành viên khỏi nhóm")
+    @DeleteMapping("/delete-member")
+    public  ResponseEntity<Response<?>> deleteMember(@RequestBody DeleteMemeberRequest deleteMemeberRequest){
+        messageService.deleteMember(deleteMemeberRequest);
         return ResponseEntity.ok(new Response<>(true, Message.OTHER_SUCCESS));
     }
 }

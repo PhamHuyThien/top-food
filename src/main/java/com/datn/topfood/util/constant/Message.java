@@ -34,8 +34,10 @@ public class Message {
     public static final String MESSAGE_CONVERSATION_NOT_FOUND = "Cuộc hội thoại này không tồn tại.";
     public static final String MESSAGE_NOT_EXISTS = "Tin nhắn này không tồn tại.";
     public static final String MESSAGE_CONVERSATION_NOT_EXISTS = "Cuộc trò chuyện này không tồn tại.";
-    
-    
+    public static final String MESSAGE_CONVERSATION_NOT_FOUND_OR_NOT_ADMIN = "Cuộc trò chuyện này không tồn tại hoặc bạn không phải quản trị viên.";
+    public static final String MESSAGE_CONVERSATION_MEMBER_IS_EXISTS = "Người dùng này đã có trong danh sách nhóm.";
+    public static final String MESSAGE_CONVERSATION_MEMBER_NOT_EXISTS = "Người dùng này không có trong nhóm.";
+
     public static final String MAX_SIZE_FOOD_MESSAGE = "danh sách món ăn tối đa là ";
     public static final String FOOD_NOT_EXISTS = "món ăn không tồn tại. ";									
     

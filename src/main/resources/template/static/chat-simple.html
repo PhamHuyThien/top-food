@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Hello WebSocket</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/sockjs-client/1.5.2/sockjs.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>
+</head>
+
+<body>
+<div>
+    Content: <input type="text" id="content"><br />
+    <button id="send">Send</button>
+</div>
+<div id="inbox">
+</div>
+<script>
+    var stompClient = null;
+    (function () {
+        let urlwss = `http://localhost:8080/ws`;
+        let sockjs = new SockJS(urlwss);
+        stompClient = Stomp.over(sockjs);
+        stompClient.connect({}, function (frame) {
+            $("#div-connected").show();
+            stompClient.subscribe("/messages/inbox/xxxxxxxxxxxxxx", function (payload) {
+                console.log(payload);
+                $("#inbox").append(`<p>${payload}</p>`);
+            });
+        });
+        $("#send").click(function () {
+            let text = $("#content").val();
+            stompClient.send("/app/send/xxxxxxxxxxxxxx", {}, text);
+        });
+    })();
+</script>
+</body>
+
+</html>

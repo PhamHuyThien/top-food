@@ -1,6 +1,7 @@
 package com.datn.topfood.data.repository.jpa;
 
 
+import com.datn.topfood.data.model.Account;
 import com.datn.topfood.data.model.Conversation;
 import com.datn.topfood.dto.response.ConversationResponse;
 import org.springframework.data.domain.Page;
@@ -28,4 +29,6 @@ public interface ConversationRepsitory extends JpaRepository<Conversation, Long>
             "JOIN Profile prof ON acc = prof.account " +
             "WHERE acc.id = ?1 AND con.disableAt IS NULL AND par.disableAt IS NULL ")
     Page<ConversationResponse> getAllConversation(Long accountId, Pageable pageable);
+
+    Conversation findByIdAndCreateBy(Long conversationId, Account account);
 }
