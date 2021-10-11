@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.datn.topfood.dto.request.FoodRequest;
 import com.datn.topfood.dto.request.PageRequest;
+import com.datn.topfood.dto.request.PostRequest;
 import com.datn.topfood.dto.response.Response;
 import com.datn.topfood.services.interf.StoreProfileServic;
 import com.datn.topfood.util.constant.Message;
@@ -60,6 +61,12 @@ public class StoreProfileController {
 		return ResponseEntity.ok(new Response<>(true, Message.OTHER_SUCCESS,profileServic.listStoreFollow(pageRequest)));
 	}
 	
+	@Operation(description = "API account follow của cửa hàng")
+	@GetMapping("/list-follow-store")
+	public ResponseEntity<?> listFollowStore(PageRequest pageRequest){
+		return ResponseEntity.ok(new Response<>(true, Message.OTHER_SUCCESS,profileServic.listFollowStore(pageRequest)));
+	}
+	
 	@Operation(description = "API danh sách món ăn của cửa hàng")
 	@GetMapping("/list-food")
 	public ResponseEntity<?> listFood(PageRequest pageRequest){
@@ -84,5 +91,11 @@ public class StoreProfileController {
 	@PutMapping("/food/update")
 	public ResponseEntity<?> updateFood(@RequestBody FoodRequest foodRequest){
 		return ResponseEntity.ok(new Response<>(true, Message.OTHER_SUCCESS, profileServic.updateFood(foodRequest)));
+	}
+	
+	@Operation(description = "API thêm bài viết")
+	@PostMapping("/post/create")
+	public ResponseEntity<?> createPost(@RequestBody PostRequest postRequest){
+		return ResponseEntity.ok(new Response<>(true, Message.OTHER_SUCCESS, profileServic.createPost(postRequest)));
 	}
 }

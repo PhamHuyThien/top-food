@@ -14,15 +14,20 @@ import org.springframework.web.server.ResponseStatusException;
 import com.datn.topfood.data.model.Account;
 import com.datn.topfood.data.model.AccountFollow;
 import com.datn.topfood.data.model.Food;
+import com.datn.topfood.data.model.Post;
 import com.datn.topfood.data.model.Profile;
 import com.datn.topfood.data.repository.jpa.AccountFollowRepository;
 import com.datn.topfood.data.repository.jpa.FoodRepository;
+import com.datn.topfood.data.repository.jpa.PostRepository;
 import com.datn.topfood.data.repository.jpa.ProfileRepository;
 import com.datn.topfood.dto.request.FileRequest;
 import com.datn.topfood.dto.request.FoodRequest;
 import com.datn.topfood.dto.request.PageRequest;
+import com.datn.topfood.dto.request.PostRequest;
 import com.datn.topfood.dto.response.FoodDetailResponse;
 import com.datn.topfood.dto.response.PageResponse;
+import com.datn.topfood.dto.response.PostResponse;
+import com.datn.topfood.dto.response.SimpleAccountResponse;
 import com.datn.topfood.dto.response.StoreWallResponse;
 import com.datn.topfood.services.BaseService;
 import com.datn.topfood.services.interf.StoreProfileServic;
@@ -41,6 +46,8 @@ public class StoreProfileServicImpl extends BaseService implements StoreProfileS
 	ProfileRepository profileRepository;
 	@Autowired
 	AccountFollowRepository followRepository;
+	@Autowired
+	PostRepository postRepository; 
 
 	public final int MAX_SIZE_FOOD = 20;
 
@@ -138,6 +145,26 @@ public class StoreProfileServicImpl extends BaseService implements StoreProfileS
 			return swr;
 		}).collect(Collectors.toList()), accountFollow.getTotalElements(), pageRequest.getPageSize());
 	}
+	
+	@Override
+	public PageResponse<SimpleAccountResponse> listFollowStore(PageRequest pageRequest) {
+		Account ime = itMe();
+		if (ime.getRole().compareTo(AccountRole.ROLE_STORE) != 0) {
+			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, Message.OTHER_ACTION_IS_DENIED);
+		}
+		Pageable pageable = PageUtils.toPageable(pageRequest);
+		Page<AccountFollow> accountFollow = followRepository.listFolowerStore(ime.getUsername(), pageable);
+		return new PageResponse<SimpleAccountResponse>(accountFollow.stream().map((al) -> {
+			SimpleAccountResponse swr = new SimpleAccountResponse();
+			Profile p = profileRepository.findByAccountId(al.getAccount().getId());
+			swr.setAddress(p.getAddress());
+			swr.setAvatar(p.getAvatar());
+			swr.setBio(p.getBio());
+			swr.setCover(p.getCover());
+			swr.setName(p.getName());
+			return swr;
+		}).collect(Collectors.toList()), accountFollow.getTotalElements(), pageRequest.getPageSize());
+	}
 
 	@Override
 	@Transactional
@@ -166,7 +193,8 @@ public class StoreProfileServicImpl extends BaseService implements StoreProfileS
 		if (food == null) {
 			throw new ResponseStatusException(HttpStatus.NOT_FOUND, Message.FOOD_NOT_EXISTS);
 		}
-		foodRepository.delete(food);
+		food.setDisableAt(DateUtils.currentTimestamp());
+		foodRepository.save(food);
 	}
 
 	@Override
@@ -186,6 +214,7 @@ public class StoreProfileServicImpl extends BaseService implements StoreProfileS
 	}
 
 	@Override
+	@Transactional
 	public FoodDetailResponse updateFood(FoodRequest foodRequest) {
 		Account ime = itMe();
 		if (ime.getRole().compareTo(AccountRole.ROLE_STORE) != 0) {
@@ -210,5 +239,26 @@ public class StoreProfileServicImpl extends BaseService implements StoreProfileS
 				food.getFiles().stream().map((file) -> {
 					return new FileRequest(file.getPath(), file.getType().name);
 				}).collect(Collectors.toList()));
+	}
+	
+	@Override
+	@Transactional
+	public PostResponse createPost(PostRequest postRequest) {
+		Account ime= itMe();
+		if (postRequest.getId() != null) {
+			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, Message.OTHER_ACTION_IS_DENIED);
+		}
+		if (ime.getRole().compareTo(AccountRole.ROLE_STORE) != 0) {
+			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, Message.OTHER_ACTION_IS_DENIED);
+		}
+		Post p = new Post();
+		p.setContent(postRequest.getContent());
+		p.setFiles(ConvertUtils.convertArrFileReqToSetFile(postRequest.getFiles()));
+		p.setCreateAt(DateUtils.currentTimestamp());
+		p.setStatus("active");
+		p.setProfile(profileRepository.findByAccountId(ime.getId()));
+		p = postRepository.save(p);
+		PostResponse pr = new PostResponse(p.getId(),p.getContent(),ConvertUtils.convertSetToArrFile(p.getFiles()));
+		return pr;
 	}
 }

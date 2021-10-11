@@ -1,8 +1,9 @@
 package com.datn.topfood.util;
 
-import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import com.datn.topfood.data.model.File;
 import com.datn.topfood.dto.request.FileRequest;
@@ -10,7 +11,7 @@ import com.datn.topfood.util.enums.FileType;
 
 public class ConvertUtils {
 
-	public static Set<File> convertArrFileReqToSetFile(ArrayList<FileRequest> arrFile){
+	public static Set<File> convertArrFileReqToSetFile(List<FileRequest> arrFile){
 		Set<File> files = new HashSet<>();
 		for(FileRequest f:arrFile) {
 			File file  = new File();
@@ -19,5 +20,11 @@ public class ConvertUtils {
 			files.add(file);
 		}
 		return files;
+	}
+	
+	public static List<FileRequest> convertSetToArrFile(Set<File> files){
+		return files.stream().map((f)->{
+			return new FileRequest(f.getPath(), f.getType().name);
+		}).collect(Collectors.toList());
 	}
 }
