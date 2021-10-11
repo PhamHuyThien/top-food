@@ -35,7 +35,6 @@ public class Account extends Base implements UserDetails {
     private AccountStatus status;
     @Enumerated(EnumType.STRING)
     private AccountRole role;
-    boolean disable=false;
 
     public Account(String username, String password) {
         super();

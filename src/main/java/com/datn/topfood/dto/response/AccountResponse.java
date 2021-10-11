@@ -1,6 +1,5 @@
 package com.datn.topfood.dto.response;
 
-import com.datn.topfood.data.model.Account;
 import com.datn.topfood.util.enums.AccountRole;
 import com.datn.topfood.util.enums.AccountStatus;
 import com.fasterxml.jackson.annotation.JsonInclude;
