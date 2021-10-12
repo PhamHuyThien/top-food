@@ -1,19 +1,21 @@
 package com.datn.topfood.services.interf;
 
 import com.datn.topfood.data.model.Conversation;
+import com.datn.topfood.dto.messages.*;
 import com.datn.topfood.dto.request.*;
 import com.datn.topfood.dto.response.ConversationResponse;
 import com.datn.topfood.dto.response.MessagesResponse;
 import com.datn.topfood.dto.response.PageResponse;
+import com.datn.topfood.dto.response.SendMessageResponse;
 
 public interface MessageService {
-    Conversation createConversation(CreateConversationRequest createConversationRequest);
+    MessageResponse<Conversation> createConversation(CreateConversationRequest createConversationRequest);
 
-    void sendMessage(SendMessageRequest sendMessageRequest);
+    MessageResponse<MessagesResponse> sendMessage(SendMessageRequest sendMessageRequest);
 
-    PageResponse<ConversationResponse> getListConversation(PageRequest pageRequest);
+    PageMessageResponse<ConversationResponse> getListConversation(PageMessageRequest pageMessageRequest);
 
-    PageResponse<MessagesResponse> getListMessages(Long conversationId, PageRequest pageRequest);
+    PageMessageResponse<MessagesResponse> getListMessages(PageMessageRequest pageMessageRequest);
 
     void deleteMessage(Long messageId);
 
