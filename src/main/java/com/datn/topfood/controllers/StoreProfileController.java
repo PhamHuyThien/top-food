@@ -7,12 +7,14 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.datn.topfood.dto.request.FoodRequest;
 import com.datn.topfood.dto.request.PageRequest;
+import com.datn.topfood.dto.request.PostRequest;
 import com.datn.topfood.dto.response.Response;
 import com.datn.topfood.services.interf.StoreProfileServic;
 import com.datn.topfood.util.constant.Message;
@@ -59,6 +61,12 @@ public class StoreProfileController {
 		return ResponseEntity.ok(new Response<>(true, Message.OTHER_SUCCESS,profileServic.listStoreFollow(pageRequest)));
 	}
 	
+	@Operation(description = "API account follow của cửa hàng")
+	@GetMapping("/list-follow-store")
+	public ResponseEntity<?> listFollowStore(PageRequest pageRequest){
+		return ResponseEntity.ok(new Response<>(true, Message.OTHER_SUCCESS,profileServic.listFollowStore(pageRequest)));
+	}
+	
 	@Operation(description = "API danh sách món ăn của cửa hàng")
 	@GetMapping("/list-food")
 	public ResponseEntity<?> listFood(PageRequest pageRequest){
@@ -77,5 +85,24 @@ public class StoreProfileController {
 	public ResponseEntity<?> deleteFood(@PathVariable Long foodId){
 		profileServic.deleteFood(foodId);
 		return ResponseEntity.ok(new Response<>(true, Message.OTHER_SUCCESS));
+	}
+	
+	@Operation(description =  "API sửa món ăn")
+	@PutMapping("/food/update")
+	public ResponseEntity<?> updateFood(@RequestBody FoodRequest foodRequest){
+		return ResponseEntity.ok(new Response<>(true, Message.OTHER_SUCCESS, profileServic.updateFood(foodRequest)));
+	}
+	
+	@Operation(description = "API thêm bài viết")
+	@PostMapping("/post/create")
+	public ResponseEntity<?> createPost(@RequestBody PostRequest postRequest){
+		return ResponseEntity.ok(new Response<>(true, Message.OTHER_SUCCESS, profileServic.createPost(postRequest)));
+	}
+	
+	@Operation(description = "API thêm bài viết")
+	@DeleteMapping("/post/delete/{postId}")
+	public ResponseEntity<?> deletePost(@PathVariable("postId") Long id){
+		profileServic.deletePost(id);
+		return ResponseEntity.ok(new Response<>(true, Message.OTHER_SUCCESS ));
 	}
 }

@@ -9,12 +9,11 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
-@NoArgsConstructor
 @AllArgsConstructor
-public class FoodDetailResponse {
+@NoArgsConstructor
+public class PostResponse {
+
 	Long id;
-	String name;
-	Double price;
 	String content;
 	List<FileRequest> files;
 }

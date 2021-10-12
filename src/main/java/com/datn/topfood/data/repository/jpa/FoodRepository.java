@@ -11,15 +11,15 @@ import com.datn.topfood.data.model.Food;
 
 public interface FoodRepository extends JpaRepository<Food, Long>{
 
-	@Query("select f from Food as f where f.profile.id = ?1")
+	@Query("select f from Food as f where f.profile.id = ?1 ")
 	List<Food> findByProfileId(Long profileId);
 	
-	@Query("select count(f) from Food as f where f.profile.account.username = ?1")
+	@Query("select count(f) from Food as f where f.profile.account.username = ?1 ")
 	long countFoodByProfileAccountUsername(String username);
 	
 	@Query("select f from Food as f where f.id = ?1 and f.profile.account.username = ?2")
 	Food findByIdAndAccountUsername(Long foodId,String username);
 	
-	@Query("select f from Food as f where f.profile.account.username = ?1")
+	@Query("select f from Food as f where f.profile.account.username = ?1 AND f.disableAt IS NULL")
 	Page<Food> findByAccountUsername(String username,Pageable pageable);
 }
