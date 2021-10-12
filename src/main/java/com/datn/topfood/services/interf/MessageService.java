@@ -1,9 +1,7 @@
 package com.datn.topfood.services.interf;
 
 import com.datn.topfood.data.model.Conversation;
-import com.datn.topfood.dto.messages.MessageResponse;
-import com.datn.topfood.dto.messages.MessageSend;
-import com.datn.topfood.dto.messages.MessageTokenInfo;
+import com.datn.topfood.dto.messages.*;
 import com.datn.topfood.dto.request.*;
 import com.datn.topfood.dto.response.ConversationResponse;
 import com.datn.topfood.dto.response.MessagesResponse;
@@ -11,13 +9,13 @@ import com.datn.topfood.dto.response.PageResponse;
 import com.datn.topfood.dto.response.SendMessageResponse;
 
 public interface MessageService {
-    Conversation createConversation(CreateConversationRequest createConversationRequest);
+    MessageResponse<Conversation> createConversation(CreateConversationRequest createConversationRequest);
 
-    SendMessageResponse sendMessage(SendMessageRequest sendMessageRequest);
+    MessageResponse<MessagesResponse> sendMessage(SendMessageRequest sendMessageRequest);
 
-    PageResponse<ConversationResponse> getListConversation(PageRequest pageRequest);
+    PageMessageResponse<ConversationResponse> getListConversation(PageMessageRequest pageMessageRequest);
 
-    PageResponse<MessagesResponse> getListMessages(Long conversationId, PageRequest pageRequest);
+    PageMessageResponse<MessagesResponse> getListMessages(PageMessageRequest pageMessageRequest);
 
     void deleteMessage(Long messageId);
 
@@ -28,8 +26,4 @@ public interface MessageService {
     void addMember(AddMemeberRequest addMemeberRequest);
 
     void deleteMember(DeleteMemeberRequest deleteMemeberRequest);
-
-    MessageResponse<MessageTokenInfo> getInfoToken(String token);
-
-    MessageResponse<MessagesResponse> sockJsSend(String token, MessageSend messageSend);
 }

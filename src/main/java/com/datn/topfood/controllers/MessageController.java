@@ -4,6 +4,8 @@ import com.datn.topfood.data.model.Account;
 import com.datn.topfood.data.model.Conversation;
 import com.datn.topfood.dto.messages.MessageResponse;
 import com.datn.topfood.dto.messages.MessageSend;
+import com.datn.topfood.dto.messages.PageMessageRequest;
+import com.datn.topfood.dto.messages.PageMessageResponse;
 import com.datn.topfood.dto.request.*;
 import com.datn.topfood.dto.response.ConversationResponse;
 import com.datn.topfood.dto.response.MessagesResponse;
@@ -33,35 +35,28 @@ public class MessageController {
     @Autowired
     SimpMessageSendingOperations simpMessageSendingOperations;
 
-    @MessageMapping("send/{token}")
+    @MessageMapping("/{token}/create-conversation")
     @SendTo("/messages/inbox/{token}")
-    public MessageResponse<MessagesResponse> send(@DestinationVariable String token, @Payload MessageSend messageSend) {
-        return messageService.sockJsSend(token, messageSend);
+    public MessageResponse<Conversation> createConversation(@Payload CreateConversationRequest createConversationRequest) {
+        return messageService.createConversation(createConversationRequest);
     }
 
-    @Operation(description = "API tạo cuộc trò chuyện")
-    @PostMapping("/create")
-    public ResponseEntity<Response<Conversation>> createConversation(@RequestBody CreateConversationRequest createConversationRequest) {
-        return ResponseEntity.ok(new Response<>(true, Message.OTHER_SUCCESS, messageService.createConversation(createConversationRequest)));
+    @MessageMapping("/{token}/send")
+    @SendTo("/messages/inbox/{token}")
+    public MessageResponse<MessagesResponse> sendMessage(@Payload SendMessageRequest sendMessageRequest) {
+        return messageService.sendMessage(sendMessageRequest);
     }
 
-    @Operation(description = "API gửi tin nhắn")
-    @PostMapping("/send")
-    public ResponseEntity<Response<Void>> sendMessage(@RequestBody SendMessageRequest sendMessageRequest) {
-        messageService.sendMessage(sendMessageRequest);
-        return ResponseEntity.ok(new Response<>(true, Message.OTHER_SUCCESS));
+    @MessageMapping("/{token}/get-list-conversation")
+    @SendTo("/messages/inbox/{token}")
+    public PageMessageResponse<ConversationResponse> getListConversation(@Payload PageMessageRequest pageMessageRequest) {
+        return messageService.getListConversation(pageMessageRequest);
     }
 
-    @Operation(description = "API Lấy danh sách cuộc trò chuyện")
-    @GetMapping("/list-conversation")
-    public ResponseEntity<PageResponse<ConversationResponse>> getListConversation(PageRequest pageRequest) {
-        return ResponseEntity.ok(messageService.getListConversation(pageRequest));
-    }
-
-    @Operation(description = "API lấy danh sách tin nhắn cuộc trò chuyện")
-    @GetMapping("/list-messages")
-    public ResponseEntity<PageResponse<MessagesResponse>> getListMessage(@RequestParam Long conversationId, PageRequest pageRequest) {
-        return ResponseEntity.ok(messageService.getListMessages(conversationId, pageRequest));
+    @MessageMapping("/{token}/get-list-message")
+    @SendTo("/messages/inbox/{token}")
+    public PageMessageResponse<MessagesResponse> getListMessage(@Payload PageMessageRequest pageMessageRequest) {
+        return messageService.getListMessages(pageMessageRequest);
     }
 
     @Operation(description = "API gỡ tin nhắn")

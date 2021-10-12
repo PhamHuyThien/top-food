@@ -11,5 +11,5 @@ import lombok.ToString;
 @ToString
 public class MessageSend extends MessageInfo {
     String message;
-    Long quoteMesage;
+    Long quoteMessage;
 }

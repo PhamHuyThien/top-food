@@ -2,9 +2,7 @@ package com.datn.topfood.services.service;
 
 import com.datn.topfood.data.model.*;
 import com.datn.topfood.data.repository.jpa.*;
-import com.datn.topfood.dto.messages.MessageResponse;
-import com.datn.topfood.dto.messages.MessageSend;
-import com.datn.topfood.dto.messages.MessageTokenInfo;
+import com.datn.topfood.dto.messages.*;
 import com.datn.topfood.dto.request.*;
 import com.datn.topfood.dto.response.*;
 import com.datn.topfood.services.BaseService;
@@ -45,10 +43,11 @@ public class MessageServiceImpl extends BaseService implements MessageService {
 
     @Override
     @Transactional
-    public Conversation createConversation(CreateConversationRequest createConversationRequest) {
-        Account itMe = itMe();
+    public MessageResponse<Conversation> createConversation(CreateConversationRequest createConversationRequest) {
+        MessageResponse<Conversation> conversationMessageResponse = new MessageResponse<>();
+        Account itMe = accountRepository.findById(createConversationRequest.getAccountId()).orElse(null);
         AccountProfileResponse accountProfileMe = getAccountProfile(itMe.getId());
-        AccountProfileResponse accountProfileRec = getAccountProfile(createConversationRequest.getAccountId());
+        AccountProfileResponse accountProfileRec = getAccountProfile(createConversationRequest.getAccountIdAdd());
         Timestamp presentTimestamp = DateUtils.currentTimestamp();
         Conversation conversation = new Conversation();
         conversation.setTitle(buildNameConversation(
@@ -64,7 +63,11 @@ public class MessageServiceImpl extends BaseService implements MessageService {
         saveParticipants(conversation, presentTimestamp, accountProfileRec.getAccount());
         itMe.setPassword(null);
         conversation.setCreateBy(itMe);
-        return conversation;
+        conversationMessageResponse.setStatus(true);
+        conversationMessageResponse.setMessage(Message.OTHER_SUCCESS);
+        conversationMessageResponse.setData(conversation);
+        conversationMessageResponse.setType(MessageType.CREATE_CONVERSATION);
+        return conversationMessageResponse;
     }
 
     private void saveParticipants(Conversation conversation, Timestamp presentTimestamp, Account account) {
@@ -88,8 +91,9 @@ public class MessageServiceImpl extends BaseService implements MessageService {
 
     @Override
     @Transactional
-    public SendMessageResponse sendMessage(SendMessageRequest sendMessageRequest) {
-        Account itMe = itMe();
+    public MessageResponse<MessagesResponse> sendMessage(SendMessageRequest sendMessageRequest) {
+        MessageResponse<MessagesResponse> messagesResponseMessagesResponse = new MessageResponse();
+        Account itMe = accountRepository.findById(sendMessageRequest.getAccountId()).orElse(null);
         Timestamp presentTimestamp = DateUtils.currentTimestamp();
         Conversation conversation = conversationRepsitory.findByIdFromAccountId(itMe.getId(), sendMessageRequest.getConversationId());
         if (conversation == null) {
@@ -108,55 +112,67 @@ public class MessageServiceImpl extends BaseService implements MessageService {
         messages = messagesRepository.save(messages);
         conversation.setUpdateAt(presentTimestamp);
         conversationRepsitory.save(conversation);
-        return new SendMessageResponse(messages);
+
+        MessagesResponse messagesResponse = toMessagesResponse(messages);
+        messagesResponseMessagesResponse.setType(MessageType.SEND);
+        messagesResponseMessagesResponse.setData(messagesResponse);
+        messagesResponseMessagesResponse.setStatus(true);
+        messagesResponseMessagesResponse.setMessage(Message.OTHER_SUCCESS);
+        return messagesResponseMessagesResponse;
     }
 
     @Override
-    public PageResponse<ConversationResponse> getListConversation(PageRequest pageRequest) {
-        Account itMe = itMe();
-        Pageable pageable = PageUtils.toPageable(pageRequest);
+    public PageMessageResponse<ConversationResponse> getListConversation(PageMessageRequest pageMessageRequest) {
+        Account itMe = accountRepository.findById(pageMessageRequest.getAccountId()).orElse(null);
+        Pageable pageable = PageUtils.toPageable(pageMessageRequest);
         Page<ConversationResponse> conversationResponsePage = conversationRepsitory.getAllConversation(itMe.getId(), pageable);
-        PageResponse<ConversationResponse> conversationResponsePageResponse = new PageResponse<>(
+        PageMessageResponse<ConversationResponse> conversationResponsePageMessageResponse = new PageMessageResponse<>(
                 conversationResponsePage.toList(),
                 conversationResponsePage.getTotalElements(),
-                pageable.getPageSize()
+                pageable.getPageSize(),
+                MessageType.LIST_CONVERSATION
         );
-        conversationResponsePageResponse.setStatus(true);
-        conversationResponsePageResponse.setMessage(Message.OTHER_SUCCESS);
-        return conversationResponsePageResponse;
+        conversationResponsePageMessageResponse.setStatus(true);
+        conversationResponsePageMessageResponse.setMessage(Message.OTHER_SUCCESS);
+        return conversationResponsePageMessageResponse;
     }
 
     @Override
-    public PageResponse<MessagesResponse> getListMessages(Long conversationId, PageRequest pageRequest) {
-        Account itMe = itMe();
-        Pageable pageable = PageUtils.toPageable(pageRequest);
+    public PageMessageResponse<MessagesResponse> getListMessages(PageMessageRequest pageMessageRequest) {
+        Account itMe = accountRepository.findById(pageMessageRequest.getAccountId()).orElse(null);
+        Pageable pageable = PageUtils.toPageable(pageMessageRequest);
 //        Page<MessagesResponse> messagesResponsePage = messagesRepository.getListMessages(itMe.getId(), conversationId, pageable);
-        Page<Messages> messagesPage = messagesRepository.getListMessages(itMe.getId(), conversationId, pageable);
+        Page<Messages> messagesPage = messagesRepository.getListMessages(itMe.getId(), pageMessageRequest.getConversationId(), pageable);
         List<MessagesResponse> messagesResponseList = new ArrayList<>();
         for (Messages messages : messagesPage) {
             MessagesResponse messagesResponse = toMessagesResponse(messages);
             messagesResponseList.add(messagesResponse);
         }
-        PageResponse<MessagesResponse> messagesResponsePageResponse = new PageResponse<>(
+        PageMessageResponse<MessagesResponse> messagesResponsePageMessageResponse = new PageMessageResponse<>(
                 messagesResponseList,
                 messagesPage.getTotalElements(),
-                pageable.getPageSize()
+                pageable.getPageSize(),
+                MessageType.LIST_MESSAGE
         );
-        messagesResponsePageResponse.setStatus(true);
-        messagesResponsePageResponse.setMessage(Message.OTHER_SUCCESS);
-        return messagesResponsePageResponse;
+        messagesResponsePageMessageResponse.setStatus(true);
+        messagesResponsePageMessageResponse.setMessage(Message.OTHER_SUCCESS);
+        return messagesResponsePageMessageResponse;
     }
 
     private MessagesResponse toMessagesResponse(Messages messages) {
         MessagesResponse messagesResponse = new MessagesResponse();
-        messagesResponse.setId(messages.getId());
-        messagesResponse.setMessage(messages.getMessage());
-        messagesResponse.setHeart(messages.getHeart());
-        messagesResponse.setCreateAt(messages.getCreateAt());
-        messagesResponse.setUpdateAt(messages.getUpdateAt());
-        messagesResponse.setCreateBy(profileRepository.findByAccountId(messages.getAccount().getId()));
-        if (messages.getMessages() != null) {
-            messagesResponse.setQuoteMessage(toMessagesResponse(messages.getMessages()));
+        try {
+            messagesResponse.setId(messages.getId());
+            messagesResponse.setMessage(messages.getMessage());
+            messagesResponse.setHeart(messages.getHeart());
+            messagesResponse.setCreateAt(messages.getCreateAt());
+            messagesResponse.setUpdateAt(messages.getUpdateAt());
+            messagesResponse.setCreateBy(profileRepository.findByAccountId(messages.getAccount().getId()));
+            if (messages.getMessages() != null) {
+                messagesResponse.setQuoteMessage(toMessagesResponse(messages.getMessages()));
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
         return messagesResponse;
     }
@@ -244,69 +260,5 @@ public class MessageServiceImpl extends BaseService implements MessageService {
         }
         participants.setDisableAt(DateUtils.currentTimestamp());
         participantsRepository.save(participants);
-    }
-
-    @Override
-    public MessageResponse<MessageTokenInfo> getInfoToken(String token) {
-        MessageResponse<MessageTokenInfo> messageTokenInfoMessageResponse = new MessageResponse<>();
-        String decode = new String(Base64.getDecoder().decode(token));
-        String[] splitDecode = decode.split("\\|");
-        if (splitDecode.length < 2 || !splitDecode[0].equals("i-love-you-baby")) {
-            messageTokenInfoMessageResponse.setMessage(Message.MESSAGE_TOKEN_WRONG_FORMAT);
-            return messageTokenInfoMessageResponse;
-        }
-        String[] splitInfo = splitDecode[1].split("/");
-        if (splitInfo.length < 2) {
-            messageTokenInfoMessageResponse.setMessage(Message.MESSAGE_TOKEN_WRONG_FORMAT);
-            return messageTokenInfoMessageResponse;
-        }
-        Long conversationId, accountId;
-        try {
-            conversationId = Long.parseLong(splitInfo[0]);
-            accountId = Long.parseLong(splitInfo[1]);
-        } catch (NumberFormatException e) {
-            messageTokenInfoMessageResponse.setMessage(Message.MESSAGE_TOKEN_WRONG_FORMAT);
-            return messageTokenInfoMessageResponse;
-        }
-        Conversation conversation = conversationRepsitory.findById(conversationId).orElse(null);
-        Account account = accountRepository.findById(accountId).orElse(null);
-        if (conversation == null || account == null) {
-            messageTokenInfoMessageResponse.setMessage(Message.MESSAGE_TOKEN_WRONG_FORMAT);
-            return messageTokenInfoMessageResponse;
-        }
-        MessageTokenInfo messageTokenInfo = new MessageTokenInfo();
-        messageTokenInfo.setAccount(account);
-        messageTokenInfo.setConversation(conversation);
-        messageTokenInfoMessageResponse.setStatus(true);
-        messageTokenInfoMessageResponse.setMessage(Message.OTHER_SUCCESS);
-        messageTokenInfoMessageResponse.setData(messageTokenInfo);
-        return messageTokenInfoMessageResponse;
-    }
-
-    @Override
-    @Transactional
-    public MessageResponse<MessagesResponse> sockJsSend(String token, MessageSend messageSend) {
-        MessageResponse<MessagesResponse> messagesResponseMessageResponse = new MessageResponse<>();
-        MessageResponse<MessageTokenInfo> messageTokenInfoMessageResponse = getInfoToken(token);
-        if (!messageTokenInfoMessageResponse.isStatus()) {
-            messagesResponseMessageResponse.setMessage(messageTokenInfoMessageResponse.getMessage());
-            return messagesResponseMessageResponse;
-        }
-        MessageTokenInfo messageTokenInfo = messageTokenInfoMessageResponse.getData();
-        try {
-            SendMessageRequest sendMessageRequest = new SendMessageRequest();
-            sendMessageRequest.setConversationId(messageTokenInfo.getConversation().getId());
-            sendMessageRequest.setMessage(messageSend.getMessage());
-            sendMessageRequest.setQuoteMessageId(messageSend.getQuoteMesage());
-            Messages messages = sendMessage(sendMessageRequest).getMessages();
-            MessagesResponse messagesResponse = toMessagesResponse(messages);
-            messagesResponseMessageResponse.setData(messagesResponse);
-            messagesResponseMessageResponse.setStatus(true);
-            messagesResponseMessageResponse.setType(MessageType.SEND);
-            messagesResponseMessageResponse.setMessage(Message.OTHER_SUCCESS);
-        } catch (Exception e) {
-            messagesResponseMessageResponse.setMessage(e.toString());
-        }
-        return messagesResponseMessageResponse;
     }
 }
