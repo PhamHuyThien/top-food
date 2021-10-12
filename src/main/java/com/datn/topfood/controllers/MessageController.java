@@ -1,6 +1,9 @@
 package com.datn.topfood.controllers;
 
+import com.datn.topfood.data.model.Account;
 import com.datn.topfood.data.model.Conversation;
+import com.datn.topfood.dto.messages.MessageResponse;
+import com.datn.topfood.dto.messages.MessageSend;
 import com.datn.topfood.dto.request.*;
 import com.datn.topfood.dto.response.ConversationResponse;
 import com.datn.topfood.dto.response.MessagesResponse;
@@ -11,6 +14,7 @@ import com.datn.topfood.util.constant.Message;
 import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.messaging.handler.annotation.SendTo;
@@ -31,8 +35,8 @@ public class MessageController {
 
     @MessageMapping("send/{token}")
     @SendTo("/messages/inbox/{token}")
-    public String send(@Payload String content) {
-        return content;
+    public MessageResponse<MessagesResponse> send(@DestinationVariable String token, @Payload MessageSend messageSend) {
+        return messageService.sockJsSend(token, messageSend);
     }
 
     @Operation(description = "API tạo cuộc trò chuyện")

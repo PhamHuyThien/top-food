@@ -2,16 +2,17 @@ package com.datn.topfood.services.service;
 
 import com.datn.topfood.data.model.*;
 import com.datn.topfood.data.repository.jpa.*;
+import com.datn.topfood.dto.messages.MessageResponse;
+import com.datn.topfood.dto.messages.MessageSend;
+import com.datn.topfood.dto.messages.MessageTokenInfo;
 import com.datn.topfood.dto.request.*;
-import com.datn.topfood.dto.response.AccountProfileResponse;
-import com.datn.topfood.dto.response.ConversationResponse;
-import com.datn.topfood.dto.response.MessagesResponse;
-import com.datn.topfood.dto.response.PageResponse;
+import com.datn.topfood.dto.response.*;
 import com.datn.topfood.services.BaseService;
 import com.datn.topfood.services.interf.MessageService;
 import com.datn.topfood.util.DateUtils;
 import com.datn.topfood.util.PageUtils;
 import com.datn.topfood.util.constant.Message;
+import com.datn.topfood.util.enums.MessageType;
 import com.datn.topfood.util.enums.ParticipantsStatus;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -25,6 +26,7 @@ import org.springframework.web.server.ResponseStatusException;
 import java.sql.Time;
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.Date;
 import java.util.List;
 
@@ -86,7 +88,7 @@ public class MessageServiceImpl extends BaseService implements MessageService {
 
     @Override
     @Transactional
-    public void sendMessage(SendMessageRequest sendMessageRequest) {
+    public SendMessageResponse sendMessage(SendMessageRequest sendMessageRequest) {
         Account itMe = itMe();
         Timestamp presentTimestamp = DateUtils.currentTimestamp();
         Conversation conversation = conversationRepsitory.findByIdFromAccountId(itMe.getId(), sendMessageRequest.getConversationId());
@@ -103,9 +105,10 @@ public class MessageServiceImpl extends BaseService implements MessageService {
         messages.setConversation(conversation);
         messages.setCreateAt(presentTimestamp);
         messages.setMessages(quoteMessage);
-        messagesRepository.save(messages);
+        messages = messagesRepository.save(messages);
         conversation.setUpdateAt(presentTimestamp);
         conversationRepsitory.save(conversation);
+        return new SendMessageResponse(messages);
     }
 
     @Override
@@ -241,5 +244,69 @@ public class MessageServiceImpl extends BaseService implements MessageService {
         }
         participants.setDisableAt(DateUtils.currentTimestamp());
         participantsRepository.save(participants);
+    }
+
+    @Override
+    public MessageResponse<MessageTokenInfo> getInfoToken(String token) {
+        MessageResponse<MessageTokenInfo> messageTokenInfoMessageResponse = new MessageResponse<>();
+        String decode = new String(Base64.getDecoder().decode(token));
+        String[] splitDecode = decode.split("\\|");
+        if (splitDecode.length < 2 || !splitDecode[0].equals("i-love-you-baby")) {
+            messageTokenInfoMessageResponse.setMessage(Message.MESSAGE_TOKEN_WRONG_FORMAT);
+            return messageTokenInfoMessageResponse;
+        }
+        String[] splitInfo = splitDecode[1].split("/");
+        if (splitInfo.length < 2) {
+            messageTokenInfoMessageResponse.setMessage(Message.MESSAGE_TOKEN_WRONG_FORMAT);
+            return messageTokenInfoMessageResponse;
+        }
+        Long conversationId, accountId;
+        try {
+            conversationId = Long.parseLong(splitInfo[0]);
+            accountId = Long.parseLong(splitInfo[1]);
+        } catch (NumberFormatException e) {
+            messageTokenInfoMessageResponse.setMessage(Message.MESSAGE_TOKEN_WRONG_FORMAT);
+            return messageTokenInfoMessageResponse;
+        }
+        Conversation conversation = conversationRepsitory.findById(conversationId).orElse(null);
+        Account account = accountRepository.findById(accountId).orElse(null);
+        if (conversation == null || account == null) {
+            messageTokenInfoMessageResponse.setMessage(Message.MESSAGE_TOKEN_WRONG_FORMAT);
+            return messageTokenInfoMessageResponse;
+        }
+        MessageTokenInfo messageTokenInfo = new MessageTokenInfo();
+        messageTokenInfo.setAccount(account);
+        messageTokenInfo.setConversation(conversation);
+        messageTokenInfoMessageResponse.setStatus(true);
+        messageTokenInfoMessageResponse.setMessage(Message.OTHER_SUCCESS);
+        messageTokenInfoMessageResponse.setData(messageTokenInfo);
+        return messageTokenInfoMessageResponse;
+    }
+
+    @Override
+    @Transactional
+    public MessageResponse<MessagesResponse> sockJsSend(String token, MessageSend messageSend) {
+        MessageResponse<MessagesResponse> messagesResponseMessageResponse = new MessageResponse<>();
+        MessageResponse<MessageTokenInfo> messageTokenInfoMessageResponse = getInfoToken(token);
+        if (!messageTokenInfoMessageResponse.isStatus()) {
+            messagesResponseMessageResponse.setMessage(messageTokenInfoMessageResponse.getMessage());
+            return messagesResponseMessageResponse;
+        }
+        MessageTokenInfo messageTokenInfo = messageTokenInfoMessageResponse.getData();
+        try {
+            SendMessageRequest sendMessageRequest = new SendMessageRequest();
+            sendMessageRequest.setConversationId(messageTokenInfo.getConversation().getId());
+            sendMessageRequest.setMessage(messageSend.getMessage());
+            sendMessageRequest.setQuoteMessageId(messageSend.getQuoteMesage());
+            Messages messages = sendMessage(sendMessageRequest).getMessages();
+            MessagesResponse messagesResponse = toMessagesResponse(messages);
+            messagesResponseMessageResponse.setData(messagesResponse);
+            messagesResponseMessageResponse.setStatus(true);
+            messagesResponseMessageResponse.setType(MessageType.SEND);
+            messagesResponseMessageResponse.setMessage(Message.OTHER_SUCCESS);
+        } catch (Exception e) {
+            messagesResponseMessageResponse.setMessage(e.toString());
+        }
+        return messagesResponseMessageResponse;
     }
 }
