@@ -12,13 +12,13 @@ import com.datn.topfood.dto.request.ChangePasswordRequest;
 import com.datn.topfood.dto.request.PageRequest;
 import com.datn.topfood.dto.response.AccountResponse;
 import com.datn.topfood.dto.response.PageResponse;
+import com.datn.topfood.dto.response.AccountPro;
 import com.datn.topfood.services.BaseService;
 import com.datn.topfood.services.interf.AccountService;
 import com.datn.topfood.util.DateUtils;
 import com.datn.topfood.util.PageUtils;
 import com.datn.topfood.util.constant.Message;
 import com.datn.topfood.util.enums.AccountStatus;
-import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -86,13 +86,20 @@ public class AccountServiceImpl extends BaseService implements AccountService {
 
   @Override
   public PageResponse<AccountResponse> searchByPhoneNumber(String phoneNumber, PageRequest request) {
-    ModelMapper mapper = new ModelMapper();
     Pageable pageable = PageUtils.toPageable(request);
     List<AccountResponse> accountResponses = new ArrayList<>();
     phoneNumber = "%" + phoneNumber + "%";
-    Page<Account> accounts = accountRepository.findByPhoneNumberLike(phoneNumber, pageable);
-    for (Account x : accounts) {
-      AccountResponse accountResponse = mapper.map(x, AccountResponse.class);
+    Page<AccountPro> accounts = accountRepository.findByPhoneNumberLike(phoneNumber, pageable);
+    for (AccountPro x : accounts) {
+      AccountResponse accountResponse = new AccountResponse();
+      accountResponse.setDisableAt(x.getAccount().getDisableAt());
+      accountResponse.setCreateAt(x.getAccount().getCreateAt());
+      accountResponse.setRole(x.getAccount().getRole());
+      accountResponse.setPhoneNumber(x.getAccount().getPhoneNumber());
+      accountResponse.setId(x.getAccount().getId());
+      accountResponse.setStatus(x.getAccount().getStatus());
+      accountResponse.setUsername(x.getAccount().getUsername());
+      accountResponse.setName(x.getName());
       accountResponses.add(accountResponse);
     }
     PageResponse<AccountResponse> acc = new PageResponse<>(

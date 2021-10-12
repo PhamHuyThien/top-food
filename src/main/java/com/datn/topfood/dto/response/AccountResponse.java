@@ -19,6 +19,7 @@ public class AccountResponse {
   String username;
   String phoneNumber;
   AccountStatus status;
+  String name;
   AccountRole role;
   Timestamp createAt;
   Timestamp disableAt;

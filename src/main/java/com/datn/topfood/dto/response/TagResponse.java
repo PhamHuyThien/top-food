@@ -6,6 +6,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.sql.Timestamp;
 import java.util.List;
 
 @Data
@@ -13,9 +14,9 @@ import java.util.List;
 @NoArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class TagResponse {
-  /*Long id;
+  Long id;
   String tagName;
   Timestamp createAt;
-  Timestamp updateAt;*/
-  List<SubTag> subTagResponses;
+  Timestamp updateAt;
+  List<SubTagResponse> subTagResponses;
 }
