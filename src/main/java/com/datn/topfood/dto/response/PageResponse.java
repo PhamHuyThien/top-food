@@ -13,10 +13,10 @@ import java.util.List;
 @NoArgsConstructor
 @ToString
 public class PageResponse<T> extends Response<T> {
-    long total;
-    long totalElements;
-    long pageSize;
-    long pageTotal;
+    protected long total;
+    protected long totalElements;
+    protected long pageSize;
+    protected long pageTotal;
 
     public PageResponse(List<T> data, long totalElements, long pageSize) {
         this.data = (T) data;
