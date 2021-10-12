@@ -153,6 +153,7 @@ public class MessageServiceImpl extends BaseService implements MessageService {
         messagesResponse.setUpdateAt(messages.getUpdateAt());
         messagesResponse.setCreateBy(profileRepository.findByAccountId(messages.getAccount().getId()));
         if (messages.getMessages() != null) {
+            messages.getMessages().setMessages(null);
             messagesResponse.setQuoteMessage(toMessagesResponse(messages.getMessages()));
         }
         return messagesResponse;
