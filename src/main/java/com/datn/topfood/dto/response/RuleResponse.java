@@ -13,7 +13,8 @@ import java.sql.Timestamp;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class RuleResponse {
   Long id;
+  String title;
   String description;
-  Timestamp createDate;
-  Timestamp updateDate;
+  Timestamp createAt;
+  Timestamp updateAt;
 }

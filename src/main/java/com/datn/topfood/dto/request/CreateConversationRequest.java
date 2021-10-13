@@ -1,5 +1,6 @@
 package com.datn.topfood.dto.request;
 
+import com.datn.topfood.dto.messages.MessageInfo;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -11,7 +12,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @ToString
-public class CreateConversationRequest {
+public class CreateConversationRequest extends MessageInfo {
     String name;
-    Long accountId;
+    Long accountIdAdd;
 }

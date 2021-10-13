@@ -2,14 +2,20 @@ package com.datn.topfood.services.service;
 
 import com.datn.topfood.data.model.Rule;
 import com.datn.topfood.data.repository.jpa.RuleRepository;
+import com.datn.topfood.dto.request.PageRequest;
 import com.datn.topfood.dto.request.RuleRequest;
+import com.datn.topfood.dto.response.PageResponse;
 import com.datn.topfood.dto.response.RuleResponse;
 import com.datn.topfood.services.interf.RuleService;
 import com.datn.topfood.util.DateUtils;
+import com.datn.topfood.util.PageUtils;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -36,16 +42,24 @@ public class RuleServiceImpl implements RuleService {
   }
 
   @Override
-  public List<RuleResponse> getAllRule() {
-    ModelMapper mapper=new ModelMapper();
-    List<Rule> rules=ruleRepository.findAll();
-    List<RuleResponse> ruleResponses=null;
-    for(Rule x:rules){
-      RuleResponse ruleResponse=mapper.map(x,RuleResponse.class);
+  public PageResponse<RuleResponse> searchByRuleTitle(String title, PageRequest request) {
+    ModelMapper mapper = new ModelMapper();
+    Pageable pageable = PageUtils.toPageable(request);
+    List<RuleResponse> ruleResponses = new ArrayList<>();
+    title = "%" + title + "%";
+    Page<Rule> rules = ruleRepository.findByTitleLike(title, pageable);
+    for (Rule x : rules) {
+      RuleResponse ruleResponse = mapper.map(x, RuleResponse.class);
       ruleResponses.add(ruleResponse);
     }
-    return ruleResponses;
+    PageResponse<RuleResponse> acc = new PageResponse<>(
+            ruleResponses,
+            rules.getTotalElements(),
+            pageable.getPageSize()
+    );
+    return acc;
   }
+
 
   @Override
   public RuleResponse findById(Long id) {
