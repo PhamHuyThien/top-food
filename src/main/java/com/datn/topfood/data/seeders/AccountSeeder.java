@@ -8,19 +8,23 @@ import com.datn.topfood.util.BeanUtils;
 import com.datn.topfood.util.DateUtils;
 import com.datn.topfood.util.enums.AccountRole;
 import com.datn.topfood.util.enums.AccountStatus;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 public class AccountSeeder implements Seeder {
     @Override
     public void seed() {
+        PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+        String passwordDefault = passwordEncoder.encode("123");
         AccountRepository accountRepository = BeanUtils.getBean(AccountRepository.class);
         ProfileRepository profileRepository = BeanUtils.getBean(ProfileRepository.class);
         Account[] accounts = new Account[]{
-                new Account("thien", "123", "0912345678", "admin.topfood1@gmail.com", AccountStatus.ACTIVE, AccountRole.ROLE_USER),
-                new Account("khai", "123", "0912345677", "admin.topfood2@gmail.com", AccountStatus.WAIT_ACTIVE, AccountRole.ROLE_USER),
-                new Account("vuong", "123", "0912345676", "admin.topfood3@gmail.com", AccountStatus.WAIT_ACTIVE, AccountRole.ROLE_USER),
-                new Account("thang", "123", "0912345675", "admin.topfood4@gmail.com", AccountStatus.WAIT_ACTIVE, AccountRole.ROLE_USER),
-                new Account("nga", "123", "0912345674", "admin.topfood5@gmail.com", AccountStatus.WAIT_ACTIVE, AccountRole.ROLE_USER),
-                new Account("minh", "123", "0912345673", "admin.topfood6@gmail.com", AccountStatus.ACTIVE, AccountRole.ROLE_STORE)
+                new Account("thien", passwordDefault, "0912345678", "admin.topfood1@gmail.com", AccountStatus.ACTIVE, AccountRole.ROLE_USER),
+                new Account("khai", passwordDefault, "0912345677", "admin.topfood2@gmail.com", AccountStatus.WAIT_ACTIVE, AccountRole.ROLE_USER),
+                new Account("vuong", passwordDefault, "0912345676", "admin.topfood3@gmail.com", AccountStatus.WAIT_ACTIVE, AccountRole.ROLE_USER),
+                new Account("thang", passwordDefault, "0912345675", "admin.topfood4@gmail.com", AccountStatus.WAIT_ACTIVE, AccountRole.ROLE_USER),
+                new Account("nga", passwordDefault, "0912345674", "admin.topfood5@gmail.com", AccountStatus.WAIT_ACTIVE, AccountRole.ROLE_ADMIN),
+                new Account("minh", passwordDefault, "0912345673", "admin.topfood6@gmail.com", AccountStatus.ACTIVE, AccountRole.ROLE_STORE)
         };
         Profile[] profiles = new Profile[]{
                 new Profile(1L, "https://i.bloganchoi.com/bloganchoi.com/wp-content/uploads/2020/09/nh-nen-nhung-dam-may-cute-696x385.jpg?fit=696%2C20000&quality=95&ssl=1", "https://i.9mobi.vn/cf/Images/tt/2021/8/20/anh-avatar-dep-39.jpg", "WHO AM I?", "VN", "Phạm Huy Thiên", DateUtils.currentTimestamp(), DateUtils.currentTimestamp(), accounts[0], null, null),
