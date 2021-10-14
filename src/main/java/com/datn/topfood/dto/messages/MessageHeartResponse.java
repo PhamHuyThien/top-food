@@ -9,6 +9,7 @@ import lombok.ToString;
 @NoArgsConstructor
 @AllArgsConstructor
 @ToString
-public class MessageRemoveRequest extends MessageInfo {
+public class MessageHeartResponse {
     Long idMessage;
+    Long totalHeart;
 }
