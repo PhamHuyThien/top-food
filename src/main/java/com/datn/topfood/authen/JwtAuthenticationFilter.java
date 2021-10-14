@@ -1,6 +1,7 @@
 package com.datn.topfood.authen;
 
 import com.datn.topfood.services.interf.AuthService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -16,6 +17,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 @Component
+@Slf4j
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     @Autowired
@@ -23,6 +25,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     @Override
     protected void doFilterInternal(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse, FilterChain filterChain) throws ServletException, IOException {
+        log.info(httpServletRequest.getMethod() + ": " + httpServletRequest.getRequestURI() + " - " + httpServletRequest.getRemoteAddr());
         String header = httpServletRequest.getHeader(JwtTokenProvider.HEADER);
         if (header != null && header.startsWith(JwtTokenProvider.PREFIX)) {
             final String jwtToken = header.replace(JwtTokenProvider.PREFIX, "");
