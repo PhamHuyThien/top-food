@@ -150,6 +150,7 @@ public class FriendsServiceImpl extends BaseService implements FriendsService {
             Account accountRequest = friendShip.getAccountRequest();
             Profile profile = profileRepository.findByAccountId(accountRequest.getId());
             friendProfileResponseList.add(new ProfileResponse(accountRequest.getId(),
+                    accountRequest.getUsername(),
                     accountRequest.getPhoneNumber(),
                     accountRequest.getEmail(),
                     accountRequest.getRole(),

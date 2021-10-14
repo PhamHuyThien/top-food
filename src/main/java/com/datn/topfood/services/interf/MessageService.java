@@ -17,7 +17,7 @@ public interface MessageService {
 
     PageMessageResponse<MessagesResponse> getListMessages(PageMessageRequest pageMessageRequest);
 
-    void deleteMessage(Long messageId);
+    MessageResponse<MessageRemoveResponse> deleteMessage(MessageRemoveRequest messageRemoveRequest);
 
     void deleteConversation(Long conversationId);
 

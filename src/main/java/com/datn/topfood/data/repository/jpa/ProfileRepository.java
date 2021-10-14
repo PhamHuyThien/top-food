@@ -14,6 +14,7 @@ public interface ProfileRepository extends JpaRepository<Profile, Long> {
 
     @Query("select new com.datn.topfood.dto.response.ProfileResponse(" +
             "acc.id, " +
+            "acc.username, " +
             "acc.phoneNumber, " +
             "acc.email, " +
             "acc.role, " +
