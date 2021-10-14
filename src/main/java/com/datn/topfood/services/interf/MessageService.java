@@ -9,7 +9,7 @@ import com.datn.topfood.dto.response.PageResponse;
 import com.datn.topfood.dto.response.SendMessageResponse;
 
 public interface MessageService {
-    MessageResponse<Conversation> createConversation(CreateConversationRequest createConversationRequest);
+    MessageResponse<ConversationResponse> createConversation(CreateConversationRequest createConversationRequest);
 
     MessageResponse<MessagesResponse> sendMessage(SendMessageRequest sendMessageRequest);
 
@@ -19,9 +19,9 @@ public interface MessageService {
 
     MessageResponse<MessageRemoveResponse> deleteMessage(MessageRemoveRequest messageRemoveRequest);
 
-    void deleteConversation(Long conversationId);
+    MessageResponse<MessageDeleteConversationResponse> deleteConversation(MessageDeleteConversationRequest messageDeleteConversationRequest);
 
-    void reactHeart(Long messageId);
+    MessageResponse<MessageHeartResponse> reactHeart(MessageHeartRequest messageHeartRequest);
 
     void addMember(AddMemeberRequest addMemeberRequest);
 

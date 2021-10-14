@@ -29,9 +29,15 @@ public class MessageController {
     @Autowired
     SimpMessageSendingOperations simpMessageSendingOperations;
 
+    @Operation(description = "Chat nội bộ, khu vực để dev test")
+    @GetMapping("/")
+    public String getChatTemplate(){
+        return "chat.html";
+    }
+
     @MessageMapping("/{token}/create-conversation")
     @SendTo("/messages/inbox/{token}")
-    public MessageResponse<Conversation> createConversation(@Payload CreateConversationRequest createConversationRequest) {
+    public MessageResponse<ConversationResponse> createConversation(@Payload CreateConversationRequest createConversationRequest) {
         return messageService.createConversation(createConversationRequest);
     }
 
@@ -59,18 +65,16 @@ public class MessageController {
         return messageService.deleteMessage(messageRemoveRequest);
     }
 
-    @Operation(description = "API xóa cuộc trò chuyện")
-    @DeleteMapping("/delete-conversation")
-    public ResponseEntity<Response<?>> deleteConversation(@RequestParam Long conversationId) {
-        messageService.deleteConversation(conversationId);
-        return ResponseEntity.ok(new Response<>(true, Message.OTHER_SUCCESS));
+    @MessageMapping("/{token}/delete-conversation")
+    @SendTo("/messages/inbox/{token}")
+    public MessageResponse<MessageDeleteConversationResponse> deleteConversation(@Payload MessageDeleteConversationRequest messageDeleteConversationRequest) {
+        return messageService.deleteConversation(messageDeleteConversationRequest);
     }
 
-    @Operation(description = "API thả tim tin nhắn")
-    @PostMapping("/react-heart")
-    public ResponseEntity<Response<?>> reactHeart(@RequestParam Long messageId){
-        messageService.reactHeart(messageId);
-        return ResponseEntity.ok(new Response<>(true, Message.OTHER_SUCCESS));
+    @MessageMapping("/{token}/heart-message")
+    @SendTo("/messages/inbox/{token}")
+    public MessageResponse<MessageHeartResponse> reactHeart(@Payload MessageHeartRequest messageHeartRequest){
+        return messageService.reactHeart(messageHeartRequest);
     }
 
     @Operation(description = "API Thêm thành viên vào nhóm")
