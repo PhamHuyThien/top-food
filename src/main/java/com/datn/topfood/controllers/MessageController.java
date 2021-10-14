@@ -1,22 +1,16 @@
 package com.datn.topfood.controllers;
 
-import com.datn.topfood.data.model.Account;
 import com.datn.topfood.data.model.Conversation;
-import com.datn.topfood.dto.messages.MessageResponse;
-import com.datn.topfood.dto.messages.MessageSend;
-import com.datn.topfood.dto.messages.PageMessageRequest;
-import com.datn.topfood.dto.messages.PageMessageResponse;
+import com.datn.topfood.dto.messages.*;
 import com.datn.topfood.dto.request.*;
 import com.datn.topfood.dto.response.ConversationResponse;
 import com.datn.topfood.dto.response.MessagesResponse;
-import com.datn.topfood.dto.response.PageResponse;
 import com.datn.topfood.dto.response.Response;
 import com.datn.topfood.services.interf.MessageService;
 import com.datn.topfood.util.constant.Message;
 import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.messaging.handler.annotation.SendTo;
@@ -59,11 +53,10 @@ public class MessageController {
         return messageService.getListMessages(pageMessageRequest);
     }
 
-    @Operation(description = "API gỡ tin nhắn")
-    @DeleteMapping("/delete-message")
-    public ResponseEntity<Response<?>> deleteMessage(@RequestParam Long messageId) {
-        messageService.deleteMessage(messageId);
-        return ResponseEntity.ok(new Response<>(true, Message.OTHER_SUCCESS));
+    @MessageMapping("/{token}/remove-message")
+    @SendTo("/messages/inbox/{token}")
+    public MessageResponse<MessageRemoveResponse> deleteMessage(@Payload MessageRemoveRequest messageRemoveRequest) {
+        return messageService.deleteMessage(messageRemoveRequest);
     }
 
     @Operation(description = "API xóa cuộc trò chuyện")

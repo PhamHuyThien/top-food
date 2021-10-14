@@ -33,9 +33,7 @@ public interface MessagesRepository extends JpaRepository<Messages, Long> {
     Page<Messages> getListMessages(Long accountId, Long conversationId, Pageable pageable);
 
     @Query("SELECT mess FROM Messages mess " +
-            "JOIN Conversation con ON mess.conversation = con " +
-            "JOIN Participants par ON par.conversation = con " +
-            "JOIN Account acc ON par.account = acc " +
+            "JOIN Account acc ON mess.account = acc " +
             "WHERE acc.id = ?1 AND mess.id = ?2 AND mess.disableAt IS NULL ")
     Messages getMessageFromAccount(Long accountId, Long messageId);
 }

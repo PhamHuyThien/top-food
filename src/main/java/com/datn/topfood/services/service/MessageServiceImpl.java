@@ -45,6 +45,7 @@ public class MessageServiceImpl extends BaseService implements MessageService {
     @Transactional
     public MessageResponse<Conversation> createConversation(CreateConversationRequest createConversationRequest) {
         MessageResponse<Conversation> conversationMessageResponse = new MessageResponse<>();
+        conversationMessageResponse.setType(MessageType.CREATE_CONVERSATION);
         Account itMe = accountRepository.findById(createConversationRequest.getAccountId()).orElse(null);
         AccountProfileResponse accountProfileMe = getAccountProfile(itMe.getId());
         AccountProfileResponse accountProfileRec = getAccountProfile(createConversationRequest.getAccountIdAdd());
@@ -66,7 +67,6 @@ public class MessageServiceImpl extends BaseService implements MessageService {
         conversationMessageResponse.setStatus(true);
         conversationMessageResponse.setMessage(Message.OTHER_SUCCESS);
         conversationMessageResponse.setData(conversation);
-        conversationMessageResponse.setType(MessageType.CREATE_CONVERSATION);
         return conversationMessageResponse;
     }
 
@@ -93,6 +93,7 @@ public class MessageServiceImpl extends BaseService implements MessageService {
     @Transactional
     public MessageResponse<MessagesResponse> sendMessage(SendMessageRequest sendMessageRequest) {
         MessageResponse<MessagesResponse> messagesResponseMessagesResponse = new MessageResponse();
+        messagesResponseMessagesResponse.setType(MessageType.SEND);
         Account itMe = accountRepository.findById(sendMessageRequest.getAccountId()).orElse(null);
         Timestamp presentTimestamp = DateUtils.currentTimestamp();
         Conversation conversation = conversationRepsitory.findByIdFromAccountId(itMe.getId(), sendMessageRequest.getConversationId());
@@ -114,7 +115,6 @@ public class MessageServiceImpl extends BaseService implements MessageService {
         conversationRepsitory.save(conversation);
 
         MessagesResponse messagesResponse = toMessagesResponse(messages);
-        messagesResponseMessagesResponse.setType(MessageType.SEND);
         messagesResponseMessagesResponse.setData(messagesResponse);
         messagesResponseMessagesResponse.setStatus(true);
         messagesResponseMessagesResponse.setMessage(Message.OTHER_SUCCESS);
@@ -179,14 +179,23 @@ public class MessageServiceImpl extends BaseService implements MessageService {
 
     @Override
     @Transactional
-    public void deleteMessage(Long messageId) {
-        Account itMe = itMe();
-        Messages messages = messagesRepository.getMessageFromAccount(itMe.getId(), messageId);
+    public MessageResponse<MessageRemoveResponse> deleteMessage(MessageRemoveRequest messageRemoveRequest) {
+        MessageResponse<MessageRemoveResponse> messageRemoveResponseMessageResponse = new MessageResponse<>();
+        messageRemoveResponseMessageResponse.setType(MessageType.REMOVE_MESSAGE);
+        Account itMe = accountRepository.findById(messageRemoveRequest.getAccountId()).orElse(null);
+        Messages messages = messagesRepository.getMessageFromAccount(itMe.getId(), messageRemoveRequest.getIdMessageRemove());
         if (messages == null) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, Message.MESSAGE_NOT_EXISTS);
+            messageRemoveResponseMessageResponse.setMessage(Message.MESSAGE_NOT_EXISTS);
+            return messageRemoveResponseMessageResponse;
         }
         messages.setDisableAt(DateUtils.currentTimestamp());
         messagesRepository.save(messages);
+        MessageRemoveResponse messageRemoveResponse = new MessageRemoveResponse();
+        messageRemoveResponse.setIdMessageRemove(messageRemoveRequest.getIdMessageRemove());
+        messageRemoveResponseMessageResponse.setStatus(true);
+        messageRemoveResponseMessageResponse.setMessage(Message.OTHER_SUCCESS);
+        messageRemoveResponseMessageResponse.setData(messageRemoveResponse);
+        return messageRemoveResponseMessageResponse;
     }
 
     @Override
