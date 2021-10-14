@@ -1,22 +1,16 @@
 package com.datn.topfood.controllers;
 
-import com.datn.topfood.data.model.Account;
 import com.datn.topfood.data.model.Conversation;
-import com.datn.topfood.dto.messages.MessageResponse;
-import com.datn.topfood.dto.messages.MessageSend;
-import com.datn.topfood.dto.messages.PageMessageRequest;
-import com.datn.topfood.dto.messages.PageMessageResponse;
+import com.datn.topfood.dto.messages.*;
 import com.datn.topfood.dto.request.*;
 import com.datn.topfood.dto.response.ConversationResponse;
 import com.datn.topfood.dto.response.MessagesResponse;
-import com.datn.topfood.dto.response.PageResponse;
 import com.datn.topfood.dto.response.Response;
 import com.datn.topfood.services.interf.MessageService;
 import com.datn.topfood.util.constant.Message;
 import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.messaging.handler.annotation.SendTo;
@@ -35,9 +29,15 @@ public class MessageController {
     @Autowired
     SimpMessageSendingOperations simpMessageSendingOperations;
 
+    @Operation(description = "Chat nội bộ, khu vực để dev test")
+    @GetMapping("/")
+    public String getChatTemplate(){
+        return "chat.html";
+    }
+
     @MessageMapping("/{token}/create-conversation")
     @SendTo("/messages/inbox/{token}")
-    public MessageResponse<Conversation> createConversation(@Payload CreateConversationRequest createConversationRequest) {
+    public MessageResponse<ConversationResponse> createConversation(@Payload CreateConversationRequest createConversationRequest) {
         return messageService.createConversation(createConversationRequest);
     }
 
@@ -59,25 +59,22 @@ public class MessageController {
         return messageService.getListMessages(pageMessageRequest);
     }
 
-    @Operation(description = "API gỡ tin nhắn")
-    @DeleteMapping("/delete-message")
-    public ResponseEntity<Response<?>> deleteMessage(@RequestParam Long messageId) {
-        messageService.deleteMessage(messageId);
-        return ResponseEntity.ok(new Response<>(true, Message.OTHER_SUCCESS));
+    @MessageMapping("/{token}/remove-message")
+    @SendTo("/messages/inbox/{token}")
+    public MessageResponse<MessageRemoveResponse> deleteMessage(@Payload MessageRemoveRequest messageRemoveRequest) {
+        return messageService.deleteMessage(messageRemoveRequest);
     }
 
-    @Operation(description = "API xóa cuộc trò chuyện")
-    @DeleteMapping("/delete-conversation")
-    public ResponseEntity<Response<?>> deleteConversation(@RequestParam Long conversationId) {
-        messageService.deleteConversation(conversationId);
-        return ResponseEntity.ok(new Response<>(true, Message.OTHER_SUCCESS));
+    @MessageMapping("/{token}/delete-conversation")
+    @SendTo("/messages/inbox/{token}")
+    public MessageResponse<MessageDeleteConversationResponse> deleteConversation(@Payload MessageDeleteConversationRequest messageDeleteConversationRequest) {
+        return messageService.deleteConversation(messageDeleteConversationRequest);
     }
 
-    @Operation(description = "API thả tim tin nhắn")
-    @PostMapping("/react-heart")
-    public ResponseEntity<Response<?>> reactHeart(@RequestParam Long messageId){
-        messageService.reactHeart(messageId);
-        return ResponseEntity.ok(new Response<>(true, Message.OTHER_SUCCESS));
+    @MessageMapping("/{token}/heart-message")
+    @SendTo("/messages/inbox/{token}")
+    public MessageResponse<MessageHeartResponse> reactHeart(@Payload MessageHeartRequest messageHeartRequest){
+        return messageService.reactHeart(messageHeartRequest);
     }
 
     @Operation(description = "API Thêm thành viên vào nhóm")

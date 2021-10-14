@@ -13,6 +13,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class ProfileResponse {
     Long accountId;
+    String username;
     String phoneNumber;
     String email;
     AccountRole role;

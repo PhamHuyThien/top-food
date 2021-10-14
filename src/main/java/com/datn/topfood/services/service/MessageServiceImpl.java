@@ -43,8 +43,9 @@ public class MessageServiceImpl extends BaseService implements MessageService {
 
     @Override
     @Transactional
-    public MessageResponse<Conversation> createConversation(CreateConversationRequest createConversationRequest) {
-        MessageResponse<Conversation> conversationMessageResponse = new MessageResponse<>();
+    public MessageResponse<ConversationResponse> createConversation(CreateConversationRequest createConversationRequest) {
+        MessageResponse<ConversationResponse> conversationMessageResponse = new MessageResponse<>();
+        conversationMessageResponse.setType(MessageType.CREATE_CONVERSATION);
         Account itMe = accountRepository.findById(createConversationRequest.getAccountId()).orElse(null);
         AccountProfileResponse accountProfileMe = getAccountProfile(itMe.getId());
         AccountProfileResponse accountProfileRec = getAccountProfile(createConversationRequest.getAccountIdAdd());
@@ -61,12 +62,15 @@ public class MessageServiceImpl extends BaseService implements MessageService {
         conversation = conversationRepsitory.save(conversation);
         saveParticipants(conversation, presentTimestamp, accountProfileMe.getAccount());
         saveParticipants(conversation, presentTimestamp, accountProfileRec.getAccount());
-        itMe.setPassword(null);
-        conversation.setCreateBy(itMe);
+
+        ConversationResponse conversationResponse = new ConversationResponse();
+        conversationResponse.setCreateAt(conversation.getCreateAt());
+        conversationResponse.setCreateBy(profileRepository.findByAccountId(itMe.getId()));
+        conversationResponse.setTitle(conversation.getTitle());
+        conversationResponse.setId(conversation.getId());
         conversationMessageResponse.setStatus(true);
         conversationMessageResponse.setMessage(Message.OTHER_SUCCESS);
-        conversationMessageResponse.setData(conversation);
-        conversationMessageResponse.setType(MessageType.CREATE_CONVERSATION);
+        conversationMessageResponse.setData(conversationResponse);
         return conversationMessageResponse;
     }
 
@@ -93,6 +97,7 @@ public class MessageServiceImpl extends BaseService implements MessageService {
     @Transactional
     public MessageResponse<MessagesResponse> sendMessage(SendMessageRequest sendMessageRequest) {
         MessageResponse<MessagesResponse> messagesResponseMessagesResponse = new MessageResponse();
+        messagesResponseMessagesResponse.setType(MessageType.SEND);
         Account itMe = accountRepository.findById(sendMessageRequest.getAccountId()).orElse(null);
         Timestamp presentTimestamp = DateUtils.currentTimestamp();
         Conversation conversation = conversationRepsitory.findByIdFromAccountId(itMe.getId(), sendMessageRequest.getConversationId());
@@ -114,7 +119,6 @@ public class MessageServiceImpl extends BaseService implements MessageService {
         conversationRepsitory.save(conversation);
 
         MessagesResponse messagesResponse = toMessagesResponse(messages);
-        messagesResponseMessagesResponse.setType(MessageType.SEND);
         messagesResponseMessagesResponse.setData(messagesResponse);
         messagesResponseMessagesResponse.setStatus(true);
         messagesResponseMessagesResponse.setMessage(Message.OTHER_SUCCESS);
@@ -179,43 +183,73 @@ public class MessageServiceImpl extends BaseService implements MessageService {
 
     @Override
     @Transactional
-    public void deleteMessage(Long messageId) {
-        Account itMe = itMe();
-        Messages messages = messagesRepository.getMessageFromAccount(itMe.getId(), messageId);
+    public MessageResponse<MessageRemoveResponse> deleteMessage(MessageRemoveRequest messageRemoveRequest) {
+        MessageResponse<MessageRemoveResponse> messageRemoveResponseMessageResponse = new MessageResponse<>();
+        messageRemoveResponseMessageResponse.setType(MessageType.REMOVE_MESSAGE);
+        Account itMe = accountRepository.findById(messageRemoveRequest.getAccountId()).orElse(null);
+        Messages messages = messagesRepository.getMessageFromAccount(itMe.getId(), messageRemoveRequest.getIdMessage());
         if (messages == null) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, Message.MESSAGE_NOT_EXISTS);
+            messageRemoveResponseMessageResponse.setMessage(Message.MESSAGE_NOT_EXISTS);
+            return messageRemoveResponseMessageResponse;
         }
         messages.setDisableAt(DateUtils.currentTimestamp());
         messagesRepository.save(messages);
+        MessageRemoveResponse messageRemoveResponse = new MessageRemoveResponse();
+        messageRemoveResponse.setIdMessage(messageRemoveRequest.getIdMessage());
+        messageRemoveResponseMessageResponse.setStatus(true);
+        messageRemoveResponseMessageResponse.setMessage(Message.OTHER_SUCCESS);
+        messageRemoveResponseMessageResponse.setData(messageRemoveResponse);
+        return messageRemoveResponseMessageResponse;
     }
 
     @Override
     @Transactional
-    public void deleteConversation(Long conversationId) {
-        Account itMe = itMe();
-        Participants participants = participantsRepository.getParticipantsFromAccount(itMe.getId(), conversationId);
+    public MessageResponse<MessageDeleteConversationResponse> deleteConversation(MessageDeleteConversationRequest messageDeleteConversationRequest) {
+        MessageResponse<MessageDeleteConversationResponse> messageDeleteConversationResponseMessageResponse = new MessageResponse<>();
+        messageDeleteConversationResponseMessageResponse.setType(MessageType.DELETE_CONVERSATION);
+        Account itMe = accountRepository.findById(messageDeleteConversationRequest.getAccountId()).orElse(null);
+        Participants participants = participantsRepository.getParticipantsFromAccount(itMe.getId(), messageDeleteConversationRequest.getConversationId());
         if (participants == null) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, Message.MESSAGE_CONVERSATION_NOT_EXISTS);
+            messageDeleteConversationResponseMessageResponse.setMessage(Message.MESSAGE_CONVERSATION_NOT_EXISTS);
+            return messageDeleteConversationResponseMessageResponse;
         }
         Timestamp presentTimestamp = DateUtils.currentTimestamp();
         participants.setDisableAt(presentTimestamp);
         participantsRepository.save(participants);
+        MessageDeleteConversationResponse messageDeleteConversationResponse = new MessageDeleteConversationResponse();
+        messageDeleteConversationResponse.setConversationId(messageDeleteConversationRequest.getConversationId());
+        messageDeleteConversationResponseMessageResponse.setStatus(true);
+        messageDeleteConversationResponseMessageResponse.setMessage(Message.OTHER_SUCCESS);
+        messageDeleteConversationResponseMessageResponse.setData(messageDeleteConversationResponse);
+        return messageDeleteConversationResponseMessageResponse;
     }
 
     @Override
     @Transactional
-    public void reactHeart(Long messageId) {
-        Account itMe = itMe();
-        Messages messages = messagesRepository.findById(messageId).orElse(null);
+    public MessageResponse<MessageHeartResponse> reactHeart(MessageHeartRequest messageHeartRequest) {
+        MessageResponse<MessageHeartResponse> messageHeartResponseMessageResponse = new MessageResponse<>();
+        messageHeartResponseMessageResponse.setType(MessageType.REACT_MESSAGE);
+        Account itMe = accountRepository.findById(messageHeartRequest.getAccountId()).orElse(null);
+        Messages messages = messagesRepository.findById(messageHeartRequest.getIdMessage()).orElse(null);
         if (messages == null || messages.getDisableAt() != null) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, Message.MESSAGE_NOT_EXISTS);
+            messageHeartResponseMessageResponse.setMessage(Message.MESSAGE_NOT_EXISTS);
+            return messageHeartResponseMessageResponse;
         }
         Conversation conversation = conversationRepsitory.findByIdFromAccountId(itMe.getId(), messages.getConversation().getId());
         if (conversation == null) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, Message.MESSAGE_NOT_EXISTS);
+            messageHeartResponseMessageResponse.setMessage(Message.MESSAGE_NOT_EXISTS);
+            return messageHeartResponseMessageResponse;
         }
         messages.setHeart(messages.getHeart() + 1);
-        messagesRepository.save(messages);
+        messages = messagesRepository.save(messages);
+        //
+        MessageHeartResponse messageHeartResponse = new MessageHeartResponse();
+        messageHeartResponse.setIdMessage(messages.getId());
+        messageHeartResponse.setTotalHeart((long) messages.getHeart());
+        messageHeartResponseMessageResponse.setStatus(true);
+        messageHeartResponseMessageResponse.setMessage(Message.OTHER_SUCCESS);
+        messageHeartResponseMessageResponse.setData(messageHeartResponse);
+        return messageHeartResponseMessageResponse;
     }
 
     @Override
