@@ -19,7 +19,7 @@ import lombok.ToString;
 public class Conversation extends Base {
 
     private String title;
-
+    private String image;
     @ManyToOne
     @JoinColumn(name = "create_by")
     private Account createBy;

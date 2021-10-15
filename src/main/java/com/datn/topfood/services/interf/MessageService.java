@@ -1,12 +1,9 @@
 package com.datn.topfood.services.interf;
 
-import com.datn.topfood.data.model.Conversation;
 import com.datn.topfood.dto.messages.*;
 import com.datn.topfood.dto.request.*;
 import com.datn.topfood.dto.response.ConversationResponse;
 import com.datn.topfood.dto.response.MessagesResponse;
-import com.datn.topfood.dto.response.PageResponse;
-import com.datn.topfood.dto.response.SendMessageResponse;
 
 public interface MessageService {
     MessageResponse<ConversationResponse> createConversation(CreateConversationRequest createConversationRequest);
@@ -23,7 +20,11 @@ public interface MessageService {
 
     MessageResponse<MessageHeartResponse> reactHeart(MessageHeartRequest messageHeartRequest);
 
-    void addMember(AddMemeberRequest addMemeberRequest);
+    MessageResponse<MessageAddResponse> addMember(MessageAddRequest messageAddRequest);
 
-    void deleteMember(DeleteMemeberRequest deleteMemeberRequest);
+    MessageResponse<MessageKickResponse> deleteMember(MessageKickRequest messageKickRequest);
+
+    MessageResponse<MessageInfoResponse> infoConversation(MessageInfoRequest messageInfoRequest);
+
+    MessageResponse<MessageUpdateConversationResponse> updateConversation(MessageUpdateConversationRequest messageUpdateConversationRequest);
 }

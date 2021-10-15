@@ -11,20 +11,16 @@ import com.datn.topfood.util.DateUtils;
 import com.datn.topfood.util.PageUtils;
 import com.datn.topfood.util.constant.Message;
 import com.datn.topfood.util.enums.MessageType;
-import com.datn.topfood.util.enums.ParticipantsStatus;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.sql.Time;
 import java.sql.Timestamp;
 import java.util.ArrayList;
-import java.util.Base64;
 import java.util.Date;
 import java.util.List;
 
@@ -254,45 +250,108 @@ public class MessageServiceImpl extends BaseService implements MessageService {
 
     @Override
     @Transactional
-    public void addMember(AddMemeberRequest addMemeberRequest) {
-        Account youAdd = accountRepository.findById(addMemeberRequest.getAccountId()).orElse(null);
+    public MessageResponse<MessageAddResponse> addMember(MessageAddRequest messageAddRequest) {
+        MessageResponse<MessageAddResponse> messageAddResponseMessageResponse = new MessageResponse<>();
+        messageAddResponseMessageResponse.setType(MessageType.ADD_MEMBER);
+        Timestamp presentTimestamp = DateUtils.currentTimestamp();
+        Account itMe = accountRepository.findById(messageAddRequest.getAccountId()).orElse(null);
+        Account youAdd = accountRepository.findById(messageAddRequest.getAccountAdd()).orElse(null);
         if (youAdd == null) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, Message.AUTH_LOGIN_USERNAME_WRONG);
+            messageAddResponseMessageResponse.setMessage(Message.AUTH_LOGIN_USERNAME_WRONG);
+            return messageAddResponseMessageResponse;
         }
-        Conversation conversation = conversationRepsitory.findByIdAndCreateBy(addMemeberRequest.getConversationId(), itMe());
+        Conversation conversation = conversationRepsitory.findByIdAndCreateBy(messageAddRequest.getConversationId(), itMe);
         if (conversation == null) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, Message.MESSAGE_CONVERSATION_NOT_FOUND_OR_NOT_ADMIN);
+            messageAddResponseMessageResponse.setMessage(Message.MESSAGE_CONVERSATION_NOT_FOUND_OR_NOT_ADMIN);
+            return messageAddResponseMessageResponse;
         }
         Participants participants = participantsRepository.findByConversationAndAccount(conversation, youAdd);
-        if (participants != null && participants.getDisableAt() == null) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, Message.MESSAGE_CONVERSATION_MEMBER_IS_EXISTS);
-        }
         if (participants == null) {
             participants = new Participants();
+            participants.setAccount(youAdd);
+            participants.setCreateAt(presentTimestamp);
+            participants.setConversation(conversation);
         }
-        participants.setConversation(conversation);
-        participants.setAccount(youAdd);
-        participants.setCreateAt(DateUtils.currentTimestamp());
+        participants.setUpdateAt(presentTimestamp);
         participants.setDisableAt(null);
-        participantsRepository.save(participants);
+        participants = participantsRepository.save(participants);
+        MessageAddResponse messageAddResponse = new MessageAddResponse();
+        messageAddResponse.setAccountAdd(messageAddRequest.getAccountAdd());
+        messageAddResponse.setAccountId(messageAddRequest.getAccountId());
+        messageAddResponse.setConversationId(messageAddRequest.getConversationId());
+        messageAddResponse.setProfile(profileRepository.findFiendProfileByAccountId(participants.getAccount().getId()).orElse(null));
+        messageAddResponseMessageResponse.setStatus(true);
+        messageAddResponseMessageResponse.setMessage(Message.OTHER_SUCCESS);
+        messageAddResponseMessageResponse.setData(messageAddResponse);
+        return messageAddResponseMessageResponse;
     }
 
     @Override
     @Transactional
-    public void deleteMember(DeleteMemeberRequest deleteMemeberRequest) {
-        Account youAdd = accountRepository.findById(deleteMemeberRequest.getAccountId()).orElse(null);
-        if (youAdd == null) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, Message.AUTH_LOGIN_USERNAME_WRONG);
+    public MessageResponse<MessageKickResponse> deleteMember(MessageKickRequest messageKickRequest) {
+        MessageResponse<MessageKickResponse> messageKickResponseMessageResponse = new MessageResponse<>();
+        messageKickResponseMessageResponse.setType(MessageType.KICK_MEMBER);
+        Account itMe = accountRepository.findById(messageKickRequest.getAccountId()).orElse(null);
+        Account youDelete = accountRepository.findById(messageKickRequest.getAccountIdKick()).orElse(null);
+        if (youDelete == null) {
+            messageKickResponseMessageResponse.setMessage(Message.AUTH_LOGIN_USERNAME_WRONG);
+            return messageKickResponseMessageResponse;
         }
-        Conversation conversation = conversationRepsitory.findByIdAndCreateBy(deleteMemeberRequest.getConversationId(), itMe());
+        Conversation conversation = conversationRepsitory.findByIdAndCreateBy(messageKickRequest.getConversationId(), itMe);
         if (conversation == null) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, Message.MESSAGE_CONVERSATION_NOT_FOUND_OR_NOT_ADMIN);
+            messageKickResponseMessageResponse.setMessage(Message.MESSAGE_CONVERSATION_NOT_FOUND_OR_NOT_ADMIN);
+            return messageKickResponseMessageResponse;
         }
-        Participants participants = participantsRepository.findByConversationAndAccount(conversation, youAdd);
+        Participants participants = participantsRepository.findByConversationAndAccount(conversation, youDelete);
         if (participants == null) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, Message.MESSAGE_CONVERSATION_MEMBER_NOT_EXISTS);
+            messageKickResponseMessageResponse.setMessage(Message.MESSAGE_CONVERSATION_MEMBER_NOT_EXISTS);
+            return messageKickResponseMessageResponse;
         }
         participants.setDisableAt(DateUtils.currentTimestamp());
         participantsRepository.save(participants);
+        MessageKickResponse messageKickResponse = new MessageKickResponse();
+        messageKickResponse.setAccountIdKick(messageKickRequest.getAccountIdKick());
+        messageKickResponse.setAccountId(messageKickRequest.getAccountId());
+        messageKickResponse.setConversationId(messageKickResponse.getConversationId());
+        messageKickResponseMessageResponse.setData(messageKickResponse);
+        messageKickResponseMessageResponse.setStatus(true);
+        messageKickResponseMessageResponse.setMessage(Message.OTHER_SUCCESS);
+        return messageKickResponseMessageResponse;
+    }
+
+    @Override
+    public MessageResponse<MessageInfoResponse> infoConversation(MessageInfoRequest messageInfoRequest) {
+        MessageResponse<MessageInfoResponse> messageInfoResponseMessageResponse = new MessageResponse<>();
+        messageInfoResponseMessageResponse.setType(MessageType.INFO_CONVERSATION);
+        Conversation conversation = conversationRepsitory.findByIdFromAccountId(messageInfoRequest.getAccountId(), messageInfoRequest.getConversationId());
+        if (conversation == null) {
+            messageInfoResponseMessageResponse.setMessage(Message.MESSAGE_CONVERSATION_NOT_FOUND);
+            return messageInfoResponseMessageResponse;
+        }
+        MessageInfoResponse messageInfoResponse = new MessageInfoResponse();
+        List<ProfileResponse> profileResponseList = new ArrayList<>();
+        List<Participants> participantsList = participantsRepository.getAllByConversationId(conversation.getId());
+        participantsList.forEach(participants -> {
+            profileResponseList.add(profileRepository.findFiendProfileByAccountId(participants.getAccount().getId()).orElse(null));
+        });
+        messageInfoResponse.setMembers(profileResponseList);
+        ConversationResponse conversationResponse = new ConversationResponse();
+        conversationResponse.setId(conversation.getId());
+        conversationResponse.setTitle(conversation.getTitle());
+        conversationResponse.setUpdateAt(conversation.getUpdateAt());
+        conversationResponse.setCreateAt(conversation.getCreateAt());
+        conversationResponse.setCreateBy(profileRepository.findByAccountId(conversation.getCreateBy().getId()));
+        messageInfoResponse.setConversation(conversationResponse);
+        messageInfoResponse.setAccountId(messageInfoRequest.getAccountId());
+        messageInfoResponse.setConversationId(messageInfoRequest.getConversationId());
+        messageInfoResponseMessageResponse.setData(messageInfoResponse);
+        messageInfoResponseMessageResponse.setMessage(Message.OTHER_SUCCESS);
+        messageInfoResponseMessageResponse.setStatus(true);
+        return messageInfoResponseMessageResponse;
+    }
+
+    @Override
+    public MessageResponse<MessageUpdateConversationResponse> updateConversation(MessageUpdateConversationRequest messageUpdateConversationRequest) {
+        return null;
     }
 }
