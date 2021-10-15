@@ -29,12 +29,6 @@ public class MessageController {
     @Autowired
     SimpMessageSendingOperations simpMessageSendingOperations;
 
-    @Operation(description = "Chat nội bộ, khu vực để dev test")
-    @GetMapping("/")
-    public String getChatTemplate(){
-        return "chat.html";
-    }
-
     @MessageMapping("/{token}/create-conversation")
     @SendTo("/messages/inbox/{token}")
     public MessageResponse<ConversationResponse> createConversation(@Payload CreateConversationRequest createConversationRequest) {
