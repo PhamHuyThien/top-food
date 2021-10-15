@@ -1,20 +1,27 @@
 package com.datn.topfood.controllers;
 
-import com.datn.topfood.dto.request.BlockFriendRequest;
-import com.datn.topfood.dto.request.PageRequest;
-import com.datn.topfood.dto.request.RemoveFriendRequest;
-import com.datn.topfood.dto.request.ReplyInvitationFriendRequest;
-import com.datn.topfood.dto.request.SendFriendInvitationsRequest;
-import com.datn.topfood.dto.response.ProfileResponse;
-import com.datn.topfood.dto.response.PageResponse;
-import com.datn.topfood.dto.response.Response;
-import com.datn.topfood.services.interf.FriendsService;
-import com.datn.topfood.util.constant.Message;
-import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+
+import com.datn.topfood.dto.request.BlockFriendRequest;
+import com.datn.topfood.dto.request.PageRequest;
+import com.datn.topfood.dto.request.ReplyInvitationFriendRequest;
+import com.datn.topfood.dto.request.SendFriendInvitationsRequest;
+import com.datn.topfood.dto.response.PageResponse;
+import com.datn.topfood.dto.response.ProfileResponse;
+import com.datn.topfood.dto.response.Response;
+import com.datn.topfood.services.interf.FriendsService;
+import com.datn.topfood.util.constant.Message;
+
+import io.swagger.v3.oas.annotations.Operation;
 
 @Controller
 @CrossOrigin
