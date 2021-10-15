@@ -166,16 +166,16 @@ public class FriendsServiceImpl extends BaseService implements FriendsService {
 
     @Override
     @Transactional
-    public void removeFriend(RemoveFriendRequest removeFriendRequest) {
+    public void removeFriend(String removeFriendRequest) {
         Account itMe = itMe();
-        Account fiendRemove = accountRepository.findByPhoneNumber(removeFriendRequest.getFriendPhoneNumber());
+        Account fiendRemove = accountRepository.findByPhoneNumber(removeFriendRequest);
         // số điện thoại không tồn tại
         if (fiendRemove == null) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, Message.ACCOUNT_FRIEND_BY_PHONE_NOT_FOUND);
         }
 
         // không thể tự hủy kết bạn với chính mình chính mình
-        if (removeFriendRequest.getFriendPhoneNumber().equals(itMe.getPhoneNumber())) {
+        if (removeFriendRequest.equals(itMe.getPhoneNumber())) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, Message.OTHER_ACTION_IS_DENIED);
         }
         FriendShip friendShip = friendShipRepository.findFriendShipRelation(itMe.getUsername(),

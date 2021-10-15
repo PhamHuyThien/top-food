@@ -20,5 +20,5 @@ public interface FriendsService {
 
     PageResponse<ProfileResponse> getListFriendsRequest(PageRequest pageRequest);
     
-    void removeFriend(RemoveFriendRequest removeFriendRequest);
+    void removeFriend(String removeFriendRequest);
 }
