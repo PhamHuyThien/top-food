@@ -6,6 +6,8 @@ import com.datn.topfood.data.model.Participants;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
+import java.util.List;
+
 public interface ParticipantsRepository extends JpaRepository<Participants, Long> {
     @Query("SELECT par FROM Participants par " +
             "JOIN Conversation con ON par.conversation = con " +
@@ -14,4 +16,8 @@ public interface ParticipantsRepository extends JpaRepository<Participants, Long
     Participants getParticipantsFromAccount(Long accountId, Long conversationId);
 
     Participants findByConversationAndAccount(Conversation conversation, Account account);
+
+    @Query("SELECT par FROM Participants par " +
+            "WHERE par.conversation.id = ?1 AND par.disableAt IS NULL")
+    List<Participants> getAllByConversationId(Long conversationId);
 }
