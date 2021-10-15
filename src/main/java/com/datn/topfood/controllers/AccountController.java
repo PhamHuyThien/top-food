@@ -41,15 +41,15 @@ public class AccountController {
     public void updateEnable(@PathVariable("id") Long id){
         accountService.updateEnable(id);
     }
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/admin/{id}")
     public void deleteAccount(@PathVariable("id") Long id){
         accountService.deleteAccount(id);
     }
-    @PutMapping("/admin-active/{id}")
+    @PutMapping("/admin/active/{id}")
     public void adminActiveAccount(@PathVariable("id") Long id){
         accountService.updateActive(id);
     }
-    @PutMapping("/admin-update-role/{id}")
+    @PutMapping("/admin/update-role/{id}")
     public void updateRole(@PathVariable("id") Long id){
         accountService.updateRole(id);
     }
