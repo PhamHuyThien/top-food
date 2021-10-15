@@ -1,6 +1,5 @@
 package com.datn.topfood.controllers;
 
-import com.datn.topfood.data.model.Conversation;
 import com.datn.topfood.dto.messages.*;
 import com.datn.topfood.dto.request.*;
 import com.datn.topfood.dto.response.ConversationResponse;
@@ -71,17 +70,27 @@ public class MessageController {
         return messageService.reactHeart(messageHeartRequest);
     }
 
-    @Operation(description = "API Thêm thành viên vào nhóm")
-    @PostMapping("/add-member")
-    public ResponseEntity<Response<?>> addMember(@RequestBody AddMemeberRequest addMemeberRequest){
-        messageService.addMember(addMemeberRequest);
-        return ResponseEntity.ok(new Response<>(true, Message.OTHER_SUCCESS));
+    @MessageMapping("/{token}/info-conversation")
+    @SendTo("/messages/inbox/{token}")
+    public MessageResponse<MessageInfoResponse> infoConversation(@Payload MessageInfoRequest messageInfoRequest){
+        return messageService.infoConversation(messageInfoRequest);
     }
 
-    @Operation(description = "API kích thành viên khỏi nhóm")
-    @DeleteMapping("/delete-member")
-    public  ResponseEntity<Response<?>> deleteMember(@RequestBody DeleteMemeberRequest deleteMemeberRequest){
-        messageService.deleteMember(deleteMemeberRequest);
-        return ResponseEntity.ok(new Response<>(true, Message.OTHER_SUCCESS));
+    @MessageMapping("/{token}/add-member")
+    @SendTo("/messages/inbox/{token}")
+    public MessageResponse<MessageAddResponse> addMember(@Payload MessageAddRequest messageAddRequest){
+        return messageService.addMember(messageAddRequest);
+    }
+
+    @MessageMapping("/{token}/delete-member")
+    @SendTo("/messages/inbox/{token}")
+    public  MessageResponse<MessageKickResponse> deleteMember(@Payload MessageKickRequest messageKickRequest){
+        return messageService.deleteMember(messageKickRequest);
+    }
+
+    @MessageMapping("/{token}/update-conversation")
+    @SendTo("/messages/inbox/{token}")
+    public  MessageResponse<MessageUpdateConversationResponse> updateConversation(@Payload MessageUpdateConversationRequest messageUpdateConversationRequest){
+        return messageService.updateConversation(messageUpdateConversationRequest);
     }
 }

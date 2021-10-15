@@ -2,6 +2,7 @@
 <html>
 
 <head>
+    <meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
     <title>Hello WebSocket</title>
     <script src="https://code.jquery.com/jquery-3.6.0.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/sockjs-client/1.5.2/sockjs.min.js"></script>
@@ -27,6 +28,15 @@
     </div>
     <div id="message" style="display: none">
         <h3 style="color:blue" id="conversation-name"></h3>
+        <div style="margin-bottom: 40px">
+            <div id="div-add-member" style="display: none;">
+                Id thành viên: <input type="text" id="conversation-add-member"> <button id="add-member">Thêm thành
+                viên</button>
+            </div>
+            <h4 id="conversation-member-length"></h4>
+            <div id="conversation-members">
+            </div>
+        </div>
         <div id="message-send">
             <input type="hidden" id="id-conversation" value="">
             Nội dung: <input type="text" id="mo-content"> <br />
@@ -84,9 +94,8 @@
     $("#cg-create").click(function () {
         let name = $("#cg-name").val();
         let idAdd = $("#cg-id-add").val();
-        let idMe = $("#idMe").val();
         let objSend = {
-            "accountId": idMe,
+            "accountId": idAccout,
             "conversationId": "",
             "name": name,
             "accountIdAdd": idAdd
@@ -95,12 +104,11 @@
     });
 
     $("#mo-send").click(function () {
-        let idMe = $("#idMe").val();
         let idConversation = $("#id-conversation").val();
         let content = $("#mo-content").val();
         let quoteContent = $("#mo-quote-content").val();
         let objSend = {
-            "accountId": idMe,
+            "accountId": idAccout,
             "conversationId": idConversation,
             "message": content,
             "quoteMessageId": quoteContent
@@ -108,6 +116,17 @@
         stompClient.send(`/app/messages_${idConversation}/send`, {}, JSON.stringify(objSend));
         $("#mo-quote-content").val("");
         $("#mo-content").val("");
+    });
+
+    $("#add-member").click(function () {
+        let idAdd = $("#conversation-add-member").val();
+        let idConversation = $("#id-conversation").val();
+        let objSend = {
+            "accountId": idAccout,
+            "conversationId": idConversation,
+            "accountAdd": idAdd,
+        };
+        stompClient.send(`/app/messages_${idConversation}/add-member`, {}, JSON.stringify(objSend));
     });
 
     function log(payload) {
@@ -165,7 +184,7 @@
                 let react = `<span style='color: blue' onclick='react(${id})'>[Thả tim]</span>`;
                 let removeMessage = '';
                 if (element.createBy.id == $("#idMe").val()) {
-                    removeMessage = `<span style='color: red' onclick='remove(${id})'>[Gỡ tin nhắn]</span>`;
+                    removeMessage = `<span style='color: red' onclick='remove(${id})'>[Gỡ]</span>`;
                 }
                 let replyMessage = `<span style='color: green' onclick='quote(${id})'>[Trả lời]</span>`;
                 $("#all-message").prepend(`<div id="chat-${id}">[<font color='red'>♥️</font><span id='heart-${id}'>${element.heart}</span>] <img src='${element.createBy.avatar}' style='width: 50px' /> ${name}: ${quote} ${content} ${react} ${removeMessage} ${replyMessage}</div>`);
@@ -193,25 +212,78 @@
             } else {
                 alert(body.message);
             }
+        } else if (body.type == "INFO_CONVERSATION") {
+            if (body.status == true) {
+                let count = body.data.members.length;
+                let isAdmin = body.data.conversation.createBy.id == idAccout;
+                let htmlMember = body.data.members.map(member => {
+                    let admin = isAdmin && count > 2 ? `<span onclick="kick(${member.profile.id})" style="color: red">[Kích]</span>` : "";
+                    return `
+                    <div id="conversation-member-${member.profile.id}">
+                        <span>${member.profile.name} - ${member.phoneNumber} </span>
+                        ${admin}
+                    </div>
+                    `;
+                });
+                $("#conversation-member-length").text(`Nhóm ${count} thành viên.`)
+                $("#conversation-members").html(htmlMember);
+                if(isAdmin){
+                    $("#div-add-member").show();
+                }
+            } else {
+                alert(body.message);
+            }
+        } else if (body.type == "KICK_MEMBER") {
+            if (body.status == true) {
+                $(`#conversation-member-${body.data.accountIdKick}`).hide();
+            } else {
+                alert(body.message);
+            }
+        } else if (body.type == "ADD_MEMBER") {
+            console.log(body);
+            if (body.status == true) {
+                let member = body.data.profile;
+                let admin = `<span onclick="kick(${member.profile.id})" style="color: red">[Kích]</span>`;
+                let htmlMember = `
+                    <div id="conversation-member-${member.profile.id}">
+                        <span>${member.profile.name} - ${member.phoneNumber} </span>
+                        ${admin}
+                    </div>
+                    `;
+                $("#conversation-members").prepend(htmlMember);
+            } else {
+                alert(body.message);
+            }
+
+        }
+    }
+
+    function kick(id) {
+        if (confirm("Bạn chắc chắn muốn xóa cuộc trò chuyện này chứ?")) {
+            let idConversation = $("#id-conversation").val();
+            let objSend = {
+                "accountId": idAccout,
+                "conversationId": idConversation,
+                "accountIdKick": id
+            };
+            stompClient.send(`/app/messages_${idConversation}/delete-member`, {}, JSON.stringify(objSend));
         }
     }
 
     function deleteConversation(id) {
         if (confirm("Bạn chắc chắn muốn xóa cuộc trò chuyện này chứ?")) {
-            let idMe = $("#idMe").val();
             let objSend = {
-                "accountId": idMe,
+                "accountId": idAccout,
                 "conversationId": id
             };
-            stompClient.send(`/app/conversation_${idMe}/delete-conversation`, {}, JSON.stringify(objSend));
+            stompClient.send(`/app/conversation_${idAccout}/delete-conversation`, {}, JSON.stringify(objSend));
         }
     }
 
     function react(id) {
-        let idMe = $("#idMe").val();
         let idConversation = $("#id-conversation").val();
         let objSend = {
-            "accountId": idMe,
+            "accountId": idAccout,
             "conversationId": idConversation,
             "idMessage": id
         };
@@ -224,10 +296,9 @@
 
     function remove(id) {
         if (confirm("Bạn chắc chắn muốn gỡ tin nhắn này chứ?")) {
-            let idMe = $("#idMe").val();
             let idConversation = $("#id-conversation").val();
             let objSend = {
-                "accountId": idMe,
+                "accountId": idAccout,
                 "conversationId": idConversation,
                 "idMessage": id
             };
@@ -245,15 +316,15 @@
         $("#id-conversation").val(id);
         //
         stompClientMessage = stompClient.subscribe(`/messages/inbox/messages_${id}`, (payload) => log(payload));
-        let idMe = $("#idMe").val();
         let objSend = {
-            "accountId": idMe,
+            "accountId": idAccout,
             "conversationId": id,
             "page": 0,
             "pageSize": 10,
             "order": "DESC",
             "orderBy": "id"
         };
+        stompClient.send(`/app/conversation_${idAccout}/info-conversation`, {}, JSON.stringify(objSend)); // info-conversation chỉ cần accountId, conversationId
         stompClient.send(`/app/messages_${id}/get-list-message`, {}, JSON.stringify(objSend));
     }
 </script>
