@@ -26,6 +26,8 @@ public class Message {
     public static final String ACCOUNT_IS_ACTIVE = "Tài khoản này đã kích hoạt.";
     public static final String ACCOUNT_NOT_ACTIVE = "Tài khoản phải kích hoạt mới dùng được tính năng này.";
 
+    public static final String FRIENDS_ACCOUNT_NOT_IN_BLOCK_LIST = "Người này không có trong danh sách chặn của bạn.";
+
     public static final String PROFILE_NOT_EXISTS = "Profile này không tồn tại.";
 
     public static final String MAIL_SEND_OTP_SUBJECT = "[TOPFOOD] Mã OTP nóng hổi đâyyyy";

@@ -39,18 +39,21 @@ public class FriendsSeeder implements Seeder {
         friendShip.setId(3L);
         friendShip.setAccountRequest(thang);
         friendShip.setStatus(FriendShipStatus.BLOCK);
+        friendShip.setBlockBy(thien);
         friendShipRepository.save(friendShip);
 
         friendShip.setId(4L);
         friendShip.setAccountAddressee(vuong);
         friendShip.setAccountRequest(thien);
         friendShip.setStatus(FriendShipStatus.SENDING);
+        friendShip.setBlockBy(null);
         friendShipRepository.save(friendShip);
 
-        friendShip.setId(4L);
+        friendShip.setId(5L);
         friendShip.setAccountAddressee(khai);
         friendShip.setAccountRequest(thien);
         friendShip.setStatus(FriendShipStatus.BLOCK);
+        friendShip.setBlockBy(thien);
         friendShipRepository.save(friendShip);
     }
 }

@@ -1,9 +1,6 @@
 package com.datn.topfood.services.interf;
 
-import com.datn.topfood.dto.request.BlockFriendRequest;
-import com.datn.topfood.dto.request.PageRequest;
-import com.datn.topfood.dto.request.ReplyInvitationFriendRequest;
-import com.datn.topfood.dto.request.SendFriendInvitationsRequest;
+import com.datn.topfood.dto.request.*;
 import com.datn.topfood.dto.response.PageResponse;
 import com.datn.topfood.dto.response.ProfileResponse;
 
@@ -20,4 +17,8 @@ public interface FriendsService {
     PageResponse<ProfileResponse> getListFriendsRequest(PageRequest pageRequest);
     
     void removeFriend(String removeFriendRequest);
+
+    PageResponse<ProfileResponse> getListFriendBlock(PageRequest pageRequest);
+
+    void unblockFriend(UnblockFriendRequest unblockFriendRequest);
 }

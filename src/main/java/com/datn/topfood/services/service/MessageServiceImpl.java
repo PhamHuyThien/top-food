@@ -352,6 +352,56 @@ public class MessageServiceImpl extends BaseService implements MessageService {
 
     @Override
     public MessageResponse<MessageUpdateConversationResponse> updateConversation(MessageUpdateConversationRequest messageUpdateConversationRequest) {
-        return null;
+        MessageResponse<MessageUpdateConversationResponse> messageUpdateConversationResponseMessageResponse = new MessageResponse<>();
+        messageUpdateConversationResponseMessageResponse.setType(MessageType.UPDATE_CONVERSATION);
+        Account itMe = accountRepository.findById(messageUpdateConversationRequest.getAccountId()).orElse(null);
+        Conversation conversation = conversationRepsitory.findByIdAndCreateBy(messageUpdateConversationRequest.getConversationId(), itMe);
+        if (conversation == null) {
+            messageUpdateConversationResponseMessageResponse.setMessage(Message.MESSAGE_CONVERSATION_NOT_FOUND_OR_NOT_ADMIN);
+            return messageUpdateConversationResponseMessageResponse;
+        }
+        conversation.setTitle(messageUpdateConversationRequest.getTitle());
+        conversation.setImage(messageUpdateConversationRequest.getImage());
+        conversation.setUpdateAt(DateUtils.currentTimestamp());
+        conversation = conversationRepsitory.save(conversation);
+        MessageUpdateConversationResponse messageUpdateConversationResponse = new MessageUpdateConversationResponse();
+        messageUpdateConversationResponse.setAccountId(messageUpdateConversationRequest.getAccountId());
+        messageUpdateConversationResponse.setConversationId(messageUpdateConversationRequest.getConversationId());
+        messageUpdateConversationResponse.setImage(conversation.getImage());
+        messageUpdateConversationResponse.setTitle(conversation.getTitle());
+        messageUpdateConversationResponseMessageResponse.setStatus(true);
+        messageUpdateConversationResponseMessageResponse.setMessage(Message.OTHER_SUCCESS);
+        messageUpdateConversationResponseMessageResponse.setData(messageUpdateConversationResponse);
+        return messageUpdateConversationResponseMessageResponse;
+    }
+
+    @Override
+    public MessageResponse<MessageRoomTransferResponse> roomTransfer(MessageRoomTransferRequest messageRoomTransferRequest) {
+        MessageResponse<MessageRoomTransferResponse> messageRoomTransferResponseMessageResponse = new MessageResponse<>();
+        messageRoomTransferResponseMessageResponse.setType(MessageType.TRANSFER_CONVERSATION);
+        Account itMe = accountRepository.findById(messageRoomTransferRequest.getAccountId()).orElse(null);
+        Conversation conversation = conversationRepsitory.findByIdAndCreateBy(messageRoomTransferRequest.getConversationId(), itMe);
+        if (conversation == null) {
+            messageRoomTransferResponseMessageResponse.setMessage(Message.MESSAGE_CONVERSATION_NOT_FOUND_OR_NOT_ADMIN);
+            return messageRoomTransferResponseMessageResponse;
+        }
+        Account account = accountRepository.findById(messageRoomTransferRequest.getAccountIdCheckIn()).orElse(null);
+        Participants participants = participantsRepository.findByConversationAndAccount(conversation, account);
+        if (participants == null) {
+            messageRoomTransferResponseMessageResponse.setMessage(Message.MESSAGE_CONVERSATION_MEMBER_NOT_EXISTS);
+            return messageRoomTransferResponseMessageResponse;
+        }
+        conversation.setCreateBy(account);
+        conversation.setUpdateAt(DateUtils.currentTimestamp());
+        conversationRepsitory.save(conversation);
+        ProfileResponse profileResponse = profileRepository.findFiendProfileByAccountId(account.getId()).orElse(null);
+        MessageRoomTransferResponse messageRoomTransferResponse = new MessageRoomTransferResponse();
+        messageRoomTransferResponse.setAccountId(messageRoomTransferRequest.getAccountId());
+        messageRoomTransferResponse.setConversationId(messageRoomTransferRequest.getConversationId());
+        messageRoomTransferResponse.setProfileCheckIn(profileResponse);
+        messageRoomTransferResponseMessageResponse.setStatus(true);
+        messageRoomTransferResponseMessageResponse.setMessage(Message.OTHER_SUCCESS);
+        messageRoomTransferResponseMessageResponse.setData(messageRoomTransferResponse);
+        return messageRoomTransferResponseMessageResponse;
     }
 }

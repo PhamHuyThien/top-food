@@ -1,8 +1,10 @@
 package com.datn.topfood.services.service;
 
 import com.datn.topfood.data.model.Account;
+import com.datn.topfood.data.model.FriendShip;
 import com.datn.topfood.data.model.Profile;
 import com.datn.topfood.data.repository.jpa.AccountRepository;
+import com.datn.topfood.data.repository.jpa.FriendShipRepository;
 import com.datn.topfood.data.repository.jpa.ProfileRepository;
 import com.datn.topfood.dto.request.PageRequest;
 import com.datn.topfood.dto.request.ProfileRequest;
@@ -33,7 +35,8 @@ public class ProfileServiceImpl extends BaseService implements ProfileService {
     ProfileRepository profileRepository;
     @Autowired
     AccountRepository accountRepository;
-
+    @Autowired
+    FriendShipRepository friendShipRepository;
     @Override
     public ProfileResponse getFiendProfileByAccountId(Long id) {
         ProfileResponse profileResponse = profileRepository.findFiendProfileByAccountId(id).orElse(null);
