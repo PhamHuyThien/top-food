@@ -14,8 +14,8 @@ public interface AccountService {
     void checkOtp(long profileId, String otp);
     PageResponse<AccountResponse> searchByPhoneNumber(String phoneNumber,PageRequest request);
     void updateEnable(Long id);
-    void createAccount(RegisterRequest request);
-    void updateRole(Long id);
+    void createAccount(CreateUser request);
+    void updateRole(UpdateRoleRequest request,Long id );
     void updateActive(Long id);
     void deleteAccount(Long id);
     void resetPassword(Long id);

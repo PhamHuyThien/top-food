@@ -8,10 +8,7 @@ import com.datn.topfood.data.repository.jpa.AccountOtpRepository;
 import com.datn.topfood.data.repository.jpa.AccountRepository;
 import com.datn.topfood.data.repository.jpa.FriendShipRepository;
 import com.datn.topfood.data.repository.jpa.ProfileRepository;
-import com.datn.topfood.dto.request.ActiveRequest;
-import com.datn.topfood.dto.request.ChangePasswordRequest;
-import com.datn.topfood.dto.request.PageRequest;
-import com.datn.topfood.dto.request.RegisterRequest;
+import com.datn.topfood.dto.request.*;
 import com.datn.topfood.dto.response.AccountResponse;
 import com.datn.topfood.dto.response.PageResponse;
 import com.datn.topfood.dto.response.AccountPro;
@@ -100,6 +97,7 @@ public class AccountServiceImpl extends BaseService implements AccountService {
       accountResponse.setRole(x.getAccount().getRole());
       accountResponse.setPhoneNumber(x.getAccount().getPhoneNumber());
       accountResponse.setId(x.getAccount().getId());
+      accountResponse.setEmail(x.getAccount().getEmail());
       accountResponse.setStatus(x.getAccount().getStatus());
       accountResponse.setUsername(x.getAccount().getUsername());
       accountResponse.setName(x.getName());
@@ -126,15 +124,16 @@ public class AccountServiceImpl extends BaseService implements AccountService {
   }
 
   @Override
-  public void createAccount(RegisterRequest request) {
+  public void createAccount(CreateUser request) {
     Account account = new Account();
     account.setUsername(request.getUsername());
     account.setPassword(passwordEncoder.encode(request.getPassword()));
     account.setPhoneNumber(request.getPhoneNumber());
     account.setEmail(request.getEmail());
+    AccountRole accountRole=AccountRole.valueOf(request.getRole());
+    account.setRole(accountRole);
     account.setCreateAt(DateUtils.currentTimestamp());
     account.setStatus(AccountStatus.ACTIVE);
-    account.setRole(AccountRole.ROLE_USER);
     accountRepository.save(account);
     Profile profile = new Profile();
     profile.setName(request.getName());
@@ -144,10 +143,11 @@ public class AccountServiceImpl extends BaseService implements AccountService {
   }
 
   @Override
-  public void updateRole(Long id) {
+  public void updateRole(UpdateRoleRequest request,Long id) {
     Account account=accountRepository.findById(id).orElseThrow(() -> new RuntimeException("account not found"));
     account.setUpdateAt(DateUtils.currentTimestamp());
-    account.setRole(AccountRole.ROLE_ADMIN);
+    AccountRole accountRole=AccountRole.valueOf(request.getRole());
+    account.setRole(accountRole);
     accountRepository.save(account);
   }
 

@@ -50,11 +50,11 @@ public class AccountController {
         accountService.updateActive(id);
     }
     @PutMapping("/admin/update-role/{id}")
-    public void updateRole(@PathVariable("id") Long id){
-        accountService.updateRole(id);
+    public void updateRole(@PathVariable("id") Long id,@RequestBody UpdateRoleRequest request){
+        accountService.updateRole(request, id);
     }
     @PostMapping("/admin")
-    public void adminCreateAccount(@RequestBody RegisterRequest request){
+    public void adminCreateAccount(@RequestBody CreateUser request){
         accountService.createAccount(request);
     }
     @PutMapping("/admin/reset-password/{id}")
