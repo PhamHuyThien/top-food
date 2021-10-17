@@ -1,5 +1,16 @@
 package com.datn.topfood.services.service;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.server.ResponseStatusException;
+
 import com.datn.topfood.data.model.Account;
 import com.datn.topfood.data.model.FriendShip;
 import com.datn.topfood.data.model.Profile;
@@ -9,27 +20,16 @@ import com.datn.topfood.data.repository.jpa.FriendShipRepository;
 import com.datn.topfood.data.repository.jpa.ProfileRepository;
 import com.datn.topfood.dto.request.BlockFriendRequest;
 import com.datn.topfood.dto.request.PageRequest;
-import com.datn.topfood.dto.request.RemoveFriendRequest;
 import com.datn.topfood.dto.request.ReplyInvitationFriendRequest;
 import com.datn.topfood.dto.request.SendFriendInvitationsRequest;
-import com.datn.topfood.dto.response.ProfileResponse;
 import com.datn.topfood.dto.response.PageResponse;
+import com.datn.topfood.dto.response.ProfileResponse;
 import com.datn.topfood.services.BaseService;
 import com.datn.topfood.services.interf.FriendsService;
 import com.datn.topfood.util.DateUtils;
 import com.datn.topfood.util.PageUtils;
 import com.datn.topfood.util.constant.Message;
 import com.datn.topfood.util.enums.FriendShipStatus;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.http.HttpStatus;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.server.ResponseStatusException;
-
-import java.util.ArrayList;
-import java.util.List;
 
 @Service
 public class FriendsServiceImpl extends BaseService implements FriendsService {
@@ -166,16 +166,16 @@ public class FriendsServiceImpl extends BaseService implements FriendsService {
 
     @Override
     @Transactional
-    public void removeFriend(RemoveFriendRequest removeFriendRequest) {
+    public void removeFriend(String removeFriendRequest) {
         Account itMe = itMe();
-        Account fiendRemove = accountRepository.findByPhoneNumber(removeFriendRequest.getFriendPhoneNumber());
+        Account fiendRemove = accountRepository.findByPhoneNumber(removeFriendRequest);
         // số điện thoại không tồn tại
         if (fiendRemove == null) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, Message.ACCOUNT_FRIEND_BY_PHONE_NOT_FOUND);
         }
 
         // không thể tự hủy kết bạn với chính mình chính mình
-        if (removeFriendRequest.getFriendPhoneNumber().equals(itMe.getPhoneNumber())) {
+        if (removeFriendRequest.equals(itMe.getPhoneNumber())) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, Message.OTHER_ACTION_IS_DENIED);
         }
         FriendShip friendShip = friendShipRepository.findFriendShipRelation(itMe.getUsername(),

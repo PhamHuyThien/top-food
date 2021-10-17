@@ -27,4 +27,6 @@ public interface MessageService {
     MessageResponse<MessageInfoResponse> infoConversation(MessageInfoRequest messageInfoRequest);
 
     MessageResponse<MessageUpdateConversationResponse> updateConversation(MessageUpdateConversationRequest messageUpdateConversationRequest);
+
+    MessageResponse<MessageRoomTransferResponse> roomTransfer(MessageRoomTransferRequest messageRoomTransferRequest);
 }

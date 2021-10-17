@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html lang="vi">
 
 <head>
     <meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
@@ -27,7 +27,15 @@
         </div>
     </div>
     <div id="message" style="display: none">
-        <h3 style="color:blue" id="conversation-name"></h3>
+        <h3 style="color:blue; padding: 0; margin: 0; margin-top: 20px; " id="conversation-name"></h3>
+        <div style="margin-bottom: 20px; display: none;" id="div-change-name">
+            Đổi tên nhóm: <input type="text" name="" id="conversation-name-change">
+            <button id="change-name">Đổi tên</button>
+        </div>
+        <div style="margin-bottom: 20px; display: none;" id="div-change-admin">
+            Id người nhậm phòng: <input type="text" name="" id="conversation-admin-change">
+            <button id="change-admin">Chuyển phòng</button>
+        </div>
         <div style="margin-bottom: 40px">
             <div id="div-add-member" style="display: none;">
                 Id thành viên: <input type="text" id="conversation-add-member"> <button id="add-member">Thêm thành
@@ -129,29 +137,55 @@
         stompClient.send(`/app/messages_${idConversation}/add-member`, {}, JSON.stringify(objSend));
     });
 
+    $("#change-name").click(function () {
+        let name = $("#conversation-name-change").val();
+        let idConversation = $("#id-conversation").val();
+        let objSend = {
+            "accountId": idAccout,
+            "conversationId": idConversation,
+            "title": name,
+            "image": "" // mình k làm chỗ nhập URL, có url ảnh thì đặt vào đây
+        };
+        stompClient.send(`/app/messages_${idConversation}/update-conversation`, {}, JSON.stringify(objSend));
+    });
+
+    $("#change-admin").click(function () {
+        let idAdminNew = $("#conversation-admin-change").val();
+        let idConversation = $("#id-conversation").val();
+        let objSend = {
+            "accountId": idAccout,
+            "conversationId": idConversation,
+            "accountIdCheckIn": idAdminNew,
+        };
+        stompClient.send(`/app/messages_${idConversation}/room-transfer`, {}, JSON.stringify(objSend));
+    });
+
     function log(payload) {
         let body = JSON.parse(payload.body);
-        if (body.type == "CREATE_CONVERSATION") {
-            if (body.status == true) {
+        switch (body.type) {
+            case "CREATE_CONVERSATION":
+                if (!checkResult(body)) {
+                    break;
+                }
                 let conversation = body.data;
                 let view = `<span style='color: blue' onclick="openMessage(${conversation.id}, '${conversation.title}')" >[Đọc]</span>`;
-                let del = `<span style='color: red' onclick="deleteConversation(${conversation.id})" >[Xóa cuộc trò chuyện]</span>`;
+                let del = `<span style='color: red' onclick="deleteConversation(${conversation.id})" >[Rời cuộc trò chuyện]</span>`;
                 $("#all-conversation").prepend(`<div id="conversation-${conversation.id}"><img src="${conversation.createBy.avatar}" style="width: 50px"></img><span style='color:blue'>${conversation.title}</span> (${conversation.createAt}) ${view} ${del}</div>`);
-            } else {
-                alert(body.message);
-            }
-        } else if (body.type == "LIST_CONVERSATION") {
-            if (body.status == true) {
+                break;
+            case "LIST_CONVERSATION":
+                if (!checkResult(body)) {
+                    break;
+                }
                 body.data.forEach((conversation) => {
                     let view = `<span style='color: blue' onclick="openMessage(${conversation.id}, '${conversation.title}')" >[Đọc]</span>`;
-                    let del = `<span style='color: red' onclick="deleteConversation(${conversation.id})" >[Xóa cuộc trò chuyện]</span>`;
+                    let del = `<span style='color: red' onclick="deleteConversation(${conversation.id})" >[Rời cuộc trò chuyện]</span>`;
                     $("#all-conversation").append(`<div id="conversation-${conversation.id}"><img src="${conversation.createBy.avatar}" style="width: 50px"></img><span style='color:blue'>${conversation.title}</span> (${conversation.createAt}) ${view} ${del}</div>`);
                 });
-            } else {
-                alert(body.message);
-            }
-        } else if (body.type == "LIST_MESSAGE") {
-            if (body.status == true) {
+                break;
+            case "LIST_MESSAGE":
+                if (!checkResult(body)) {
+                    break;
+                }
                 body.data.forEach(element => {
                     let id = element.id;
                     let name = element.createBy.name;
@@ -168,11 +202,11 @@
                     let replyMessage = `<span style='color: green' onclick='quote(${id})'>[Trả lời]</span>`;
                     $("#all-message").append(`<div id="chat-${id}">[<font color='red'>♥️</font><span id='heart-${id}'>${element.heart}</span>] <img src='${element.createBy.avatar}' style='width: 50px' /> ${name}: ${quote} ${content} ${react} ${removeMessage} ${replyMessage}</div>`);
                 });
-            } else {
-                alert(body.message);
-            }
-        } else if (body.type == 'SEND') {
-            if (body.status == 1) {
+                break;
+            case "SEND":
+                if (!checkResult(body)) {
+                    break;
+                }
                 let element = body.data;
                 let id = element.id;
                 let name = element.createBy.name;
@@ -188,32 +222,32 @@
                 }
                 let replyMessage = `<span style='color: green' onclick='quote(${id})'>[Trả lời]</span>`;
                 $("#all-message").prepend(`<div id="chat-${id}">[<font color='red'>♥️</font><span id='heart-${id}'>${element.heart}</span>] <img src='${element.createBy.avatar}' style='width: 50px' /> ${name}: ${quote} ${content} ${react} ${removeMessage} ${replyMessage}</div>`);
-            } else {
-                alert(body.message);
-            }
-        } else if (body.type == "REMOVE_MESSAGE") {
-            if (body.status == true) {
+                break;
+            case "REMOVE_MESSAGE":
+                if (!checkResult(body)) {
+                    break;
+                }
                 $(`#chat-${body.data.idMessage}`).hide();
-            } else {
-                alert(body.message);
-            }
-        } else if (body.type == "REACT_MESSAGE") {
-            if (body.status == true) {
+                break;
+            case "REACT_MESSAGE":
+                if (!checkResult(body)) {
+                    break;
+                }
                 $(`#heart-${body.data.idMessage}`).text(body.data.totalHeart);
-            } else {
-                alert(body.message);
-            }
-        } else if (body.type == "DELETE_CONVERSATION") {
-            if (body.status == true) {
+                break;
+            case "DELETE_CONVERSATION":
+                if (!checkResult(body)) {
+                    break;
+                }
                 $(`#conversation-${body.data.conversationId}`).hide();
                 if ($("#id-conversation").val() == body.data.conversationId) {
                     $("#message").hide();
                 }
-            } else {
-                alert(body.message);
-            }
-        } else if (body.type == "INFO_CONVERSATION") {
-            if (body.status == true) {
+                break;
+            case "INFO_CONVERSATION":
+                if (!checkResult(body)) {
+                    break;
+                }
                 let count = body.data.members.length;
                 let isAdmin = body.data.conversation.createBy.id == idAccout;
                 let htmlMember = body.data.members.map(member => {
@@ -227,34 +261,52 @@
                 });
                 $("#conversation-member-length").text(`Nhóm ${count} thành viên.`)
                 $("#conversation-members").html(htmlMember);
-                if(isAdmin){
+                if (isAdmin) {
                     $("#div-add-member").show();
+                    $("#div-change-name").show();
+                    $("#div-change-admin").show();
                 }
-            } else {
-                alert(body.message);
-            }
-        } else if (body.type == "KICK_MEMBER") {
-            if (body.status == true) {
+                break;
+            case "KICK_MEMBER":
+                if (!checkResult(body)) {
+                    break;
+                }
                 $(`#conversation-member-${body.data.accountIdKick}`).hide();
-            } else {
-                alert(body.message);
-            }
-        } else if (body.type == "ADD_MEMBER") {
-            console.log(body);
-            if (body.status == true) {
+                break;
+            case "ADD_MEMBER":
+                if (!checkResult(body)) {
+                    break;
+                }
                 let member = body.data.profile;
                 let admin = `<span onclick="kick(${member.profile.id})" style="color: red">[Kích]</span>`;
-                let htmlMember = `
+                htmlMember = `
                     <div id="conversation-member-${member.profile.id}">
                         <span>${member.profile.name} - ${member.phoneNumber} </span>
                         ${admin}
                     </div>
                     `;
                 $("#conversation-members").prepend(htmlMember);
-            } else {
-                alert(body.message);
-            }
+                break;
+            case "UPDATE_CONVERSATION":
+                if (!checkResult(body)) {
+                    break;
+                }
+                $("#conversation-name").text(body.data.title);
+                break;
+            case "TRANSFER_CONVERSATION":
+                if (!checkResult(body)) {
+                    break;
+                }
+                openMessage(body.data.conversationId, $("#conversation-name").val());
+                break;
 
+        }
+        function checkResult(body) {
+            if (body.status == false) {
+                alert(body.message);
+                return false;
+            }
+            return true;
         }
     }
 
