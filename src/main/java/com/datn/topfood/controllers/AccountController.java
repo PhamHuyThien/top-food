@@ -1,6 +1,7 @@
 package com.datn.topfood.controllers;
 
 import com.datn.topfood.dto.request.*;
+import com.datn.topfood.dto.response.AccountDetailResponse;
 import com.datn.topfood.dto.response.AccountResponse;
 import com.datn.topfood.dto.response.PageResponse;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -50,15 +51,19 @@ public class AccountController {
         accountService.updateActive(id);
     }
     @PutMapping("/admin/update-role/{id}")
-    public void updateRole(@PathVariable("id") Long id){
-        accountService.updateRole(id);
+    public void updateRole(@PathVariable("id") Long id,@RequestBody UpdateRoleRequest request){
+        accountService.updateRole(request, id);
     }
     @PostMapping("/admin")
-    public void adminCreateAccount(@RequestBody RegisterRequest request){
+    public void adminCreateAccount(@RequestBody CreateUser request){
         accountService.createAccount(request);
     }
     @PutMapping("/admin/reset-password/{id}")
     public void adminResetPassword(@PathVariable("id") Long id){
         accountService.resetPassword(id);
+    }
+    @GetMapping("/admin/{id}")
+    public AccountDetailResponse getAccountById(@PathVariable("id") Long id){
+        return accountService.getAccountById(id);
     }
 }
