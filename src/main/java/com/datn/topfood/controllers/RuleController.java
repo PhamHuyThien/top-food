@@ -13,22 +13,26 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/rule")
 public class RuleController {
-  @Autowired
-  RuleService ruleService;
-  @GetMapping(path = "")
-  public PageResponse<RuleResponse> searchByTitleRule(String title, PageRequest request){
-    return ruleService.searchByRuleTitle(title,request);
-  }
-  @GetMapping("/{id}")
-  public RuleResponse findById(@PathVariable Long id){
-    return ruleService.findById(id);
-  }
-  @PostMapping(path = "")
-  public RuleResponse createRule(@RequestBody RuleRequest request){
-    return ruleService.createRule(request);
-  }
-  @PutMapping("/{id}")
-  public RuleResponse updateRule(@RequestBody RuleRequest request, @PathVariable Long id){
-    return ruleService.updateRule(request, id);
-  }
+    @Autowired
+    RuleService ruleService;
+
+    @GetMapping(path = "")
+    public PageResponse<RuleResponse> searchByTitleRule(String title, PageRequest request) {
+        return ruleService.searchByRuleTitle(title, request);
+    }
+
+    @GetMapping("/{id}")
+    public RuleResponse findById(@PathVariable Long id) {
+        return ruleService.findById(id);
+    }
+
+    @PostMapping(path = "")
+    public RuleResponse createRule(@RequestBody RuleRequest request) {
+        return ruleService.createRule(request);
+    }
+
+    @PutMapping("/{id}")
+    public RuleResponse updateRule(@RequestBody RuleRequest request, @PathVariable Long id) {
+        return ruleService.updateRule(request, id);
+    }
 }

@@ -13,23 +13,27 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/api/tag")
 public class TagController {
-  @Autowired
-  TagService tagService;
-  @PostMapping(path = "")
-  public TagResponse createTag(@RequestBody TagRequest create){
-    return tagService.createTag(create);
-  }
-  @GetMapping("/{id}")
-  public TagResponse getTagById(@PathVariable Long id){
-    return tagService.findById(id);
-  }
-  @PutMapping("/{id}")
-  public TagResponse updateTag(@RequestBody TagRequest request ,@PathVariable Long id){
-    return tagService.updateTag(request,id);
-  }
-  @GetMapping("")
-  public PageResponse<TitleTagResponse> searchByTagName(@RequestParam String tagName, PageRequest pageRequest){
-    return tagService.searchByTagName(tagName,pageRequest);
-  }
+    @Autowired
+    TagService tagService;
+
+    @PostMapping(path = "")
+    public TagResponse createTag(@RequestBody TagRequest create) {
+        return tagService.createTag(create);
+    }
+
+    @GetMapping("/{id}")
+    public TagResponse getTagById(@PathVariable Long id) {
+        return tagService.findById(id);
+    }
+
+    @PutMapping("/{id}")
+    public TagResponse updateTag(@RequestBody TagRequest request, @PathVariable Long id) {
+        return tagService.updateTag(request, id);
+    }
+
+    @GetMapping("")
+    public PageResponse<TitleTagResponse> searchByTagName(@RequestParam String tagName, PageRequest pageRequest) {
+        return tagService.searchByTagName(tagName, pageRequest);
+    }
 
 }

@@ -1,5 +1,6 @@
 package com.datn.topfood.controllers;
 
+import com.datn.topfood.dto.request.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -11,10 +12,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-import com.datn.topfood.dto.request.BlockFriendRequest;
-import com.datn.topfood.dto.request.PageRequest;
-import com.datn.topfood.dto.request.ReplyInvitationFriendRequest;
-import com.datn.topfood.dto.request.SendFriendInvitationsRequest;
 import com.datn.topfood.dto.response.PageResponse;
 import com.datn.topfood.dto.response.ProfileResponse;
 import com.datn.topfood.dto.response.Response;
@@ -32,7 +29,7 @@ public class FriendController {
 
     @Operation(description = "API gửi lời mời kết bạn")
     @PostMapping("/send-friend-invitations")
-    public ResponseEntity<Response<?>> sendFriendInvitations(
+    public ResponseEntity<Response<Void>> sendFriendInvitations(
             @RequestBody SendFriendInvitationsRequest friendInvitationsRequest) {
         friendsService.sendFriendInvitations(friendInvitationsRequest);
         return ResponseEntity.ok(new Response<>(true, Message.OTHER_SUCCESS));
@@ -40,14 +37,14 @@ public class FriendController {
 
     @Operation(description = "API chặn bạn bè")
     @PostMapping("/block-friend")
-    public ResponseEntity<Response<?>> blockFriend(@RequestBody BlockFriendRequest blockFriendRequest) {
+    public ResponseEntity<Response<Void>> blockFriend(@RequestBody BlockFriendRequest blockFriendRequest) {
         friendsService.blockFriend(blockFriendRequest);
         return ResponseEntity.ok(new Response<>(true, Message.OTHER_SUCCESS));
     }
 
     @Operation(description = "API phản hồi lời mời kết bạn")
     @PostMapping("/reply-friend")
-    public ResponseEntity<Response<?>> replyFriend(
+    public ResponseEntity<Response<Void>> replyFriend(
             @RequestBody ReplyInvitationFriendRequest replyInvitationFriendRequest) {
         friendsService.replyFriend(replyInvitationFriendRequest);
         return ResponseEntity.ok(new Response<>(true, Message.OTHER_SUCCESS));
@@ -67,8 +64,21 @@ public class FriendController {
     
     @Operation(description = "API hủy kết bạn")
     @DeleteMapping("/remove-friend/{friendPhoneNumber}")
-    public ResponseEntity<Response<?>> removeFriend(@PathVariable("friendPhoneNumber") String friendPhoneNumber) {
+    public ResponseEntity<Response<Void>> removeFriend(@PathVariable("friendPhoneNumber") String friendPhoneNumber) {
         friendsService.removeFriend(friendPhoneNumber);
+        return ResponseEntity.ok(new Response<>(true, Message.OTHER_SUCCESS));
+    }
+
+    @Operation(description = "API danh sách bạn bè bị chặn")
+    @GetMapping("/list-friend-block")
+    public ResponseEntity<PageResponse<ProfileResponse>> listFriendBlock(PageRequest pageRequest){
+        return ResponseEntity.ok(friendsService.getListFriendBlock(pageRequest));
+    }
+
+    @Operation(description = "API bỏ chặn, chỉ có ng chặn mới đc quyền bỏ chặn")
+    @PostMapping("/unblock-friend")
+    public ResponseEntity<Response<Void>> unblockFriend(@RequestBody UnblockFriendRequest unblockFriendRequest){
+        friendsService.unblockFriend(unblockFriendRequest);
         return ResponseEntity.ok(new Response<>(true, Message.OTHER_SUCCESS));
     }
 }

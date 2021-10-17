@@ -11,7 +11,9 @@ import java.util.List;
 
 @Repository
 public interface ProfileService {
-  ProfileResponse getFiendProfileByAccountId(Long id);
-  void updateProfile(ProfileRequest profileRequest);
-  PageResponse<ProfileResponse> search(String search, PageRequest pageRequest);
+    ProfileResponse getFiendProfileByAccountId(Long id);
+
+    void updateProfile(ProfileRequest profileRequest);
+
+    PageResponse<ProfileResponse> search(String search, PageRequest pageRequest);
 }

@@ -3,6 +3,7 @@ package com.datn.topfood.services.service;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.datn.topfood.dto.request.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -18,10 +19,6 @@ import com.datn.topfood.data.repository.custom.impl.FriendshipCustomRepository;
 import com.datn.topfood.data.repository.jpa.AccountRepository;
 import com.datn.topfood.data.repository.jpa.FriendShipRepository;
 import com.datn.topfood.data.repository.jpa.ProfileRepository;
-import com.datn.topfood.dto.request.BlockFriendRequest;
-import com.datn.topfood.dto.request.PageRequest;
-import com.datn.topfood.dto.request.ReplyInvitationFriendRequest;
-import com.datn.topfood.dto.request.SendFriendInvitationsRequest;
 import com.datn.topfood.dto.response.PageResponse;
 import com.datn.topfood.dto.response.ProfileResponse;
 import com.datn.topfood.services.BaseService;
@@ -96,8 +93,9 @@ public class FriendsServiceImpl extends BaseService implements FriendsService {
                 throw new ResponseStatusException(HttpStatus.BAD_REQUEST, Message.OTHER_ACTION_IS_DENIED);
             }
         }
-
+        friendShip.setBlockBy(itMe);
         friendShip.setStatus(FriendShipStatus.BLOCK);
+        friendShip.setUpdateAt(DateUtils.currentTimestamp());
         friendShipRepository.save(friendShip);
     }
 
@@ -193,6 +191,44 @@ public class FriendsServiceImpl extends BaseService implements FriendsService {
             friendShipRepository.delete(friendShip);
         }
 
+    }
+
+    @Override
+    public PageResponse<ProfileResponse> getListFriendBlock(PageRequest pageRequest) {
+        Account itMe = itMe();
+        Pageable pageable = PageUtils.toPageable(pageRequest);
+        Page<FriendShip> friendShipPage = friendShipRepository.getAllByAccountAddOrAccountReqAndBlockAt(itMe.getId(), itMe.getId(), itMe.getId(), pageable);
+        List<ProfileResponse> profileResponseList = new ArrayList<>();
+        friendShipPage.toList().forEach(friendShip -> {
+            ProfileResponse profileResponse = profileRepository.findFiendProfileByAccountId(friendShip.getId()).orElse(null);
+            profileResponseList.add(profileResponse);
+        });
+        PageResponse<ProfileResponse> profileResponsePageResponse = new PageResponse<>(
+                profileResponseList,
+                friendShipPage.getTotalElements(),
+                pageable.getPageSize()
+        );
+        profileResponsePageResponse.setStatus(true);
+        profileResponsePageResponse.setMessage(Message.OTHER_SUCCESS);
+        return profileResponsePageResponse;
+    }
+
+    @Override
+    public void unblockFriend(UnblockFriendRequest unblockFriendRequest) {
+        Account itMe = itMe();
+        PageRequest pageRequest = new PageRequest();
+        Pageable pageable = PageUtils.toPageable(pageRequest);
+        Page<FriendShip> friendShipPage = friendShipRepository.getAllByAccountAddOrAccountReqAndBlockAt(
+                unblockFriendRequest.getAccountIdUnblock(),
+                unblockFriendRequest.getAccountIdUnblock(),
+                itMe.getId(),
+                pageable
+        );
+        if(friendShipPage.getTotalElements() < 1){
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, Message.FRIENDS_ACCOUNT_NOT_IN_BLOCK_LIST);
+        }
+        FriendShip friendShip = friendShipPage.toList().get(0);
+        friendShipRepository.delete(friendShip);
     }
 
 }

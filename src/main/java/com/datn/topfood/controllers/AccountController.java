@@ -33,32 +33,39 @@ public class AccountController {
         accountService.active(activeRequest);
         return ResponseEntity.ok(new Response<>(true, Message.OTHER_SUCCESS));
     }
+
     @GetMapping("")
-    public PageResponse<AccountResponse> searchByPhoneNumber(@RequestParam String phoneNumber,PageRequest pageRequest){
-        return accountService.searchByPhoneNumber(phoneNumber,pageRequest);
+    public PageResponse<AccountResponse> searchByPhoneNumber(@RequestParam String phoneNumber, PageRequest pageRequest) {
+        return accountService.searchByPhoneNumber(phoneNumber, pageRequest);
     }
+
     @PutMapping("/enable/{id}")
-    public void updateEnable(@PathVariable("id") Long id){
+    public void updateEnable(@PathVariable("id") Long id) {
         accountService.updateEnable(id);
     }
+
     @DeleteMapping("/admin/{id}")
-    public void deleteAccount(@PathVariable("id") Long id){
+    public void deleteAccount(@PathVariable("id") Long id) {
         accountService.deleteAccount(id);
     }
+
     @PutMapping("/admin/active/{id}")
-    public void adminActiveAccount(@PathVariable("id") Long id){
+    public void adminActiveAccount(@PathVariable("id") Long id) {
         accountService.updateActive(id);
     }
+
     @PutMapping("/admin/update-role/{id}")
-    public void updateRole(@PathVariable("id") Long id){
+    public void updateRole(@PathVariable("id") Long id) {
         accountService.updateRole(id);
     }
+
     @PostMapping("/admin")
-    public void adminCreateAccount(@RequestBody RegisterRequest request){
+    public void adminCreateAccount(@RequestBody RegisterRequest request) {
         accountService.createAccount(request);
     }
+
     @PutMapping("/admin/reset-password/{id}")
-    public void adminResetPassword(@PathVariable("id") Long id){
+    public void adminResetPassword(@PathVariable("id") Long id) {
         accountService.resetPassword(id);
     }
 }

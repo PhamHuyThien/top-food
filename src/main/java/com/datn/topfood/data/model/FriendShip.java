@@ -22,7 +22,11 @@ public class FriendShip extends Base{
 
 	@Enumerated(EnumType.STRING)
 	private FriendShipStatus status;
-	
+
+	@ManyToOne
+	@JoinColumn(name = "block_by")
+	private Account blockBy;
+
 	@ManyToOne
 	@JoinColumn(name = "accountrequest_id")
 	private Account accountRequest;
