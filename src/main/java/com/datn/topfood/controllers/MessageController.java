@@ -93,4 +93,11 @@ public class MessageController {
     public  MessageResponse<MessageUpdateConversationResponse> updateConversation(@Payload MessageUpdateConversationRequest messageUpdateConversationRequest){
         return messageService.updateConversation(messageUpdateConversationRequest);
     }
+
+    @MessageMapping("/{token}/room-transfer")
+    @SendTo("/messages/inbox/{token}")
+    public  MessageResponse<MessageRoomTransferResponse> roomTransfer(@Payload MessageRoomTransferRequest messageRoomTransferRequest){
+        return messageService.roomTransfer(messageRoomTransferRequest);
+    }
+
 }
