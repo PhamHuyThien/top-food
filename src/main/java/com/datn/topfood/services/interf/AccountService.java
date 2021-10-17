@@ -1,6 +1,7 @@
 package com.datn.topfood.services.interf;
 
 import com.datn.topfood.dto.request.*;
+import com.datn.topfood.dto.response.AccountDetailResponse;
 import com.datn.topfood.dto.response.AccountResponse;
 import com.datn.topfood.dto.response.PageResponse;
 import com.datn.topfood.dto.response.ProfileResponse;
@@ -19,4 +20,5 @@ public interface AccountService {
     void updateActive(Long id);
     void deleteAccount(Long id);
     void resetPassword(Long id);
+    AccountDetailResponse getAccountById(Long id);
 }

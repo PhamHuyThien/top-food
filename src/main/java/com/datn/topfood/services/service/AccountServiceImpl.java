@@ -9,6 +9,7 @@ import com.datn.topfood.data.repository.jpa.AccountRepository;
 import com.datn.topfood.data.repository.jpa.FriendShipRepository;
 import com.datn.topfood.data.repository.jpa.ProfileRepository;
 import com.datn.topfood.dto.request.*;
+import com.datn.topfood.dto.response.AccountDetailResponse;
 import com.datn.topfood.dto.response.AccountResponse;
 import com.datn.topfood.dto.response.PageResponse;
 import com.datn.topfood.dto.response.AccountPro;
@@ -172,5 +173,23 @@ public class AccountServiceImpl extends BaseService implements AccountService {
     String password=passwordEncoder.encode("123");
     account.setPassword(password);
     accountRepository.save(account);
+  }
+
+  @Override
+  public AccountDetailResponse getAccountById(Long id) {
+    Profile profile=profileRepository.findById(id).orElseThrow(() -> new RuntimeException("account not found"));
+    AccountDetailResponse accountDetailResponse = new AccountDetailResponse();
+    accountDetailResponse.setDisableAt(profile.getAccount().getDisableAt());
+    accountDetailResponse.setCreateAt(profile.getAccount().getCreateAt());
+    accountDetailResponse.setRole(profile.getAccount().getRole());
+    accountDetailResponse.setPhoneNumber(profile.getAccount().getPhoneNumber());
+    accountDetailResponse.setId( profile.getAccount().getId());
+    accountDetailResponse.setEmail(profile.getAccount().getEmail());
+    accountDetailResponse.setStatus(profile.getAccount().getStatus());
+    accountDetailResponse.setUsername(profile.getAccount().getUsername());
+    accountDetailResponse.setName(profile.getName());
+    accountDetailResponse.setAddress(profile.getAddress());
+    accountDetailResponse.setImg(profile.getAvatar());
+    return accountDetailResponse;
   }
 }
