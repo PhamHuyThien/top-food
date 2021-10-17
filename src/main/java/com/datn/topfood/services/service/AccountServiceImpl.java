@@ -2,6 +2,7 @@ package com.datn.topfood.services.service;
 
 import com.datn.topfood.data.model.Account;
 import com.datn.topfood.data.model.AccountOtp;
+import com.datn.topfood.data.model.Profile;
 import com.datn.topfood.data.repository.custom.impl.FriendshipCustomRepository;
 import com.datn.topfood.data.repository.jpa.AccountOtpRepository;
 import com.datn.topfood.data.repository.jpa.AccountRepository;
@@ -10,6 +11,7 @@ import com.datn.topfood.data.repository.jpa.ProfileRepository;
 import com.datn.topfood.dto.request.ActiveRequest;
 import com.datn.topfood.dto.request.ChangePasswordRequest;
 import com.datn.topfood.dto.request.PageRequest;
+import com.datn.topfood.dto.request.RegisterRequest;
 import com.datn.topfood.dto.response.AccountResponse;
 import com.datn.topfood.dto.response.PageResponse;
 import com.datn.topfood.dto.response.AccountPro;
@@ -18,6 +20,7 @@ import com.datn.topfood.services.interf.AccountService;
 import com.datn.topfood.util.DateUtils;
 import com.datn.topfood.util.PageUtils;
 import com.datn.topfood.util.constant.Message;
+import com.datn.topfood.util.enums.AccountRole;
 import com.datn.topfood.util.enums.AccountStatus;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -119,6 +122,55 @@ public class AccountServiceImpl extends BaseService implements AccountService {
     Account account=accountOptional.get();
     account.setStatus(AccountStatus.DISABLE);
     account.setDisableAt(DateUtils.currentTimestamp());
+    accountRepository.save(account);
+  }
+
+  @Override
+  public void createAccount(RegisterRequest request) {
+    Account account = new Account();
+    account.setUsername(request.getUsername());
+    account.setPassword(passwordEncoder.encode(request.getPassword()));
+    account.setPhoneNumber(request.getPhoneNumber());
+    account.setEmail(request.getEmail());
+    account.setCreateAt(DateUtils.currentTimestamp());
+    account.setStatus(AccountStatus.ACTIVE);
+    account.setRole(AccountRole.ROLE_USER);
+    accountRepository.save(account);
+    Profile profile = new Profile();
+    profile.setName(request.getName());
+    profile.setBirthday(request.getBirthday());
+    profile.setAccount(account);
+    profileRepository.save(profile);
+  }
+
+  @Override
+  public void updateRole(Long id) {
+    Account account=accountRepository.findById(id).orElseThrow(() -> new RuntimeException("account not found"));
+    account.setUpdateAt(DateUtils.currentTimestamp());
+    account.setRole(AccountRole.ROLE_ADMIN);
+    accountRepository.save(account);
+  }
+
+  @Override
+  public void updateActive(Long id) {
+    Account account=accountRepository.findById(id).orElseThrow(() -> new RuntimeException("account not found"));
+    account.setUpdateAt(DateUtils.currentTimestamp());
+    account.setStatus(AccountStatus.ACTIVE);
+    accountRepository.save(account);
+  }
+
+  @Override
+  public void deleteAccount(Long id) {
+    Account account=accountRepository.findById(id).orElseThrow(() -> new RuntimeException("account not found"));
+    profileRepository.deleteById(account.getId());
+    accountRepository.deleteById(account.getId());
+  }
+
+  @Override
+  public void resetPassword(Long id) {
+    Account account=accountRepository.findById(id).orElseThrow(() -> new RuntimeException("account not found"));
+    String password=passwordEncoder.encode("123");
+    account.setPassword(password);
     accountRepository.save(account);
   }
 }
