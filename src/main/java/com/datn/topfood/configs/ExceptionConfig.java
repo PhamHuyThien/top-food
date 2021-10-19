@@ -15,23 +15,23 @@ import java.util.Objects;
 public class ExceptionConfig extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler({Exception.class})
-    public ResponseEntity<Response<?>> handleAll(final Exception ex) {
+    public ResponseEntity<Response<Void>> handleAll(final Exception ex) {
         String message = ex.getMessage();
         if (StringUtils.isAllEmpty(message)) {
             message = ExceptionUtils.getStackTrace(ex);
         }
-        Response<?> apiError = new Response<>(message);
+        Response<Void> apiError = new Response<>(message);
         return new ResponseEntity<>(apiError, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
     @ExceptionHandler({ResponseStatusException.class})
-    public ResponseEntity<Response<?>> handleResponseStatusException(final ResponseStatusException ex) {
+    public ResponseEntity<Response<Void>> handleResponseStatusException(final ResponseStatusException ex) {
         String message = ex.getMessage();
         String[] messages = Objects.requireNonNull(message).split("\"");
         if (messages.length > 1 && StringUtils.isNotEmpty(messages[1])) {
             message = messages[1];
         }
-        Response<?> apiError = new Response<>(message);
+        Response<Void> apiError = new Response<>(message);
         return new ResponseEntity<>(apiError, ex.getStatus());
     }
 }

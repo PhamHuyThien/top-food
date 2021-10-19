@@ -2,6 +2,7 @@ package com.datn.topfood.services;
 
 import com.datn.topfood.data.model.Account;
 import com.datn.topfood.util.constant.Message;
+import com.datn.topfood.util.enums.AccountRole;
 import com.datn.topfood.util.enums.AccountStatus;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -20,6 +21,14 @@ public class BaseService {
         Account account = itMe();
         if (account.getStatus() != AccountStatus.ACTIVE) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, Message.ACCOUNT_NOT_ACTIVE);
+        }
+    }
+
+    public void checkStore() {
+        Account account = itMe();
+        checkMe();
+        if (account.getRole() != AccountRole.ROLE_STORE) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, Message.OTHER_ACTION_IS_DENIED);
         }
     }
 }

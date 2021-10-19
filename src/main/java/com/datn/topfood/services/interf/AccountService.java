@@ -13,12 +13,20 @@ public interface AccountService {
     void active(ActiveRequest activeRequest);
 
     void checkOtp(long profileId, String otp);
-    PageResponse<AccountResponse> searchByPhoneNumber(String phoneNumber,PageRequest request);
+
+    PageResponse<AccountResponse> searchByPhoneNumber(String phoneNumber, PageRequest request);
+
     void updateEnable(Long id);
+
     void createAccount(CreateUser request);
-    void updateRole(UpdateRoleRequest request,Long id );
+
+    void updateRole(UpdateRoleRequest request, Long id);
+
     void updateActive(Long id);
+
     void deleteAccount(Long id);
+
     void resetPassword(Long id);
+
     AccountDetailResponse getAccountById(Long id);
 }

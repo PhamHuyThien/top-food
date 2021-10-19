@@ -1,0 +1,33 @@
+version: "3"
+
+services:
+  db:
+    image: mysql:latest
+    restart: unless-stopped
+    environment:
+      - MYSQL_ROOT_PASSWORD=123456
+      - MYSQL_DATABASE=topfood
+    ports:
+      - 3306:3306
+    volumes:
+      - db:/var/lib/mysql
+  sv:
+    depends_on:
+      - db
+    build: ./
+    restart: on-failure
+    ports:
+      - 8080:8080
+    environment:
+        - spring.datasource.url=jdbc:mysql://db:3306/topfood
+        - spring.datasource.username=root
+        - spring.datasource.password=123456
+        - spring.jpa.hibernate.ddl-auto=update
+        - topfood.file.upload-dir=/root/.m2
+    volumes:
+      - .m2:/root/.m2
+    stdin_open: true
+    tty: true
+volumes:
+  db:
+  .m2:

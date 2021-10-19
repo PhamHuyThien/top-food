@@ -36,6 +36,8 @@ public class MessageServiceImpl extends BaseService implements MessageService {
     ParticipantsRepository participantsRepository;
     @Autowired
     MessagesRepository messagesRepository;
+    @Autowired
+    AttachmentRepository attachmentRepository;
 
     @Override
     @Transactional
@@ -92,7 +94,7 @@ public class MessageServiceImpl extends BaseService implements MessageService {
     @Override
     @Transactional
     public MessageResponse<MessagesResponse> sendMessage(SendMessageRequest sendMessageRequest) {
-        MessageResponse<MessagesResponse> messagesResponseMessagesResponse = new MessageResponse();
+        MessageResponse<MessagesResponse> messagesResponseMessagesResponse = new MessageResponse<>();
         messagesResponseMessagesResponse.setType(MessageType.SEND);
         Account itMe = accountRepository.findById(sendMessageRequest.getAccountId()).orElse(null);
         Timestamp presentTimestamp = DateUtils.currentTimestamp();
@@ -111,6 +113,14 @@ public class MessageServiceImpl extends BaseService implements MessageService {
         messages.setCreateAt(presentTimestamp);
         messages.setMessages(quoteMessage);
         messages = messagesRepository.save(messages);
+        Messages finalMessages = messages;
+        sendMessageRequest.getAttachments().forEach(attachment -> {
+            Attachments attachments = new Attachments();
+            attachments.setMessages(finalMessages);
+            attachments.setCreateAt(presentTimestamp);
+            attachments.setFileUrl(attachment);
+            attachmentRepository.save(attachments);
+        });
         conversation.setUpdateAt(presentTimestamp);
         conversationRepsitory.save(conversation);
 
@@ -168,6 +178,7 @@ public class MessageServiceImpl extends BaseService implements MessageService {
             messagesResponse.setCreateAt(messages.getCreateAt());
             messagesResponse.setUpdateAt(messages.getUpdateAt());
             messagesResponse.setCreateBy(profileRepository.findByAccountId(messages.getAccount().getId()));
+            messagesResponse.setAttachments(attachmentRepository.findByMessagesId(messages.getId()));
             if (messages.getMessages() != null) {
                 messagesResponse.setQuoteMessage(toMessagesResponse(messages.getMessages()));
             }

@@ -3,6 +3,7 @@ package com.datn.topfood.authen;
 import com.datn.topfood.dto.response.Response;
 import com.datn.topfood.util.constant.Message;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.AuthenticationEntryPoint;
@@ -17,7 +18,7 @@ public class AuthenticationEntryPointFilter implements AuthenticationEntryPoint 
     @Override
     public void commence(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse, AuthenticationException e) throws IOException {
         httpServletResponse.setStatus(HttpStatus.BAD_REQUEST.value());
-        Response<?> response = new Response<>(false, Message.OTHER_ACTION_IS_DENIED);
+        Response<Void> response = new Response<>(false, Message.OTHER_ACTION_IS_DENIED);
         httpServletResponse.setHeader("Content-Type", "Application/Json; charset=UTF-8");
         httpServletResponse.getWriter().write(new ObjectMapper().writeValueAsString(response));
     }

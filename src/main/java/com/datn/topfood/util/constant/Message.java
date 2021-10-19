@@ -44,5 +44,11 @@ public class Message {
 
     public static final String MAX_SIZE_FOOD_MESSAGE = "danh sách món ăn tối đa là ";
     public static final String FOOD_NOT_EXISTS = "món ăn không tồn tại. ";									
-    
+
+    public static final String FILES_FILENAME_CONTAINS_INVALID_PATH = "Xin lỗi! Tên tệp chứa chuỗi đường dẫn không hợp lệ.";
+    public static final String FILES_UPLOAD_FILE_ERROR = "Tải file lên thất bại, hãy thử lại.";
+    public static final String FILES_UPLOAD_NOT_FOUND = "Không có file nào được tải lên.";
+    public static final String FILES_UPLOAD_EXT_NOT_SUPPORT = "File tải lên không hỗ trợ định dạng này.";
+    public static final String FILES_FILE_NOT_FOUND = "File này không tồn tại.";
+
 }

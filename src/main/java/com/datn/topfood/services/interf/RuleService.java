@@ -7,8 +7,11 @@ import com.datn.topfood.dto.response.RuleResponse;
 
 
 public interface RuleService {
-  RuleResponse createRule(RuleRequest request);
-  RuleResponse updateRule(RuleRequest request,Long id);
-  PageResponse<RuleResponse> searchByRuleTitle(String title, PageRequest request);
-  RuleResponse findById(Long id);
+    RuleResponse createRule(RuleRequest request);
+
+    RuleResponse updateRule(RuleRequest request, Long id);
+
+    PageResponse<RuleResponse> searchByRuleTitle(String title, PageRequest request);
+
+    RuleResponse findById(Long id);
 }

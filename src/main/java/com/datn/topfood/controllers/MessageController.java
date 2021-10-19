@@ -4,12 +4,8 @@ import com.datn.topfood.dto.messages.*;
 import com.datn.topfood.dto.request.*;
 import com.datn.topfood.dto.response.ConversationResponse;
 import com.datn.topfood.dto.response.MessagesResponse;
-import com.datn.topfood.dto.response.Response;
 import com.datn.topfood.services.interf.MessageService;
-import com.datn.topfood.util.constant.Message;
-import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.messaging.handler.annotation.SendTo;
@@ -18,7 +14,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 @Controller
-@CrossOrigin
 @RequestMapping("/messages")
 public class MessageController {
 
@@ -66,37 +61,37 @@ public class MessageController {
 
     @MessageMapping("/{token}/heart-message")
     @SendTo("/messages/inbox/{token}")
-    public MessageResponse<MessageHeartResponse> reactHeart(@Payload MessageHeartRequest messageHeartRequest){
+    public MessageResponse<MessageHeartResponse> reactHeart(@Payload MessageHeartRequest messageHeartRequest) {
         return messageService.reactHeart(messageHeartRequest);
     }
 
     @MessageMapping("/{token}/info-conversation")
     @SendTo("/messages/inbox/{token}")
-    public MessageResponse<MessageInfoResponse> infoConversation(@Payload MessageInfoRequest messageInfoRequest){
+    public MessageResponse<MessageInfoResponse> infoConversation(@Payload MessageInfoRequest messageInfoRequest) {
         return messageService.infoConversation(messageInfoRequest);
     }
 
     @MessageMapping("/{token}/add-member")
     @SendTo("/messages/inbox/{token}")
-    public MessageResponse<MessageAddResponse> addMember(@Payload MessageAddRequest messageAddRequest){
+    public MessageResponse<MessageAddResponse> addMember(@Payload MessageAddRequest messageAddRequest) {
         return messageService.addMember(messageAddRequest);
     }
 
     @MessageMapping("/{token}/delete-member")
     @SendTo("/messages/inbox/{token}")
-    public  MessageResponse<MessageKickResponse> deleteMember(@Payload MessageKickRequest messageKickRequest){
+    public MessageResponse<MessageKickResponse> deleteMember(@Payload MessageKickRequest messageKickRequest) {
         return messageService.deleteMember(messageKickRequest);
     }
 
     @MessageMapping("/{token}/update-conversation")
     @SendTo("/messages/inbox/{token}")
-    public  MessageResponse<MessageUpdateConversationResponse> updateConversation(@Payload MessageUpdateConversationRequest messageUpdateConversationRequest){
+    public MessageResponse<MessageUpdateConversationResponse> updateConversation(@Payload MessageUpdateConversationRequest messageUpdateConversationRequest) {
         return messageService.updateConversation(messageUpdateConversationRequest);
     }
 
     @MessageMapping("/{token}/room-transfer")
     @SendTo("/messages/inbox/{token}")
-    public  MessageResponse<MessageRoomTransferResponse> roomTransfer(@Payload MessageRoomTransferRequest messageRoomTransferRequest){
+    public MessageResponse<MessageRoomTransferResponse> roomTransfer(@Payload MessageRoomTransferRequest messageRoomTransferRequest) {
         return messageService.roomTransfer(messageRoomTransferRequest);
     }
 

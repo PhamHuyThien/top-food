@@ -36,9 +36,4 @@ public class Messages extends Base {
 	@ManyToOne
 	@JoinColumn(name = "account_id")
 	private Account account;
-
-	@EqualsAndHashCode.Exclude
-	@ToStringExclude
-	@OneToMany(mappedBy = "messages",cascade = CascadeType.ALL)
-	private List<Attachments> attachments;
 }
