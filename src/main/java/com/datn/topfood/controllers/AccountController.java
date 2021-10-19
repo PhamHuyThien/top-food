@@ -22,14 +22,14 @@ public class AccountController {
 
     @Operation(description = "API đổi mật khẩu")
     @PutMapping("/change-password")
-    public ResponseEntity<Response<?>> changePassword(@RequestBody ChangePasswordRequest changePasswordRequest) {
+    public ResponseEntity<Response<Void>> changePassword(@RequestBody ChangePasswordRequest changePasswordRequest) {
         accountService.changePassword(changePasswordRequest);
         return ResponseEntity.ok(new Response<>(true, Message.OTHER_SUCCESS));
     }
 
     @Operation(description = "API kích hoạt tài khoản")
     @PostMapping("active")
-    public ResponseEntity<Response<?>> active(@RequestBody ActiveRequest activeRequest) {
+    public ResponseEntity<Response<Void>> active(@RequestBody ActiveRequest activeRequest) {
         accountService.active(activeRequest);
         return ResponseEntity.ok(new Response<>(true, Message.OTHER_SUCCESS));
     }

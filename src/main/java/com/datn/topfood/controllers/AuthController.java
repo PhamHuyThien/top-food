@@ -26,21 +26,21 @@ public class AuthController {
 
     @Operation(description = "API đăng ký tài khoản")
     @PostMapping("/register")
-    public ResponseEntity<Response<?>> register(@RequestBody RegisterRequest registerRequest) {
+    public ResponseEntity<Response<Void>> register(@RequestBody RegisterRequest registerRequest) {
         authService.register(registerRequest);
         return ResponseEntity.ok(new Response<>(true, Message.OTHER_SUCCESS));
     }
 
     @Operation(description = "API quên mật khẩu")
     @PostMapping("/forgot-password")
-    public ResponseEntity<Response<?>> forgotPassword(@RequestBody ForgotPasswordRequest forgotPasswordRequest) {
+    public ResponseEntity<Response<Void>> forgotPassword(@RequestBody ForgotPasswordRequest forgotPasswordRequest) {
         authService.forgotPassword(forgotPasswordRequest);
         return ResponseEntity.ok(new Response<>(true, Message.OTHER_SUCCESS));
     }
 
     @Operation(description = "API lấy OTP")
     @GetMapping("/get-otp")
-    public ResponseEntity<Response<?>> getOtp(String email) {
+    public ResponseEntity<Response<Void>> getOtp(String email) {
         authService.getOtp(email);
         return ResponseEntity.ok(new Response<>(true, Message.OTHER_SUCCESS));
     }
