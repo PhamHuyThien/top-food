@@ -10,8 +10,11 @@ import com.datn.topfood.dto.response.TitleTagResponse;
 import java.util.List;
 
 public interface TagService {
-  TagResponse createTag(TagRequest request);
-  TagResponse updateTag(TagRequest request,Long id);
-  TagResponse findById(Long id);
-  PageResponse<TitleTagResponse> searchByTagName(String phoneNumber, PageRequest request);
+    TagResponse createTag(TagRequest request);
+
+    TagResponse updateTag(TagRequest request, Long id);
+
+    TagResponse findById(Long id);
+
+    PageResponse<TitleTagResponse> searchByTagName(String phoneNumber, PageRequest request);
 }

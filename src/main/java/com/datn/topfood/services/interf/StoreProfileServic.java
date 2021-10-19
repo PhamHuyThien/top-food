@@ -11,16 +11,27 @@ import com.datn.topfood.dto.response.StoreWallResponse;
 
 public interface StoreProfileServic {
 
-	void createFood(FoodRequest foodRequest);
-	FoodDetailResponse foodDetail(Long foodId);
-	void followStore(Long storeProfileId);
-	StoreWallResponse storeProfile(Long storeProfileId);
-	PageResponse<StoreWallResponse> listStoreFollow(PageRequest pageRequest);
-	PageResponse<SimpleAccountResponse> listFollowStore(PageRequest pageRequest);
-	void unFollowStore(Long storeId);
-	void deleteFood(Long foodId);
-	PageResponse<FoodDetailResponse> listFood(PageRequest pageRequest);
-	FoodDetailResponse updateFood(FoodRequest foodRequest);
-	PostResponse createPost(PostRequest postRequest);
-	void deletePost(Long postId);
+    void createFood(FoodRequest foodRequest);
+
+    FoodDetailResponse foodDetail(Long foodId);
+
+    void followStore(Long storeProfileId);
+
+    StoreWallResponse storeProfile(Long storeProfileId);
+
+    PageResponse<StoreWallResponse> listStoreFollow(PageRequest pageRequest);
+
+    PageResponse<SimpleAccountResponse> listFollowStore(PageRequest pageRequest);
+
+    void unFollowStore(Long storeId);
+
+    void deleteFood(Long foodId);
+
+    PageResponse<FoodDetailResponse> listFood(PageRequest pageRequest);
+
+    FoodDetailResponse updateFood(FoodRequest foodRequest);
+
+    PostResponse createPost(PostRequest postRequest);
+
+    void deletePost(Long postId);
 }

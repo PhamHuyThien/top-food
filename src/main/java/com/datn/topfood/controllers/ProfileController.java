@@ -13,10 +13,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-
 @Controller
-@CrossOrigin
 @RequestMapping("/profiles")
 public class ProfileController {
     @Autowired
@@ -31,7 +28,7 @@ public class ProfileController {
 
     @Operation(description = "API cập nhật profile")
     @PutMapping("/update")
-    public ResponseEntity<Response<?>> updateProfile(@RequestBody ProfileRequest profileRequest) {
+    public ResponseEntity<Response<Void>> updateProfile(@RequestBody ProfileRequest profileRequest) {
         profileService.updateProfile(profileRequest);
         return ResponseEntity.ok(new Response<>(true, Message.OTHER_SUCCESS));
     }

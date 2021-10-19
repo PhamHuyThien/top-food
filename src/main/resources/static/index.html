@@ -377,7 +377,7 @@
             "orderBy": "id"
         };
         stompClient.send(`/app/conversation_${idAccout}/info-conversation`, {}, JSON.stringify(objSend)); // info-conversation chỉ cần accountId, conversationId
-        stompClient.send(`/app/messages_${id}/get-list-message`, {}, JSON.stringify(objSend));
+        stompClient.send(`/app/conversation_${idAccout}/get-list-message`, {}, JSON.stringify(objSend));
     }
 </script>
 </body>

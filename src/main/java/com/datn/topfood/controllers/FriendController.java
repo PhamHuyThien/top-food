@@ -21,7 +21,6 @@ import com.datn.topfood.util.constant.Message;
 import io.swagger.v3.oas.annotations.Operation;
 
 @Controller
-@CrossOrigin
 @RequestMapping("/friends")
 public class FriendController {
     @Autowired
@@ -61,7 +60,7 @@ public class FriendController {
     public ResponseEntity<PageResponse<ProfileResponse>> getListFriendsRequest(PageRequest pageRequest) {
         return ResponseEntity.ok(friendsService.getListFriendsRequest(pageRequest));
     }
-    
+
     @Operation(description = "API hủy kết bạn")
     @DeleteMapping("/remove-friend/{friendPhoneNumber}")
     public ResponseEntity<Response<Void>> removeFriend(@PathVariable("friendPhoneNumber") String friendPhoneNumber) {
@@ -71,13 +70,13 @@ public class FriendController {
 
     @Operation(description = "API danh sách bạn bè bị chặn")
     @GetMapping("/list-friend-block")
-    public ResponseEntity<PageResponse<ProfileResponse>> listFriendBlock(PageRequest pageRequest){
+    public ResponseEntity<PageResponse<ProfileResponse>> listFriendBlock(PageRequest pageRequest) {
         return ResponseEntity.ok(friendsService.getListFriendBlock(pageRequest));
     }
 
     @Operation(description = "API bỏ chặn, chỉ có ng chặn mới đc quyền bỏ chặn")
     @PostMapping("/unblock-friend")
-    public ResponseEntity<Response<Void>> unblockFriend(@RequestBody UnblockFriendRequest unblockFriendRequest){
+    public ResponseEntity<Response<Void>> unblockFriend(@RequestBody UnblockFriendRequest unblockFriendRequest) {
         friendsService.unblockFriend(unblockFriendRequest);
         return ResponseEntity.ok(new Response<>(true, Message.OTHER_SUCCESS));
     }

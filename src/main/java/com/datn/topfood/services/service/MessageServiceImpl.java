@@ -92,7 +92,7 @@ public class MessageServiceImpl extends BaseService implements MessageService {
     @Override
     @Transactional
     public MessageResponse<MessagesResponse> sendMessage(SendMessageRequest sendMessageRequest) {
-        MessageResponse<MessagesResponse> messagesResponseMessagesResponse = new MessageResponse();
+        MessageResponse<MessagesResponse> messagesResponseMessagesResponse = new MessageResponse<>();
         messagesResponseMessagesResponse.setType(MessageType.SEND);
         Account itMe = accountRepository.findById(sendMessageRequest.getAccountId()).orElse(null);
         Timestamp presentTimestamp = DateUtils.currentTimestamp();
