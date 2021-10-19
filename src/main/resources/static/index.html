@@ -119,7 +119,9 @@
             "accountId": idAccout,
             "conversationId": idConversation,
             "message": content,
-            "quoteMessageId": quoteContent
+            "quoteMessageId": quoteContent,
+            "attachments": [] // array các hình ảnh cần thêm,
+            // trước khi bắn send tin nhắn cần upload hết hình người gửi cần gửi rồi dùng socket send sau
         };
         stompClient.send(`/app/messages_${idConversation}/send`, {}, JSON.stringify(objSend));
         $("#mo-quote-content").val("");

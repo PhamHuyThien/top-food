@@ -49,7 +49,7 @@ public class AuthServiceImpl implements AuthService {
     ModelMapper modelMapper;
     @Autowired
     PasswordEncoder passwordEncoder;
-    @Value("${toopfood.otp.expired}")
+    @Value("${topfood.otp.expired}")
     private long otpTimeExpired;
 
     @Override
