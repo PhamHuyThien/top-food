@@ -16,10 +16,4 @@ public class ModelMapperConfig {
                 .setMatchingStrategy(MatchingStrategies.STANDARD);
         return modelMapper;
     }
-
-    @Bean
-    public ObjectMapper objectMapper() {
-        return new ObjectMapper();
-    }
-
 }

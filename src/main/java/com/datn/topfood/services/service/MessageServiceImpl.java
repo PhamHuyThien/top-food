@@ -178,7 +178,7 @@ public class MessageServiceImpl extends BaseService implements MessageService {
             messagesResponse.setCreateAt(messages.getCreateAt());
             messagesResponse.setUpdateAt(messages.getUpdateAt());
             messagesResponse.setCreateBy(profileRepository.findByAccountId(messages.getAccount().getId()));
-            messagesResponse.setAttachments(messages.getAttachments());
+            messagesResponse.setAttachments(attachmentRepository.findByMessagesId(messages.getId()));
             if (messages.getMessages() != null) {
                 messagesResponse.setQuoteMessage(toMessagesResponse(messages.getMessages()));
             }
