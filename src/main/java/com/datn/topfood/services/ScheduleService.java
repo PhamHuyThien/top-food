@@ -19,7 +19,7 @@ public class ScheduleService {
     @Autowired
     AccountOtpRepository accountOtpRepository;
 
-    @Value("${toopfood.otp.expired}")
+    @Value("${topfood.otp.expired}")
     private long timeExpired;
 
     @Scheduled(fixedDelay = 1000)
