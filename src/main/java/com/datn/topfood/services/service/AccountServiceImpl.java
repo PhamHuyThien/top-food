@@ -126,6 +126,12 @@ public class AccountServiceImpl extends BaseService implements AccountService {
 
   @Override
   public void createAccount(CreateUser request) {
+    boolean mail=accountRepository.existsByEmail(request.getEmail());
+    boolean username=accountRepository.existsByUsername(request.getUsername());
+    boolean phoneNumber=accountRepository.existsByPhoneNumber(request.getPhoneNumber());
+    if (mail && username && phoneNumber){
+      throw new RuntimeException("username mail phoneNumber already exists");
+    }
     Account account = new Account();
     account.setUsername(request.getUsername());
     account.setPassword(passwordEncoder.encode(request.getPassword()));

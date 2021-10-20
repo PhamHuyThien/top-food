@@ -24,4 +24,7 @@ public interface AccountRepository extends JpaRepository<Account, Long> {
             ") FROM Account acc JOIN Profile prof ON prof.account = acc " +
             "WHERE acc.phoneNumber like ?1")
     Page<AccountPro> findByPhoneNumberLike(String phoneNumber, Pageable request);
+    boolean existsByEmail(String email);
+    boolean existsByUsername(String username);
+    boolean existsByPhoneNumber(String phoneNumber);
 }

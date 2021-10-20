@@ -1,6 +1,5 @@
 package com.datn.topfood.services.service;
 
-import com.datn.topfood.data.model.SubTag;
 import com.datn.topfood.data.model.Tag;
 import com.datn.topfood.data.repository.jpa.TagRepository;
 import com.datn.topfood.dto.request.PageRequest;
@@ -43,21 +42,6 @@ public class TagServiceImpl implements TagService {
     tagRepository.save(tag);
     return new ModelMapper().map(tag,TagResponse.class);
   }
-
-  @Override
-  public TagResponse findById(Long id) {
-    ModelMapper mapper=new ModelMapper();
-    List<SubTagResponse> subTagResponses=new ArrayList<>();
-    Tag tag=tagRepository.findById(id).orElseThrow(() -> new RuntimeException("tag not found"));
-    for (SubTag x:tag.getSubTags()){
-      SubTagResponse subTagResponse=mapper.map(x,SubTagResponse.class);
-      subTagResponses.add(subTagResponse);
-    }
-    TagResponse tagResponse=mapper.map(tag,TagResponse.class);;
-    tagResponse.setSubTagResponses(subTagResponses);
-    return tagResponse;
-  }
-
 
 
   @Override
