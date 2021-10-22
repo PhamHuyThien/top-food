@@ -33,18 +33,7 @@ public class FileController {
 
     @PostMapping("/uploads")
     public ResponseEntity<PageResponse<FileUploadResponse>> uploadFile(@RequestParam("file") MultipartFile[] files) {
-        List<FileUploadResponse> fileUploadResponseList = Arrays.asList(files)
-                .stream()
-                .map(file -> fileService.upload(file))
-                .collect(Collectors.toList());
-        PageResponse<FileUploadResponse> pageResponse = new PageResponse<>(
-                fileUploadResponseList,
-                fileUploadResponseList.size(),
-                fileUploadResponseList.size()
-        );
-        pageResponse.setStatus(true);
-        pageResponse.setMessage(Message.OTHER_SUCCESS);
-        return ResponseEntity.ok(pageResponse);
+        return ResponseEntity.ok(fileService.upload(files));
     }
 
 }

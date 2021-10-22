@@ -1,5 +1,6 @@
 package com.datn.topfood.dto.response;
 
+import com.datn.topfood.data.model.Attachments;
 import com.datn.topfood.data.model.Messages;
 import com.datn.topfood.data.model.Profile;
 import lombok.AllArgsConstructor;
@@ -8,6 +9,7 @@ import lombok.NoArgsConstructor;
 import lombok.ToString;
 
 import java.util.Date;
+import java.util.List;
 
 @Data
 @NoArgsConstructor
@@ -21,4 +23,5 @@ public class MessagesResponse {
     int heart;
     MessagesResponse quoteMessage;
     Profile createBy;
+    List<Attachments> attachments;
 }

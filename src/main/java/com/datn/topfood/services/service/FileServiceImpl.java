@@ -2,6 +2,7 @@ package com.datn.topfood.services.service;
 
 import com.datn.topfood.configs.FileUploadConfig;
 import com.datn.topfood.dto.response.FileUploadResponse;
+import com.datn.topfood.dto.response.PageResponse;
 import com.datn.topfood.services.interf.FileService;
 import com.datn.topfood.util.constant.Message;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,7 +24,10 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Random;
+import java.util.stream.Collectors;
 
 @Service
 public class FileServiceImpl implements FileService {
@@ -62,6 +66,22 @@ public class FileServiceImpl implements FileService {
         fileUploadResponse.setPath("/files/" + hashFileName + fileExtension);
         fileUploadResponse.setSize(multipartFile.getSize());
         return fileUploadResponse;
+    }
+
+    @Override
+    public PageResponse<FileUploadResponse> upload(MultipartFile[] multipartFiles) {
+        List<FileUploadResponse> fileUploadResponseList = Arrays.asList(multipartFiles)
+                .stream()
+                .map(file -> upload(file))
+                .collect(Collectors.toList());
+        PageResponse<FileUploadResponse> pageResponse = new PageResponse<>(
+                fileUploadResponseList,
+                fileUploadResponseList.size(),
+                fileUploadResponseList.size()
+        );
+        pageResponse.setStatus(true);
+        pageResponse.setMessage(Message.OTHER_SUCCESS);
+        return pageResponse;
     }
 
     @Override
