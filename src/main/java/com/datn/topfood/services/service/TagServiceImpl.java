@@ -39,6 +39,7 @@ public class TagServiceImpl implements TagService {
     Tag tag=tagRepository.findById(id).orElseThrow(() -> new RuntimeException("tag not found"));
     tag.setTagName(request.getTagName());
     tag.setUpdateAt(DateUtils.currentTimestamp());
+    tag.setImage(request.getImage());
     tagRepository.save(tag);
     return new ModelMapper().map(tag,TagResponse.class);
   }

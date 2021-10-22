@@ -19,7 +19,7 @@ public class Tag extends Base {
     Long id;
     String tagName;
     String image;
-    boolean disable;
+    boolean disable=false;
     @OneToMany(mappedBy = "tag", cascade = CascadeType.ALL)
     private List<Food> foods;
     @EqualsAndHashCode.Exclude
