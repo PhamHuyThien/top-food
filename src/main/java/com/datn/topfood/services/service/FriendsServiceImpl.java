@@ -200,7 +200,8 @@ public class FriendsServiceImpl extends BaseService implements FriendsService {
         Page<FriendShip> friendShipPage = friendShipRepository.getAllByAccountAddOrAccountReqAndBlockAt(itMe.getId(), itMe.getId(), itMe.getId(), pageable);
         List<ProfileResponse> profileResponseList = new ArrayList<>();
         friendShipPage.toList().forEach(friendShip -> {
-            ProfileResponse profileResponse = profileRepository.findFiendProfileByAccountId(friendShip.getId()).orElse(null);
+            Account account = friendShip.getAccountAddressee().equals(itMe) ? friendShip.getAccountRequest() : friendShip.getAccountAddressee();
+            ProfileResponse profileResponse = profileRepository.findFiendProfileByAccountId(account.getId()).orElse(null);
             profileResponseList.add(profileResponse);
         });
         PageResponse<ProfileResponse> profileResponsePageResponse = new PageResponse<>(

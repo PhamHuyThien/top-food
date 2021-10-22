@@ -14,7 +14,7 @@ public interface TagService {
 
     TagResponse updateTag(TagRequest request, Long id);
 
-    TagResponse findById(Long id);
+    //TagResponse findById(Long id);
 
     PageResponse<TitleTagResponse> searchByTagName(String phoneNumber, PageRequest request);
 }

@@ -65,9 +65,13 @@ public class StoreProfileServicImpl extends BaseService implements StoreProfileS
 			throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
 					Message.MAX_SIZE_FOOD_MESSAGE + MAX_SIZE_FOOD + " món.");
 		}
-		Food f = new Food(foodRequest.getName(), foodRequest.getPrice(), foodRequest.getContent(), "active",
-				profileRepository.findByAccountId(ime.getId()),
-				ConvertUtils.convertArrFileReqToSetFile(foodRequest.getFiles()));
+		Food f = new Food();
+		f.setName(foodRequest.getName());
+		f.setPrice(foodRequest.getPrice());
+		f.setContent(foodRequest.getContent());
+		f.setProfile(profileRepository.findByAccountId(ime.getId()));
+		f.setStatus("active");
+		f.setFiles(ConvertUtils.convertArrFileReqToSetFile(foodRequest.getFiles()));
 		f.setCreateAt(DateUtils.currentTimestamp());
 		foodRepository.save(f);
 	}

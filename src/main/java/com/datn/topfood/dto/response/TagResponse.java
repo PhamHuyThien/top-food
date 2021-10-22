@@ -1,6 +1,6 @@
 package com.datn.topfood.dto.response;
 
-import com.datn.topfood.data.model.SubTag;
+import com.datn.topfood.data.model.Food;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -18,5 +18,5 @@ public class TagResponse {
   String tagName;
   Timestamp createAt;
   Timestamp updateAt;
-  List<SubTagResponse> subTagResponses;
+  List<Food> foods;
 }
