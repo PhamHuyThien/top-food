@@ -21,10 +21,6 @@ public class TagController {
         return tagService.createTag(create);
     }
 
-    @GetMapping("/{id}")
-    public TagResponse getTagById(@PathVariable Long id) {
-        return tagService.findById(id);
-    }
 
     @PutMapping("/{id}")
     public TagResponse updateTag(@RequestBody TagRequest request, @PathVariable Long id) {

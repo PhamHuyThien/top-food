@@ -9,4 +9,5 @@ import lombok.NoArgsConstructor;
 @Data
 public class TagRequest {
   String tagName;
+  String image;
 }
