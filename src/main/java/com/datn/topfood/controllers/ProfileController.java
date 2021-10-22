@@ -5,6 +5,7 @@ import com.datn.topfood.dto.request.ProfileRequest;
 import com.datn.topfood.dto.response.PageResponse;
 import com.datn.topfood.dto.response.ProfileResponse;
 import com.datn.topfood.dto.response.Response;
+import com.datn.topfood.dto.response.SearchProfileResponse;
 import com.datn.topfood.services.interf.ProfileService;
 import com.datn.topfood.util.constant.Message;
 import io.swagger.v3.oas.annotations.Operation;
@@ -35,7 +36,7 @@ public class ProfileController {
 
     @Operation(description = "API tìm kiếm bạn bè qua tên hoặc số điện thoại")
     @GetMapping(path = "/search")
-    public ResponseEntity<PageResponse<ProfileResponse>> search(String search, PageRequest pageRequest) {
+    public ResponseEntity<PageResponse<SearchProfileResponse>> search(@RequestParam("search") String search, PageRequest pageRequest) {
         return ResponseEntity.ok(profileService.search(search, pageRequest));
     }
 }

@@ -29,6 +29,6 @@ public interface ProfileRepository extends JpaRepository<Profile, Long> {
 
     @Query("SELECT prof FROM Profile prof " +
             "JOIN Account acc ON prof.account = acc " +
-            "WHERE prof.name LIKE ?1 OR acc.phoneNumber LIKE ?2 ")
-    Page<Profile> findByNameLikeOrPhoneLike(String name, String phone, Pageable pageable);
+            "WHERE (prof.name LIKE ?1 OR acc.phoneNumber LIKE ?2) AND acc.role = 'ROLE_USER' AND acc.id <> ?3 ")
+    Page<Profile> findByNameLikeOrPhoneLike(String name, String phone, Long accountMe, Pageable pageable);
 }
