@@ -15,6 +15,7 @@ public class FoodRequest {
 	Double price;
 	String name;
 	String content;
+	Long tagId;
 	
 	ArrayList<FileRequest> files;
 	

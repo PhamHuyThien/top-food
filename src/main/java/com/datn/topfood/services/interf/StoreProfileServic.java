@@ -1,5 +1,6 @@
 package com.datn.topfood.services.interf;
 
+import com.datn.topfood.data.model.Post;
 import com.datn.topfood.dto.request.FoodRequest;
 import com.datn.topfood.dto.request.PageRequest;
 import com.datn.topfood.dto.request.PostRequest;
@@ -34,4 +35,6 @@ public interface StoreProfileServic {
     PostResponse createPost(PostRequest postRequest);
 
     void deletePost(Long postId);
+    
+    Post detailPost(Long id);
 }

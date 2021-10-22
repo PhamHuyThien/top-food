@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.datn.topfood.data.model.Post;
 import com.datn.topfood.dto.request.FoodRequest;
 import com.datn.topfood.dto.request.PageRequest;
 import com.datn.topfood.dto.request.PostRequest;
@@ -98,9 +99,16 @@ public class StoreProfileController {
         return ResponseEntity.ok(new Response<>(true, Message.OTHER_SUCCESS, profileServic.createPost(postRequest)));
     }
 
-    @Operation(description = "API thêm bài viết")
+    @Operation(description = "API xóa bài viết")
     @DeleteMapping("/post/delete/{postId}")
     public ResponseEntity<Response<Void>> deletePost(@PathVariable("postId") Long id) {
+        profileServic.deletePost(id);
+        return ResponseEntity.ok(new Response<>(true, Message.OTHER_SUCCESS));
+    }
+    
+    @Operation(description = "API chi tiêt bài viết")
+    @DeleteMapping("/post/detail/{postId}")
+    public ResponseEntity<Response<Post>> detailPost(@PathVariable("postId") Long id) {
         profileServic.deletePost(id);
         return ResponseEntity.ok(new Response<>(true, Message.OTHER_SUCCESS));
     }
