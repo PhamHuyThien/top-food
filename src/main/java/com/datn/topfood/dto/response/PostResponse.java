@@ -1,7 +1,9 @@
 package com.datn.topfood.dto.response;
 
+import java.util.Collection;
 import java.util.List;
 
+import com.datn.topfood.data.model.Tag;
 import com.datn.topfood.dto.request.FileRequest;
 
 import lombok.AllArgsConstructor;
@@ -16,4 +18,5 @@ public class PostResponse {
 	Long id;
 	String content;
 	List<FileRequest> files;
+	List<TagResponse> tags;
 }

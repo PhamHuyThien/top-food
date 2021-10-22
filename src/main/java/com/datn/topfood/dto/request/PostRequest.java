@@ -14,4 +14,5 @@ public class PostRequest {
 	Long id;
 	String content;
 	List<FileRequest> files;
+	Long[] tagIds;
 }

@@ -20,6 +20,7 @@ import com.datn.topfood.data.repository.jpa.AccountFollowRepository;
 import com.datn.topfood.data.repository.jpa.FoodRepository;
 import com.datn.topfood.data.repository.jpa.PostRepository;
 import com.datn.topfood.data.repository.jpa.ProfileRepository;
+import com.datn.topfood.data.repository.jpa.TagRepository;
 import com.datn.topfood.dto.request.FileRequest;
 import com.datn.topfood.dto.request.FoodRequest;
 import com.datn.topfood.dto.request.PageRequest;
@@ -29,6 +30,7 @@ import com.datn.topfood.dto.response.PageResponse;
 import com.datn.topfood.dto.response.PostResponse;
 import com.datn.topfood.dto.response.SimpleAccountResponse;
 import com.datn.topfood.dto.response.StoreWallResponse;
+import com.datn.topfood.dto.response.TagResponse;
 import com.datn.topfood.services.BaseService;
 import com.datn.topfood.services.interf.StoreProfileServic;
 import com.datn.topfood.util.ConvertUtils;
@@ -48,6 +50,8 @@ public class StoreProfileServicImpl extends BaseService implements StoreProfileS
 	AccountFollowRepository followRepository;
 	@Autowired
 	PostRepository postRepository;
+	@Autowired
+	TagRepository tagRepository;
 
 	public final int MAX_SIZE_FOOD = 20;
 
@@ -58,13 +62,13 @@ public class StoreProfileServicImpl extends BaseService implements StoreProfileS
 		if (foodRequest.getId() != null) {
 			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, Message.OTHER_ACTION_IS_DENIED);
 		}
-		if (ime.getRole().compareTo(AccountRole.ROLE_STORE) != 0) {
-			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, Message.OTHER_ACTION_IS_DENIED);
-		}
-		if (foodRepository.countFoodByProfileAccountUsername(ime.getUsername()) >= MAX_SIZE_FOOD) {
-			throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
-					Message.MAX_SIZE_FOOD_MESSAGE + MAX_SIZE_FOOD + " món.");
-		}
+//		if (ime.getRole().compareTo(AccountRole.ROLE_STORE) != 0) {
+//			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, Message.OTHER_ACTION_IS_DENIED);
+//		}
+//		if (foodRepository.countFoodByProfileAccountUsername(ime.getUsername()) >= MAX_SIZE_FOOD) {
+//			throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+//					Message.MAX_SIZE_FOOD_MESSAGE + MAX_SIZE_FOOD + " món.");
+//		}
 		Food f = new Food();
 		f.setName(foodRequest.getName());
 		f.setPrice(foodRequest.getPrice());
@@ -73,6 +77,7 @@ public class StoreProfileServicImpl extends BaseService implements StoreProfileS
 		f.setStatus("active");
 		f.setFiles(ConvertUtils.convertArrFileReqToSetFile(foodRequest.getFiles()));
 		f.setCreateAt(DateUtils.currentTimestamp());
+		f.setTag(tagRepository.findById(foodRequest.getTagId()).get());
 		foodRepository.save(f);
 	}
 
@@ -90,6 +95,8 @@ public class StoreProfileServicImpl extends BaseService implements StoreProfileS
 		detailResponse.setId(f.getId());
 		detailResponse.setName(f.getName());
 		detailResponse.setPrice(f.getPrice());
+		detailResponse.setTag(new TagResponse(f.getTag().getId(),
+				f.getTag().getTagName()));
 		return detailResponse;
 	}
 
@@ -125,7 +132,8 @@ public class StoreProfileServicImpl extends BaseService implements StoreProfileS
 			return new FoodDetailResponse(food.getId(), food.getName(), food.getPrice(), food.getContent(),
 					food.getFiles().stream().map((file) -> {
 						return new FileRequest(file.getPath(), file.getType().name);
-					}).collect(Collectors.toList()));
+					}).collect(Collectors.toList()),new TagResponse(food.getTag().getId(),
+							food.getTag().getTagName()));
 		}).collect(Collectors.toList()));
 		swr.setName(p.getName());
 		swr.setStoreId(p.getId());
@@ -213,7 +221,8 @@ public class StoreProfileServicImpl extends BaseService implements StoreProfileS
 			return new FoodDetailResponse(food.getId(), food.getName(), food.getPrice(), food.getContent(),
 					food.getFiles().stream().map((file) -> {
 						return new FileRequest(file.getPath(), file.getType().name);
-					}).collect(Collectors.toList()));
+					}).collect(Collectors.toList()),new TagResponse(food.getTag().getId(),
+							food.getTag().getTagName()));
 		}).collect(Collectors.toList()), foods.getTotalElements(), pageRequest.getPageSize());
 	}
 
@@ -237,12 +246,14 @@ public class StoreProfileServicImpl extends BaseService implements StoreProfileS
 		food.setFiles(ConvertUtils.convertArrFileReqToSetFile(foodRequest.getFiles()));
 		food.setName(foodRequest.getName());
 		food.setPrice(foodRequest.getPrice());
+		food.setTag(tagRepository.findById(foodRequest.getTagId()).get());
 		food = foodRepository.save(food);
 
 		return new FoodDetailResponse(food.getId(), food.getName(), food.getPrice(), food.getContent(),
 				food.getFiles().stream().map((file) -> {
 					return new FileRequest(file.getPath(), file.getType().name);
-				}).collect(Collectors.toList()));
+				}).collect(Collectors.toList()),new TagResponse(food.getTag().getId(),
+						food.getTag().getTagName()));
 	}
 
 	@Override
@@ -252,17 +263,20 @@ public class StoreProfileServicImpl extends BaseService implements StoreProfileS
 		if (postRequest.getId() != null) {
 			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, Message.OTHER_ACTION_IS_DENIED);
 		}
-		if (ime.getRole().compareTo(AccountRole.ROLE_STORE) != 0) {
-			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, Message.OTHER_ACTION_IS_DENIED);
-		}
 		Post p = new Post();
 		p.setContent(postRequest.getContent());
 		p.setFiles(ConvertUtils.convertArrFileReqToSetFile(postRequest.getFiles()));
 		p.setCreateAt(DateUtils.currentTimestamp());
 		p.setStatus("active");
 		p.setProfile(profileRepository.findByAccountId(ime.getId()));
+		if(postRequest.getTagIds()!=null) {
+			p.setTags(tagRepository.findAllListTagId(postRequest.getTagIds()));
+		}
 		p = postRepository.save(p);
-		PostResponse pr = new PostResponse(p.getId(), p.getContent(), ConvertUtils.convertSetToArrFile(p.getFiles()));
+		PostResponse pr = new PostResponse(p.getId(), p.getContent(), ConvertUtils.convertSetToArrFile(p.getFiles()),p.getTags()
+				.stream().map((tag)->{
+					return new TagResponse(tag.getId(),tag.getTagName());
+				}).collect(Collectors.toList()));
 		return pr;
 	}
 
@@ -276,5 +290,10 @@ public class StoreProfileServicImpl extends BaseService implements StoreProfileS
 		}
 		p.setDisableAt(DateUtils.currentTimestamp());
 		postRepository.save(p);
+	}
+	
+	@Override
+	public Post detailPost(Long id) {
+		return postRepository.findById(id).get();
 	}
 }

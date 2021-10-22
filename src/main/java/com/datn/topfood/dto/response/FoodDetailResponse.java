@@ -2,6 +2,7 @@ package com.datn.topfood.dto.response;
 
 import java.util.List;
 
+import com.datn.topfood.data.model.Tag;
 import com.datn.topfood.dto.request.FileRequest;
 
 import lombok.AllArgsConstructor;
@@ -17,4 +18,5 @@ public class FoodDetailResponse {
 	Double price;
 	String content;
 	List<FileRequest> files;
+	TagResponse tag;
 }

@@ -14,9 +14,16 @@ import java.util.List;
 @NoArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class TagResponse {
-  Long id;
-  String tagName;
-  Timestamp createAt;
-  Timestamp updateAt;
-  List<Food> foods;
+	Long id;
+	String tagName;
+	Timestamp createAt;
+	Timestamp updateAt;
+	List<Food> foods;
+
+	public TagResponse(Long id, String tagName) {
+		super();
+		this.id = id;
+		this.tagName = tagName;
+	}
+
 }
