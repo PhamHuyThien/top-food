@@ -12,7 +12,7 @@ import java.util.Optional;
 public interface TagRepository extends JpaRepository<Tag,Long> {
   boolean existsByTagName(String tagName);
   Optional<Tag> findByTagName(String tagName);
-  Page<Tag> findByTagNameLike(String tagName, Pageable request);
+  Page<Tag> findByEnableAndTagNameLike(boolean enable,String tagName, Pageable request);
   @Query("select t from Tag as t where t.id IN ?1")
   List<Tag> findAllListTagId(Long[] longs);
 }

@@ -12,4 +12,6 @@ import lombok.NoArgsConstructor;
 public class TitleTagResponse {
   Long id;
   String tagName;
+  String image;
+  boolean enable;
 }
