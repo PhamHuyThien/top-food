@@ -28,8 +28,23 @@ public class TagController {
     }
 
     @GetMapping("")
-    public PageResponse<TitleTagResponse> searchByTagName(@RequestParam String tagName, PageRequest pageRequest) {
-        return tagService.searchByTagName(tagName, pageRequest);
+    public PageResponse<TitleTagResponse> searchByTagName(@RequestParam boolean enable, @RequestParam String tagName, PageRequest pageRequest) {
+        return tagService.searchByTagName(enable, tagName, pageRequest);
+    }
+
+    @GetMapping("/{id}")
+    public TagResponse findById(@PathVariable("id") Long id) {
+        return tagService.findById(id);
+    }
+
+    @DeleteMapping("{id}")
+    public void deleteTagById(@PathVariable("id") Long id) {
+        tagService.deleteTag(id);
+    }
+
+    @PutMapping("/{id}")
+    public void updateEnable(@PathVariable("id") Long id) {
+        tagService.updateEnable(id);
     }
 
 }
