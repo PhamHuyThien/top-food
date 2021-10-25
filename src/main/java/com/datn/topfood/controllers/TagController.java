@@ -42,7 +42,7 @@ public class TagController {
         tagService.deleteTag(id);
     }
 
-    @PutMapping("/{id}")
+    @PutMapping("/enable/{id}")
     public void updateEnable(@PathVariable("id") Long id) {
         tagService.updateEnable(id);
     }
