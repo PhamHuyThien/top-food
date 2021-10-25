@@ -1,11 +1,9 @@
 package com.datn.topfood.controllers;
 
+import com.datn.topfood.data.model.Tag;
 import com.datn.topfood.dto.request.PageRequest;
 import com.datn.topfood.dto.request.ProfileRequest;
-import com.datn.topfood.dto.response.PageResponse;
-import com.datn.topfood.dto.response.ProfileResponse;
-import com.datn.topfood.dto.response.Response;
-import com.datn.topfood.dto.response.SearchProfileResponse;
+import com.datn.topfood.dto.response.*;
 import com.datn.topfood.services.interf.ProfileService;
 import com.datn.topfood.util.constant.Message;
 import io.swagger.v3.oas.annotations.Operation;
@@ -13,6 +11,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+import java.util.Set;
 
 @Controller
 @RequestMapping("/profiles")
@@ -38,5 +39,18 @@ public class ProfileController {
     @GetMapping(path = "/search")
     public ResponseEntity<PageResponse<SearchProfileResponse>> search(@RequestParam("search") String search, PageRequest pageRequest) {
         return ResponseEntity.ok(profileService.search(search, pageRequest));
+    }
+
+    @Operation(description = "API danh sách những món ăn ưa thích của tài khoản đó.")
+    @GetMapping("/favorite")
+    public ResponseEntity<PageResponse<? extends Tag>> getFavorite(PageRequest pageRequest) {
+        return ResponseEntity.ok(profileService.getFavorite(pageRequest));
+    }
+
+    @Operation(description = "API cập nhật lại danh sách sở thích của tài khoản đó.")
+    @PostMapping("/favorite/update")
+    public ResponseEntity<Response<Void>> updateFavorite(@RequestBody Set<Long> listIdTag) {
+        profileService.updateFavorite(listIdTag);
+        return ResponseEntity.ok(new Response<>(true, Message.OTHER_SUCCESS));
     }
 }
