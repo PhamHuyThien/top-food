@@ -20,8 +20,6 @@ public class Tag extends Base {
     @OneToMany(mappedBy = "tag",cascade = CascadeType.ALL)
     List<Food> food;
     boolean enable=false;
-    @ManyToMany(mappedBy = "tag")
-    Collection<Post> posts;
     public Tag(Long id, String tagName) {
         this.id = id;
         this.tagName = tagName;
