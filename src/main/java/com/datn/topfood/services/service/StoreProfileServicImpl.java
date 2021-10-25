@@ -83,10 +83,7 @@ public class StoreProfileServicImpl extends BaseService implements StoreProfileS
 
 	@Override
 	public FoodDetailResponse foodDetail(Long foodId) {
-		Food f = foodRepository.findById(foodId).orElse(null);
-		if (f == null) {
-			throw new ResponseStatusException(HttpStatus.NOT_FOUND, Message.OTHER_ACTION_IS_DENIED);
-		}
+		Food f = foodRepository.findById(foodId).orElseThrow(() -> new RuntimeException("tag not found"));
 		FoodDetailResponse detailResponse = new FoodDetailResponse();
 		detailResponse.setContent(f.getContent());
 		detailResponse.setFiles(f.getFiles().stream().map((file) -> {
