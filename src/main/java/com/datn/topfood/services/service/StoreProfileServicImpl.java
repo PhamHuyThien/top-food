@@ -62,13 +62,13 @@ public class StoreProfileServicImpl extends BaseService implements StoreProfileS
 		if (foodRequest.getId() != null) {
 			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, Message.OTHER_ACTION_IS_DENIED);
 		}
-//		if (ime.getRole().compareTo(AccountRole.ROLE_STORE) != 0) {
-//			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, Message.OTHER_ACTION_IS_DENIED);
-//		}
-//		if (foodRepository.countFoodByProfileAccountUsername(ime.getUsername()) >= MAX_SIZE_FOOD) {
-//			throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
-//					Message.MAX_SIZE_FOOD_MESSAGE + MAX_SIZE_FOOD + " món.");
-//		}
+		if (ime.getRole().compareTo(AccountRole.ROLE_STORE) != 0) {
+			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, Message.OTHER_ACTION_IS_DENIED);
+		}
+		if (foodRepository.countFoodByProfileAccountUsername(ime.getUsername()) >= MAX_SIZE_FOOD) {
+			throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+					Message.MAX_SIZE_FOOD_MESSAGE + MAX_SIZE_FOOD + " món.");
+		}
 		Food f = new Food();
 		f.setName(foodRequest.getName());
 		f.setPrice(foodRequest.getPrice());
@@ -202,8 +202,7 @@ public class StoreProfileServicImpl extends BaseService implements StoreProfileS
 		if (food == null) {
 			throw new ResponseStatusException(HttpStatus.NOT_FOUND, Message.FOOD_NOT_EXISTS);
 		}
-		food.setDisableAt(DateUtils.currentTimestamp());
-		foodRepository.save(food);
+		foodRepository.delete(food);
 	}
 
 	@Override
@@ -285,8 +284,7 @@ public class StoreProfileServicImpl extends BaseService implements StoreProfileS
 		if (p == null) {
 			throw new ResponseStatusException(HttpStatus.NOT_FOUND, Message.OTHER_ACTION_IS_DENIED);
 		}
-		p.setDisableAt(DateUtils.currentTimestamp());
-		postRepository.save(p);
+		postRepository.delete(p);
 	}
 	
 	@Override
