@@ -53,4 +53,6 @@ public class Message {
 
     public static final String FAVORITE_SIZE_LESS_THAN_MIN = "Bạn phải chọn ít nhất %d lựa chọn.";
     public static final String FAVORITE_TAG_NOT_FOUND = "Sở thích này không tồn tại.";
+    
+    public static final String NULL_DATA = "dữ liệu null.";
 }

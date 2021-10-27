@@ -7,6 +7,7 @@ import com.datn.topfood.dto.request.PostRequest;
 import com.datn.topfood.dto.response.FoodDetailResponse;
 import com.datn.topfood.dto.response.PageResponse;
 import com.datn.topfood.dto.response.PostResponse;
+import com.datn.topfood.dto.response.ProfileResponse;
 import com.datn.topfood.dto.response.SimpleAccountResponse;
 import com.datn.topfood.dto.response.StoreWallResponse;
 
@@ -37,4 +38,6 @@ public interface StoreProfileServic {
     void deletePost(Long postId);
     
     Post detailPost(Long id);
+    
+    PageResponse<PostResponse> getListPost(PageRequest pageRequest);
 }
