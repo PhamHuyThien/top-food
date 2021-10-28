@@ -1,5 +1,7 @@
 package com.datn.topfood.services.service;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.stream.Collectors;
 
 import javax.transaction.Transactional;
@@ -62,13 +64,13 @@ public class StoreProfileServicImpl extends BaseService implements StoreProfileS
 		if (foodRequest.getId() != null) {
 			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, Message.OTHER_ACTION_IS_DENIED);
 		}
-//		if (ime.getRole().compareTo(AccountRole.ROLE_STORE) != 0) {
-//			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, Message.OTHER_ACTION_IS_DENIED);
-//		}
-//		if (foodRepository.countFoodByProfileAccountUsername(ime.getUsername()) >= MAX_SIZE_FOOD) {
-//			throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
-//					Message.MAX_SIZE_FOOD_MESSAGE + MAX_SIZE_FOOD + " món.");
-//		}
+		if (ime.getRole().compareTo(AccountRole.ROLE_STORE) != 0) {
+			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, Message.OTHER_ACTION_IS_DENIED);
+		}
+		if (foodRepository.countFoodByProfileAccountUsername(ime.getUsername()) >= MAX_SIZE_FOOD) {
+			throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+					Message.MAX_SIZE_FOOD_MESSAGE + MAX_SIZE_FOOD + " món.");
+		}
 		Food f = new Food();
 		f.setName(foodRequest.getName());
 		f.setPrice(foodRequest.getPrice());
@@ -92,8 +94,7 @@ public class StoreProfileServicImpl extends BaseService implements StoreProfileS
 		detailResponse.setId(f.getId());
 		detailResponse.setName(f.getName());
 		detailResponse.setPrice(f.getPrice());
-		detailResponse.setTag(new TagResponse(f.getTag().getId(),
-				f.getTag().getTagName()));
+		detailResponse.setTag(new TagResponse(f.getTag().getId(), f.getTag().getTagName()));
 		return detailResponse;
 	}
 
@@ -129,8 +130,8 @@ public class StoreProfileServicImpl extends BaseService implements StoreProfileS
 			return new FoodDetailResponse(food.getId(), food.getName(), food.getPrice(), food.getContent(),
 					food.getFiles().stream().map((file) -> {
 						return new FileRequest(file.getPath(), file.getType().name);
-					}).collect(Collectors.toList()),new TagResponse(food.getTag().getId(),
-							food.getTag().getTagName()));
+					}).collect(Collectors.toList()),
+					new TagResponse(food.getTag().getId(), food.getTag().getTagName()));
 		}).collect(Collectors.toList()));
 		swr.setName(p.getName());
 		swr.setStoreId(p.getId());
@@ -202,8 +203,7 @@ public class StoreProfileServicImpl extends BaseService implements StoreProfileS
 		if (food == null) {
 			throw new ResponseStatusException(HttpStatus.NOT_FOUND, Message.FOOD_NOT_EXISTS);
 		}
-		food.setDisableAt(DateUtils.currentTimestamp());
-		foodRepository.save(food);
+		foodRepository.delete(food);
 	}
 
 	@Override
@@ -218,8 +218,8 @@ public class StoreProfileServicImpl extends BaseService implements StoreProfileS
 			return new FoodDetailResponse(food.getId(), food.getName(), food.getPrice(), food.getContent(),
 					food.getFiles().stream().map((file) -> {
 						return new FileRequest(file.getPath(), file.getType().name);
-					}).collect(Collectors.toList()),new TagResponse(food.getTag().getId(),
-							food.getTag().getTagName()));
+					}).collect(Collectors.toList()),
+					new TagResponse(food.getTag().getId(), food.getTag().getTagName()));
 		}).collect(Collectors.toList()), foods.getTotalElements(), pageRequest.getPageSize());
 	}
 
@@ -249,8 +249,7 @@ public class StoreProfileServicImpl extends BaseService implements StoreProfileS
 		return new FoodDetailResponse(food.getId(), food.getName(), food.getPrice(), food.getContent(),
 				food.getFiles().stream().map((file) -> {
 					return new FileRequest(file.getPath(), file.getType().name);
-				}).collect(Collectors.toList()),new TagResponse(food.getTag().getId(),
-						food.getTag().getTagName()));
+				}).collect(Collectors.toList()), new TagResponse(food.getTag().getId(), food.getTag().getTagName()));
 	}
 
 	@Override
@@ -266,13 +265,13 @@ public class StoreProfileServicImpl extends BaseService implements StoreProfileS
 		p.setCreateAt(DateUtils.currentTimestamp());
 		p.setStatus("active");
 		p.setProfile(profileRepository.findByAccountId(ime.getId()));
-		if(postRequest.getTagIds()!=null) {
+		if (postRequest.getTagIds() != null) {
 			p.setTags(tagRepository.findAllListTagId(postRequest.getTagIds()));
 		}
 		p = postRepository.save(p);
-		PostResponse pr = new PostResponse(p.getId(), p.getContent(), ConvertUtils.convertSetToArrFile(p.getFiles()),p.getTags()
-				.stream().map((tag)->{
-					return new TagResponse(tag.getId(),tag.getTagName());
+		PostResponse pr = new PostResponse(p.getId(), p.getContent(), ConvertUtils.convertSetToArrFile(p.getFiles()),
+				p.getTags().stream().map((tag) -> {
+					return new TagResponse(tag.getId(), tag.getTagName());
 				}).collect(Collectors.toList()));
 		return pr;
 	}
@@ -281,16 +280,38 @@ public class StoreProfileServicImpl extends BaseService implements StoreProfileS
 	@Transactional
 	public void deletePost(Long postId) {
 		Account ime = itMe();
-		Post p = postRepository.findByAccountAndPostId(ime.getUsername(),postId).orElse(null);
+		Post p = postRepository.findByAccountAndPostId(ime.getUsername(), postId).orElse(null);
 		if (p == null) {
 			throw new ResponseStatusException(HttpStatus.NOT_FOUND, Message.OTHER_ACTION_IS_DENIED);
 		}
-		p.setDisableAt(DateUtils.currentTimestamp());
-		postRepository.save(p);
+		postRepository.delete(p);
 	}
-	
+
 	@Override
 	public Post detailPost(Long id) {
 		return postRepository.findById(id).get();
+	}
+
+	@Override
+	public PageResponse<PostResponse> getListPost(PageRequest pageRequest) {
+		Account itMe = itMe();
+		Pageable pageable = PageUtils.toPageable(pageRequest);
+		Page<Post> listPost = postRepository.findAllByAccount(itMe.getUsername(), pageable);
+		List<PostResponse> listPostResponse = new ArrayList<>();
+		if (listPost == null) {
+			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, Message.NULL_DATA);
+		}
+		listPost.forEach((p) -> {
+			listPostResponse.add(new PostResponse(p.getId(), p.getContent(), p.getFiles().stream().map((f) -> {
+				return new FileRequest(f.getPath(), f.getType().name);
+			}).collect(Collectors.toList()), p.getTags().stream().map((t) -> {
+				return new TagResponse(t.getId(), t.getTagName());
+			}).collect(Collectors.toList())));
+		});
+		PageResponse pageResponse = new PageResponse(listPostResponse, listPost.getTotalElements(),
+				pageRequest.getPageSize());
+		pageResponse.setStatus(true);
+		pageResponse.setMessage(Message.OTHER_SUCCESS);
+		return pageResponse;
 	}
 }
