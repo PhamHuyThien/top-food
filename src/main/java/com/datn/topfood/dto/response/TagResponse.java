@@ -18,7 +18,7 @@ public class TagResponse {
 	String tagName;
 	Timestamp createAt;
 	Timestamp updateAt;
-	List<Food> foods;
+	List<FoodResponse> foods;
 
 	public TagResponse(Long id, String tagName) {
 		super();

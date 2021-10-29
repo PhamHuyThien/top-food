@@ -5,6 +5,9 @@ import javax.persistence.*;
 
 import lombok.*;
 
+import java.util.Collection;
+import java.util.List;
+
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -16,7 +19,9 @@ public class Tag extends Base {
     String tagName;
     @Column(length = 100)
     String image;
-
+    @OneToMany(mappedBy = "tag",cascade = CascadeType.ALL)
+    List<Food> food;
+    boolean enable=false;
     public Tag(Long id, String tagName) {
         this.id = id;
         this.tagName = tagName;
