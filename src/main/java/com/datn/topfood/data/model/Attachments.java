@@ -1,5 +1,6 @@
 package com.datn.topfood.data.model;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
@@ -16,6 +17,7 @@ import lombok.ToString;
 @Entity
 public class Attachments extends Base{
 
+	@Column(length = 100)
 	private String fileUrl;
 	
 	@ManyToOne

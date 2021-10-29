@@ -2,12 +2,9 @@ package com.datn.topfood.data.model;
 
 import java.util.Set;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.ManyToMany;
+import javax.persistence.*;
 
+import com.datn.topfood.util.enums.ReactionType;
 import lombok.*;
 import org.apache.commons.lang3.builder.ToStringExclude;
 
@@ -20,8 +17,9 @@ public class Reaction {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
-	
-	private String type;
+
+	@Enumerated(EnumType.STRING)
+	private ReactionType type;
 
 	@EqualsAndHashCode.Exclude
 	@ToStringExclude

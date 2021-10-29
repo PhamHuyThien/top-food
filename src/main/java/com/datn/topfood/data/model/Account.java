@@ -1,21 +1,12 @@
 package com.datn.topfood.data.model;
 
 import java.util.Collection;
-import java.util.List;
-import java.util.Set;
-
 import javax.persistence.*;
-
 import com.datn.topfood.util.enums.AccountRole;
 import com.datn.topfood.util.enums.AccountStatus;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
-import lombok.ToString;
-
-import org.apache.commons.lang3.builder.ToStringExclude;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
@@ -24,12 +15,13 @@ import org.springframework.security.core.userdetails.UserDetails;
 @AllArgsConstructor
 @Entity
 public class Account extends Base implements UserDetails {
-    @Column(unique = true)
+    @Column(unique = true, length = 30)
     private String username;
+    @Column(length = 72)
     private String password;
-    @Column(unique = true)
+    @Column(unique = true, length = 15)
     private String phoneNumber;
-    @Column(unique = true)
+    @Column(unique = true, length = 50)
     private String email;
     @Enumerated(EnumType.STRING)
     private AccountStatus status;
