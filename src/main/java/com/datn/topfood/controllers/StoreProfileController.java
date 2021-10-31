@@ -112,4 +112,10 @@ public class StoreProfileController {
         profileServic.deletePost(id);
         return ResponseEntity.ok(new Response<>(true, Message.OTHER_SUCCESS));
     }
+    
+    @Operation(description = "API lấy danh sách bài viết")
+    @GetMapping("/list-post")
+    public ResponseEntity<PageResponse<PostResponse>> getListPost(PageRequest pageRequest) {
+        return ResponseEntity.ok(profileServic.getListPost(pageRequest));
+    }
 }
