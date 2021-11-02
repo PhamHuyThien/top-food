@@ -113,6 +113,12 @@ public class StoreProfileController {
         return ResponseEntity.ok(new Response<>(true, Message.OTHER_SUCCESS));
     }
     
+    @Operation(description = "API sửa bài viết")
+    @PutMapping("/post/update")
+    public ResponseEntity<Response<PostResponse>> updatePost(@RequestBody PostRequest postRs) {
+        return ResponseEntity.ok(new Response<>(true, Message.OTHER_SUCCESS, profileServic.updatePost(postRs)));
+    }
+    
     @Operation(description = "API lấy danh sách bài viết")
     @GetMapping("/list-post")
     public ResponseEntity<PageResponse<PostResponse>> getListPost(PageRequest pageRequest) {

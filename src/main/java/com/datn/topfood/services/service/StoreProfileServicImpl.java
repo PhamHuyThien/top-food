@@ -314,4 +314,31 @@ public class StoreProfileServicImpl extends BaseService implements StoreProfileS
 		pageResponse.setMessage(Message.OTHER_SUCCESS);
 		return pageResponse;
 	}
+	
+	@Override
+	public PostResponse updatePost(PostRequest postRequest) {
+	    Post post = postRepository.findById(postRequest.getId()).get();
+	    if(post==null) {
+	        throw new ResponseStatusException(HttpStatus.NOT_FOUND,Message.POST_NOT_EXISTS);
+	    }
+	    post.setUpdateAt(DateUtils.currentTimestamp());
+	    if(postRequest.getFiles()!=null) {
+	        post.setFiles(ConvertUtils.convertArrFileReqToSetFile(postRequest.getFiles()));
+	    }
+	    if(postRequest.getContent()!=null) {
+	        post.setContent(postRequest.getContent());
+	    }
+	    if(postRequest.getTagIds()!=null) {
+	        post.setTags(tagRepository.findAllListTagId(postRequest.getTagIds()));
+	    }
+	    post = postRepository.save(post);
+	    PostResponse postResponse = new PostResponse();
+	    postResponse.setId(post.getId());
+	    postResponse.setFiles(ConvertUtils.convertSetToArrFile(post.getFiles()));
+	    postResponse.setTags(post.getTags().stream().map((tag) -> {
+                    return new TagResponse(tag.getId(), tag.getTagName());
+                }).collect(Collectors.toList()));
+	    postResponse.setContent(post.getContent());
+	    return postResponse;
+	}
 }
