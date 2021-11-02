@@ -107,7 +107,7 @@ public class StoreProfileController {
     }
     
     @Operation(description = "API chi tiêt bài viết")
-    @DeleteMapping("/post/detail/{postId}")
+    @GetMapping("/post/detail/{postId}")
     public ResponseEntity<Response<Post>> detailPost(@PathVariable("postId") Long id) {
         profileServic.deletePost(id);
         return ResponseEntity.ok(new Response<>(true, Message.OTHER_SUCCESS));
