@@ -2,7 +2,7 @@ package com.datn.topfood.util.enums;
 
 public enum FileType {
 
-	FILE("file"),VIDEO("video");
+	FILE("image"),VIDEO("video");
 	
 	public final String name;
 	

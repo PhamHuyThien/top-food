@@ -18,6 +18,7 @@ import com.datn.topfood.data.model.AccountFollow;
 import com.datn.topfood.data.model.Food;
 import com.datn.topfood.data.model.Post;
 import com.datn.topfood.data.model.Profile;
+import com.datn.topfood.data.repository.custom.impl.StoreCustomRepository;
 import com.datn.topfood.data.repository.jpa.AccountFollowRepository;
 import com.datn.topfood.data.repository.jpa.FoodRepository;
 import com.datn.topfood.data.repository.jpa.PostRepository;
@@ -27,7 +28,9 @@ import com.datn.topfood.dto.request.FileRequest;
 import com.datn.topfood.dto.request.FoodRequest;
 import com.datn.topfood.dto.request.PageRequest;
 import com.datn.topfood.dto.request.PostRequest;
+import com.datn.topfood.dto.request.SearchFoodsRequest;
 import com.datn.topfood.dto.response.FoodDetailResponse;
+import com.datn.topfood.dto.response.FoodResponse;
 import com.datn.topfood.dto.response.PageResponse;
 import com.datn.topfood.dto.response.PostResponse;
 import com.datn.topfood.dto.response.SimpleAccountResponse;
@@ -54,6 +57,8 @@ public class StoreProfileServicImpl extends BaseService implements StoreProfileS
 	PostRepository postRepository;
 	@Autowired
 	TagRepository tagRepository;
+	@Autowired
+	StoreCustomRepository storeCustomRepository;
 
 	public final int MAX_SIZE_FOOD = 20;
 
@@ -340,5 +345,22 @@ public class StoreProfileServicImpl extends BaseService implements StoreProfileS
                 }).collect(Collectors.toList()));
 	    postResponse.setContent(post.getContent());
 	    return postResponse;
+	}
+	
+	@Override
+	public PageResponse<FoodDetailResponse> searchFoods(SearchFoodsRequest foodsRequest,PageRequest pageRequest) {
+		Double min = foodsRequest.getMinPrice()==null?0:foodsRequest.getMinPrice();
+		Double max = foodsRequest.getMaxPrice()==null?Double.MAX_VALUE:foodsRequest.getMaxPrice();
+		List<Food> foods = storeCustomRepository.searchFoods(foodsRequest.getFoodName(), foodsRequest.getTagName()
+				,min,max , pageRequest);
+		List<FoodDetailResponse> response = foods.stream().map((food) -> {
+			return new FoodDetailResponse(food.getId(), food.getName(), food.getPrice(), food.getContent(),
+					food.getFiles().stream().map((file) -> {
+						return new FileRequest(file.getPath(), file.getType().name);
+					}).collect(Collectors.toList()),
+					new TagResponse(food.getTag().getId(), food.getTag().getTagName()));
+		}).collect(Collectors.toList());
+		return new PageResponse<FoodDetailResponse>(response, storeCustomRepository.countFoodsSearch(foodsRequest.getFoodName(),
+				foodsRequest.getTagName(), min, max), pageRequest.getPageSize());
 	}
 }

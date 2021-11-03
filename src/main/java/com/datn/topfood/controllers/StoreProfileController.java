@@ -17,6 +17,7 @@ import com.datn.topfood.data.model.Post;
 import com.datn.topfood.dto.request.FoodRequest;
 import com.datn.topfood.dto.request.PageRequest;
 import com.datn.topfood.dto.request.PostRequest;
+import com.datn.topfood.dto.request.SearchFoodsRequest;
 import com.datn.topfood.services.interf.StoreProfileServic;
 import com.datn.topfood.util.constant.Message;
 
@@ -123,5 +124,11 @@ public class StoreProfileController {
     @GetMapping("/list-post")
     public ResponseEntity<PageResponse<PostResponse>> getListPost(PageRequest pageRequest) {
         return ResponseEntity.ok(profileServic.getListPost(pageRequest));
+    }
+    
+    @Operation(description = "API tìm kiếm món ăn")
+    @GetMapping("/search/food")
+    public ResponseEntity<PageResponse<FoodDetailResponse>> searchFoods(@RequestBody SearchFoodsRequest foodsRequest,PageRequest pageRequest) {
+        return ResponseEntity.ok(profileServic.searchFoods(foodsRequest,pageRequest));
     }
 }
