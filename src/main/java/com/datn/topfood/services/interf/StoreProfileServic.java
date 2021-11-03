@@ -40,4 +40,6 @@ public interface StoreProfileServic {
     Post detailPost(Long id);
     
     PageResponse<PostResponse> getListPost(PageRequest pageRequest);
+    
+    PostResponse updatePost(PostRequest postRequest);
 }

@@ -107,10 +107,16 @@ public class StoreProfileController {
     }
     
     @Operation(description = "API chi tiêt bài viết")
-    @DeleteMapping("/post/detail/{postId}")
+    @GetMapping("/post/detail/{postId}")
     public ResponseEntity<Response<Post>> detailPost(@PathVariable("postId") Long id) {
         profileServic.deletePost(id);
         return ResponseEntity.ok(new Response<>(true, Message.OTHER_SUCCESS));
+    }
+    
+    @Operation(description = "API sửa bài viết")
+    @PutMapping("/post/update")
+    public ResponseEntity<Response<PostResponse>> updatePost(@RequestBody PostRequest postRs) {
+        return ResponseEntity.ok(new Response<>(true, Message.OTHER_SUCCESS, profileServic.updatePost(postRs)));
     }
     
     @Operation(description = "API lấy danh sách bài viết")
