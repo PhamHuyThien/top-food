@@ -17,6 +17,6 @@ public class FoodRequest {
 	String content;
 	Long tagId;
 	
-	ArrayList<FileRequest> files;
+	ArrayList<String> files;
 	
 }

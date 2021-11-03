@@ -94,7 +94,7 @@ public class StoreProfileServicImpl extends BaseService implements StoreProfileS
 		FoodDetailResponse detailResponse = new FoodDetailResponse();
 		detailResponse.setContent(f.getContent());
 		detailResponse.setFiles(f.getFiles().stream().map((file) -> {
-			return new FileRequest(file.getPath(), file.getType().name);
+			return file.getPath();
 		}).collect(Collectors.toList()));
 		detailResponse.setId(f.getId());
 		detailResponse.setName(f.getName());
@@ -134,7 +134,7 @@ public class StoreProfileServicImpl extends BaseService implements StoreProfileS
 		swr.setFoods(foodRepository.findByProfileId(storeProfileId).stream().map((food) -> {
 			return new FoodDetailResponse(food.getId(), food.getName(), food.getPrice(), food.getContent(),
 					food.getFiles().stream().map((file) -> {
-						return new FileRequest(file.getPath(), file.getType().name);
+						return file.getPath();
 					}).collect(Collectors.toList()),
 					new TagResponse(food.getTag().getId(), food.getTag().getTagName()));
 		}).collect(Collectors.toList()));
@@ -222,7 +222,7 @@ public class StoreProfileServicImpl extends BaseService implements StoreProfileS
 		return new PageResponse<FoodDetailResponse>(foods.stream().map((food) -> {
 			return new FoodDetailResponse(food.getId(), food.getName(), food.getPrice(), food.getContent(),
 					food.getFiles().stream().map((file) -> {
-						return new FileRequest(file.getPath(), file.getType().name);
+						return file.getPath();
 					}).collect(Collectors.toList()),
 					new TagResponse(food.getTag().getId(), food.getTag().getTagName()));
 		}).collect(Collectors.toList()), foods.getTotalElements(), pageRequest.getPageSize());
@@ -253,7 +253,7 @@ public class StoreProfileServicImpl extends BaseService implements StoreProfileS
 
 		return new FoodDetailResponse(food.getId(), food.getName(), food.getPrice(), food.getContent(),
 				food.getFiles().stream().map((file) -> {
-					return new FileRequest(file.getPath(), file.getType().name);
+					return file.getPath();
 				}).collect(Collectors.toList()), new TagResponse(food.getTag().getId(), food.getTag().getTagName()));
 	}
 
@@ -308,7 +308,7 @@ public class StoreProfileServicImpl extends BaseService implements StoreProfileS
 		}
 		listPost.forEach((p) -> {
 			listPostResponse.add(new PostResponse(p.getId(), p.getContent(), p.getFiles().stream().map((f) -> {
-				return new FileRequest(f.getPath(), f.getType().name);
+				return f.getPath();
 			}).collect(Collectors.toList()), p.getTags().stream().map((t) -> {
 				return new TagResponse(t.getId(), t.getTagName());
 			}).collect(Collectors.toList())));
@@ -356,7 +356,7 @@ public class StoreProfileServicImpl extends BaseService implements StoreProfileS
 		List<FoodDetailResponse> response = foods.stream().map((food) -> {
 			return new FoodDetailResponse(food.getId(), food.getName(), food.getPrice(), food.getContent(),
 					food.getFiles().stream().map((file) -> {
-						return new FileRequest(file.getPath(), file.getType().name);
+						return file.getPath();
 					}).collect(Collectors.toList()),
 					new TagResponse(food.getTag().getId(), food.getTag().getTagName()));
 		}).collect(Collectors.toList());

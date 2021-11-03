@@ -13,6 +13,6 @@ public class PostRequest {
 
 	Long id;
 	String content;
-	List<FileRequest> files;
+	List<String> files;
 	Long[] tagIds;
 }
