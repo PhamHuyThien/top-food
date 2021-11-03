@@ -110,4 +110,18 @@ public class TagServiceImpl implements TagService {
         tag.setEnable(!tag.isEnable());
         tagRepository.save(tag);
     }
+
+    @Override
+    public List<TagResponse> getAllTitleTag(String tagName) {
+        tagName = "%" + tagName + "%";
+        List<TagResponse> tagResponses=new ArrayList<>();
+        List<Tag> tags=tagRepository.findByEnableAndTagNameLike(false,tagName);
+        for (Tag x:tags){
+            TagResponse tagResponse=new TagResponse();
+            tagResponse.setId(x.getId());
+            tagResponse.setTagName(x.getTagName());
+            tagResponses.add(tagResponse);
+        }
+        return tagResponses;
+    }
 }
