@@ -14,7 +14,7 @@ public class FoodResponse {
     String name;
     Double price;
     String content;
-    List<FileRequest> files;
+    List<String> files;
     String storeName;
 
 }

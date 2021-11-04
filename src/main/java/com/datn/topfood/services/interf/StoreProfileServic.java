@@ -4,7 +4,9 @@ import com.datn.topfood.data.model.Post;
 import com.datn.topfood.dto.request.FoodRequest;
 import com.datn.topfood.dto.request.PageRequest;
 import com.datn.topfood.dto.request.PostRequest;
+import com.datn.topfood.dto.request.SearchFoodsRequest;
 import com.datn.topfood.dto.response.FoodDetailResponse;
+import com.datn.topfood.dto.response.FoodResponse;
 import com.datn.topfood.dto.response.PageResponse;
 import com.datn.topfood.dto.response.PostResponse;
 import com.datn.topfood.dto.response.ProfileResponse;
@@ -42,4 +44,6 @@ public interface StoreProfileServic {
     PageResponse<PostResponse> getListPost(PageRequest pageRequest);
     
     PostResponse updatePost(PostRequest postRequest);
+    
+    PageResponse<FoodDetailResponse> searchFoods(SearchFoodsRequest foodsRequest,PageRequest pageRequest);
 }

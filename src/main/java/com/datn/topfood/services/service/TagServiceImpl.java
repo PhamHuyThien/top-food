@@ -64,7 +64,7 @@ public class TagServiceImpl implements TagService {
             foodResponse.setPrice(x.getPrice());
             foodResponse.setStoreName(x.getProfile().getName());
             foodResponse.setFiles(x.getFiles().stream().map((file) -> {
-                return new FileRequest(file.getPath(), file.getType().name);
+                return file.getPath();
             }).collect(Collectors.toList()));
             foodResponse.setContent(x.getContent());
             foodResponses.add(foodResponse);
