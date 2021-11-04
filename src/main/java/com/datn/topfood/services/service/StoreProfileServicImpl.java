@@ -293,8 +293,11 @@ public class StoreProfileServicImpl extends BaseService implements StoreProfileS
 	}
 
 	@Override
-	public Post detailPost(Long id) {
-		return postRepository.findById(id).get();
+	public PostResponse detailPost(Long id) {
+	    Post p = postRepository.findById(id).get();
+		return new PostResponse(p.getId(), p.getContent(), ConvertUtils.convertSetToArrFile(p.getFiles()), p.getTags().stream().map((t)->{
+	       return new TagResponse(t.getId(), t.getTagName());
+	    }).collect(Collectors.toList()));
 	}
 
 	@Override
