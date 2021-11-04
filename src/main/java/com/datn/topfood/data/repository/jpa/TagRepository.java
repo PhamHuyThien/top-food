@@ -13,6 +13,7 @@ public interface TagRepository extends JpaRepository<Tag,Long> {
   boolean existsByTagName(String tagName);
   Optional<Tag> findByTagName(String tagName);
   Page<Tag> findByEnableAndTagNameLike(boolean enable,String tagName, Pageable request);
+  List<Tag>findByEnableAndTagNameLike(boolean enable,String tagName);
   @Query("select t from Tag as t where t.id IN ?1")
   List<Tag> findAllListTagId(Long[] longs);
 }

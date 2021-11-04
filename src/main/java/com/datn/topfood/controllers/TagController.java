@@ -10,6 +10,8 @@ import com.datn.topfood.services.interf.TagService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/api/tag")
 public class TagController {
@@ -35,6 +37,11 @@ public class TagController {
     @GetMapping("/{id}")
     public TagResponse findById(@PathVariable("id") Long id) {
         return tagService.findById(id);
+    }
+
+    @GetMapping(path = "/all")
+    public List<TagResponse> getAllTag(@RequestParam String tagName) {
+        return tagService.getAllTitleTag(tagName);
     }
 
     @DeleteMapping("{id}")
