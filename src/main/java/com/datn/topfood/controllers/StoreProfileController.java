@@ -109,9 +109,8 @@ public class StoreProfileController {
     
     @Operation(description = "API chi tiêt bài viết")
     @GetMapping("/post/detail/{postId}")
-    public ResponseEntity<Response<Post>> detailPost(@PathVariable("postId") Long id) {
-        profileServic.deletePost(id);
-        return ResponseEntity.ok(new Response<>(true, Message.OTHER_SUCCESS));
+    public ResponseEntity<Response<PostResponse>> detailPost(@PathVariable("postId") Long id) {
+        return ResponseEntity.ok(new Response<>(true, Message.OTHER_SUCCESS,profileServic.detailPost(id)));
     }
     
     @Operation(description = "API sửa bài viết")
