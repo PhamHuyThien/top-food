@@ -1,18 +1,16 @@
 package com.datn.topfood.dto.request;
 
-import java.util.List;
-
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-@Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class PostRequest {
+@Data
+public class SearchFoodsRequest {
 
-	Long id;
-	String content;
-	List<String> files;
-	Long[] tagIds;
+	public String foodName;
+	public String tagName;
+	public Double minPrice;
+	public Double maxPrice;
 }

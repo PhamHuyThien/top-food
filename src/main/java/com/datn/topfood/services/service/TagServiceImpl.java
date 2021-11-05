@@ -64,7 +64,7 @@ public class TagServiceImpl implements TagService {
             foodResponse.setPrice(x.getPrice());
             foodResponse.setStoreName(x.getProfile().getName());
             foodResponse.setFiles(x.getFiles().stream().map((file) -> {
-                return new FileRequest(file.getPath(), file.getType().name);
+                return file.getPath();
             }).collect(Collectors.toList()));
             foodResponse.setContent(x.getContent());
             foodResponses.add(foodResponse);
@@ -109,5 +109,19 @@ public class TagServiceImpl implements TagService {
         Tag tag = tagRepository.findById(id).orElseThrow(() -> new RuntimeException("tag not found"));
         tag.setEnable(!tag.isEnable());
         tagRepository.save(tag);
+    }
+
+    @Override
+    public List<TagResponse> getAllTitleTag(String tagName) {
+        tagName = "%" + tagName + "%";
+        List<TagResponse> tagResponses=new ArrayList<>();
+        List<Tag> tags=tagRepository.findByEnableAndTagNameLike(false,tagName);
+        for (Tag x:tags){
+            TagResponse tagResponse=new TagResponse();
+            tagResponse.setId(x.getId());
+            tagResponse.setTagName(x.getTagName());
+            tagResponses.add(tagResponse);
+        }
+        return tagResponses;
     }
 }

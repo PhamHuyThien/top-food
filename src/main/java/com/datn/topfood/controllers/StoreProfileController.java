@@ -17,6 +17,7 @@ import com.datn.topfood.data.model.Post;
 import com.datn.topfood.dto.request.FoodRequest;
 import com.datn.topfood.dto.request.PageRequest;
 import com.datn.topfood.dto.request.PostRequest;
+import com.datn.topfood.dto.request.SearchFoodsRequest;
 import com.datn.topfood.services.interf.StoreProfileServic;
 import com.datn.topfood.util.constant.Message;
 
@@ -107,15 +108,26 @@ public class StoreProfileController {
     }
     
     @Operation(description = "API chi tiêt bài viết")
-    @DeleteMapping("/post/detail/{postId}")
-    public ResponseEntity<Response<Post>> detailPost(@PathVariable("postId") Long id) {
-        profileServic.deletePost(id);
-        return ResponseEntity.ok(new Response<>(true, Message.OTHER_SUCCESS));
+    @GetMapping("/post/detail/{postId}")
+    public ResponseEntity<Response<PostResponse>> detailPost(@PathVariable("postId") Long id) {
+        return ResponseEntity.ok(new Response<>(true, Message.OTHER_SUCCESS,profileServic.detailPost(id)));
+    }
+    
+    @Operation(description = "API sửa bài viết")
+    @PutMapping("/post/update")
+    public ResponseEntity<Response<PostResponse>> updatePost(@RequestBody PostRequest postRs) {
+        return ResponseEntity.ok(new Response<>(true, Message.OTHER_SUCCESS, profileServic.updatePost(postRs)));
     }
     
     @Operation(description = "API lấy danh sách bài viết")
     @GetMapping("/list-post")
     public ResponseEntity<PageResponse<PostResponse>> getListPost(PageRequest pageRequest) {
         return ResponseEntity.ok(profileServic.getListPost(pageRequest));
+    }
+    
+    @Operation(description = "API tìm kiếm món ăn")
+    @GetMapping("/search/food")
+    public ResponseEntity<PageResponse<FoodDetailResponse>> searchFoods(@RequestBody SearchFoodsRequest foodsRequest,PageRequest pageRequest) {
+        return ResponseEntity.ok(profileServic.searchFoods(foodsRequest,pageRequest));
     }
 }

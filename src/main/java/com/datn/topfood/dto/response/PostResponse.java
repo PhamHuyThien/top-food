@@ -17,6 +17,6 @@ public class PostResponse {
 
 	Long id;
 	String content;
-	List<FileRequest> files;
+	List<String> files;
 	List<TagResponse> tags;
 }
