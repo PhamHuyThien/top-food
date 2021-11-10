@@ -16,9 +16,12 @@ public class Food extends Base {
 
     @Column(length = 50)
     private String name;
+
     private Double price;
+
     @Column(length = 200)
     private String content;
+
     @ManyToOne
     @JoinColumn(name = "tag_id")
     Tag tag;

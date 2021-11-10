@@ -20,6 +20,7 @@ public class File extends Base{
 	private String path;
 	
 	@Enumerated(EnumType.STRING)
+	@Column(length = 30)
 	private FileType type;
 
 	@EqualsAndHashCode.Exclude

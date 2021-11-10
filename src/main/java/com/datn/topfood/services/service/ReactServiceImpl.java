@@ -78,7 +78,6 @@ public class ReactServiceImpl implements ReactService {
         ReactionPost reactionPost = new ReactionPost();
         reactionPost.setReaction(reaction);
         reactionPost.setPost(optionalPost.get());
-        reactionPost.setCreateAt(currentTime);
         reactionPostRepository.save(reactionPost);
         return null;
     }

@@ -17,8 +17,10 @@ public class Conversation extends Base {
 
     @Column(length = 100)
     private String title;
+
     @Column(length = 100)
     private String image;
+
     @ManyToOne
     @JoinColumn(name = "createby_id")
     private Account createBy;

@@ -17,6 +17,7 @@ import org.apache.commons.lang3.builder.ToStringExclude;
 @Entity
 public class Reaction extends Base {
     @Enumerated(EnumType.STRING)
+    @Column(length = 30)
     ReactType type;
 
     @ManyToOne

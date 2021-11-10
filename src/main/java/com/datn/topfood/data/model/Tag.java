@@ -14,14 +14,18 @@ import java.util.List;
 @ToString
 @Entity
 public class Tag extends Base {
-    Long id;
+
     @Column(length = 50)
     String tagName;
+
     @Column(length = 100)
     String image;
-    @OneToMany(mappedBy = "tag",cascade = CascadeType.ALL)
+
+    @OneToMany(mappedBy = "tag", cascade = CascadeType.ALL)
     List<Food> food;
-    boolean enable=false;
+
+    boolean enable = false;
+
     public Tag(Long id, String tagName) {
         this.id = id;
         this.tagName = tagName;
