@@ -9,6 +9,7 @@ import com.datn.topfood.dto.response.ProfileResponse;
 import com.datn.topfood.dto.response.Response;
 import com.datn.topfood.services.BaseService;
 import com.datn.topfood.services.interf.ReactService;
+import com.sun.org.apache.regexp.internal.RE;
 import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -49,5 +50,11 @@ public class ReactController extends BaseService {
     @PostMapping("/reaction-comment")
     public ResponseEntity<Response<Void>> reactionComment(@RequestParam Long id, @RequestBody ReactionRequest reactionRequest){
         return ResponseEntity.ok(new Response<>(reactService.reactionComment(id, reactionRequest, itMe())));
+    }
+
+    @Operation(description = "API trả lời bình luận.")
+    @PostMapping("/comment-reply")
+    public ResponseEntity<Response<Void>> commentReply(@RequestParam Long id, @RequestBody CommentPostRequest commentPostRequest){
+        return ResponseEntity.ok(new Response<>(reactService.commentReply(id, commentPostRequest, itMe())));
     }
 }

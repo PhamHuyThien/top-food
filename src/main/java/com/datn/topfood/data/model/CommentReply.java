@@ -17,11 +17,12 @@ public class CommentReply {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     protected Long id;
 
-    @Column(length = 1000)
-    private String content;
-
     @ManyToOne
     @JoinColumn(name = "comment_id")
-    private Comment comment;
+    Comment comment;
+
+    @ManyToOne
+    @JoinColumn(name = "comment_reply_id")
+    private Comment commentReply;
 
 }

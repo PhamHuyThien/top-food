@@ -45,42 +45,19 @@ public class ReactServiceImpl implements ReactService {
     CommentFileRepository commentFileRepository;
     @Autowired
     CommentReactionRepository commentReactionRepository;
+    @Autowired
+    CommentReplyRepository commentReplyRepository;
 
     @Override
     @Transactional
     public Void commentPost(Long id, CommentPostRequest commentPostRequest, Account itMe) {
         Post post = checkPostExists(id);
-        Timestamp currentTime = DateUtils.currentTimestamp();
-        Comment comment = new Comment();
-        comment.setContent(commentPostRequest.getContent());
-        comment.setCreateAt(currentTime);
-        comment.setAccount(itMe);
-        comment = commentRepository.save(comment);
-        Comment finalComment = comment;
-        commentPostRequest.getFiles().forEach(strFile -> {
-            File file = new File();
-            file.setPath(strFile);
-            file.setCreateAt(currentTime);
-            file = fileRepository.save(file);
-            CommentFile commentFile = new CommentFile();
-            commentFile.setComment(finalComment);
-            commentFile.setFile(file);
-            commentFileRepository.save(commentFile);
-        });
+        Comment comment = savedComment(commentPostRequest, itMe);
         CommentPost commentPost = new CommentPost();
         commentPost.setComment(comment);
         commentPost.setPost(post);
-        commentPost.setCreateAt(currentTime);
         commentPostRepository.save(commentPost);
         return null;
-    }
-
-    private Post checkPostExists(Long id) {
-        Optional<Post> optionalPost = postRepository.findById(id);
-        if (!optionalPost.isPresent()) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, Message.POST_NOT_EXISTS);
-        }
-        return optionalPost.get();
     }
 
     @Override
@@ -157,11 +134,51 @@ public class ReactServiceImpl implements ReactService {
         return null;
     }
 
+    @Override
+    public Void commentReply(Long id, CommentPostRequest commentPostRequest, Account itMe) {
+        Comment comment = checkCommentExists(id);
+        Comment commentReply = savedComment(commentPostRequest, itMe);
+        CommentReply savedComment = new CommentReply();
+        savedComment.setComment(comment);
+        savedComment.setCommentReply(commentReply);
+        commentReplyRepository.save(savedComment);
+        return null;
+    }
+
     private Comment checkCommentExists(Long id) {
         Optional<Comment> commentOptional = commentRepository.findById(id);
         if (!commentOptional.isPresent()) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, Message.REACT_COMMENT_NOT_EXISTS);
         }
         return commentOptional.get();
+    }
+
+    private Post checkPostExists(Long id) {
+        Optional<Post> optionalPost = postRepository.findById(id);
+        if (!optionalPost.isPresent()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, Message.POST_NOT_EXISTS);
+        }
+        return optionalPost.get();
+    }
+
+    private Comment savedComment(CommentPostRequest commentPostRequest, Account account) {
+        Timestamp currentTime = DateUtils.currentTimestamp();
+        Comment comment = new Comment();
+        comment.setContent(commentPostRequest.getContent());
+        comment.setCreateAt(currentTime);
+        comment.setAccount(account);
+        comment = commentRepository.save(comment);
+        Comment finalComment = comment;
+        commentPostRequest.getFiles().forEach(strFile -> {
+            File file = new File();
+            file.setPath(strFile);
+            file.setCreateAt(currentTime);
+            file = fileRepository.save(file);
+            CommentFile commentFile = new CommentFile();
+            commentFile.setComment(finalComment);
+            commentFile.setFile(file);
+            commentFileRepository.save(commentFile);
+        });
+        return finalComment;
     }
 }
