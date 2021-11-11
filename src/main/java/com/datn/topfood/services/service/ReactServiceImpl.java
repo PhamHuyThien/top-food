@@ -149,6 +149,18 @@ public class ReactServiceImpl implements ReactService {
         return toPageReactionResponse(reactionPage, pageable);
     }
 
+    @Override
+    public Void deleteCommentPost(Long postId, Long commentId, Account itMe) {
+        Optional<CommentPost> commentPostOptional = commentPostRepository.findByPostIdAndCommentIdAndAccountId(postId, commentId, itMe.getId());
+        if (!commentPostOptional.isPresent()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, Message.REACT_COMMENT_NOT_EXISTS);
+        }
+        Timestamp currentTime = DateUtils.currentTimestamp();
+        Comment comment = commentPostOptional.get().getComment();
+        comment.setDisableAt(currentTime);
+        commentRepository.save(comment);
+        return null;
+    }
 
     private Comment checkCommentExists(Long id) {
         Optional<Comment> commentOptional = commentRepository.findById(id);

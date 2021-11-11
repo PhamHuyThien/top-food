@@ -63,7 +63,13 @@ public class ReactController extends BaseService {
 
     @Operation(description = "API danh sách thả tim trong bình luận.")
     @GetMapping("/list-reaction-comment")
-    public ResponseEntity<PageResponse<ReactionResponse>> listReactionComment(@RequestParam Long id, PageRequest pageRequest){
+    public ResponseEntity<PageResponse<ReactionResponse>> listReactionComment(@RequestParam Long id, PageRequest pageRequest) {
         return ResponseEntity.ok(reactService.listReactionComment(id, pageRequest, itMe()));
+    }
+
+    @Operation(description = "API xóa bình luận bài viết.")
+    @DeleteMapping("/comment-post")
+    public ResponseEntity<Response<Void>> deleteCommentPost(@RequestParam Long postId, @RequestParam Long commentId) {
+        return ResponseEntity.ok(new Response<>(reactService.deleteCommentPost(postId, commentId, itMe())));
     }
 }

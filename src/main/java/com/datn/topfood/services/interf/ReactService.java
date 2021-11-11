@@ -25,4 +25,6 @@ public interface ReactService {
     PageResponse<CommentResponse> listCommentReply(Long id, PageRequest pageRequest, Account itMe);
 
     PageResponse<ReactionResponse> listReactionComment(Long id, PageRequest pageRequest, Account itMe);
+
+    Void deleteCommentPost(Long postId, Long commentId, Account itMe);
 }
