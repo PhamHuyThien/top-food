@@ -66,15 +66,21 @@ public class ReactServiceImpl implements ReactService {
     public Void reactPost(Long id, ReactionRequest reactPostRequest, Account itMe) {
         Post post = checkPostExists(id);
         Timestamp currentTime = DateUtils.currentTimestamp();
-        Reaction reaction = new Reaction();
-        reaction.setAccount(itMe);
-        reaction.setCreateAt(currentTime);
-        reaction.setType(reactPostRequest.getType());
-        reaction = reactionRepository.save(reaction);
-        ReactionPost reactionPost = new ReactionPost();
-        reactionPost.setReaction(reaction);
-        reactionPost.setPost(post);
-        reactionPostRepository.save(reactionPost);
+        if (reactionPostRepository.existsByReactionPost(itMe.getId(), post.getId())) {
+            ReactionPost reactionPost = reactionPostRepository.getByAccountIdAndPostId(itMe.getId(), post.getId());
+            reactionPostRepository.delete(reactionPost);
+            reactionRepository.delete(reactionPost.getReaction());
+        } else {
+            Reaction reaction = new Reaction();
+            reaction.setAccount(itMe);
+            reaction.setCreateAt(currentTime);
+            reaction.setType(reactPostRequest.getType());
+            reaction = reactionRepository.save(reaction);
+            ReactionPost reactionPost = new ReactionPost();
+            reactionPost.setReaction(reaction);
+            reactionPost.setPost(post);
+            reactionPostRepository.save(reactionPost);
+        }
         return null;
     }
 
@@ -98,15 +104,21 @@ public class ReactServiceImpl implements ReactService {
     public Void reactionComment(Long id, ReactionRequest reactionRequest, Account itMe) {
         Comment comment = checkCommentExists(id);
         Timestamp currentTime = DateUtils.currentTimestamp();
-        Reaction reaction = new Reaction();
-        reaction.setAccount(itMe);
-        reaction.setCreateAt(currentTime);
-        reaction.setType(reactionRequest.getType());
-        reaction = reactionRepository.save(reaction);
-        CommentReaction commentReaction = new CommentReaction();
-        commentReaction.setReaction(reaction);
-        commentReaction.setComment(comment);
-        commentReactionRepository.save(commentReaction);
+        if (commentReactionRepository.existsByCommentReaction(itMe.getId(), comment.getId())) {
+            CommentReaction commentReaction = commentReactionRepository.getByAccountIdAndCommentId(itMe.getId(), comment.getId());
+            commentReactionRepository.delete(commentReaction);
+            reactionRepository.delete(commentReaction.getReaction());
+        } else {
+            Reaction reaction = new Reaction();
+            reaction.setAccount(itMe);
+            reaction.setCreateAt(currentTime);
+            reaction.setType(reactionRequest.getType());
+            reaction = reactionRepository.save(reaction);
+            CommentReaction commentReaction = new CommentReaction();
+            commentReaction.setReaction(reaction);
+            commentReaction.setComment(comment);
+            commentReactionRepository.save(commentReaction);
+        }
         return null;
     }
 
