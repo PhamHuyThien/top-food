@@ -67,9 +67,9 @@ public class ReactController extends BaseService {
         return ResponseEntity.ok(reactService.listReactionComment(id, pageRequest, itMe()));
     }
 
-    @Operation(description = "API xóa bình luận bài viết.")
+    @Operation(description = "API xóa bình luận.")
     @DeleteMapping("/comment-post")
-    public ResponseEntity<Response<Void>> deleteCommentPost(@RequestParam Long postId, @RequestParam Long commentId) {
-        return ResponseEntity.ok(new Response<>(reactService.deleteCommentPost(postId, commentId, itMe())));
+    public ResponseEntity<Response<Void>> deleteCommentPost(@RequestParam Long commentId) {
+        return ResponseEntity.ok(new Response<>(reactService.deleteCommentPost(commentId, itMe())));
     }
 }

@@ -150,15 +150,14 @@ public class ReactServiceImpl implements ReactService {
     }
 
     @Override
-    public Void deleteCommentPost(Long postId, Long commentId, Account itMe) {
-        Optional<CommentPost> commentPostOptional = commentPostRepository.findByPostIdAndCommentIdAndAccountId(postId, commentId, itMe.getId());
-        if (!commentPostOptional.isPresent()) {
+    public Void deleteCommentPost(Long commentId, Account itMe) {
+        Optional<Comment> commentOptional = commentRepository.findByCommentIdAndAccountId(commentId, itMe.getId());
+        if (!commentOptional.isPresent()) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, Message.REACT_COMMENT_NOT_EXISTS);
         }
         Timestamp currentTime = DateUtils.currentTimestamp();
-        Comment comment = commentPostOptional.get().getComment();
-        comment.setDisableAt(currentTime);
-        commentRepository.save(comment);
+        commentOptional.get().setDisableAt(currentTime);
+        commentRepository.save(commentOptional.get());
         return null;
     }
 
