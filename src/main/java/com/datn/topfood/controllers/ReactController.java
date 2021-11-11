@@ -30,31 +30,37 @@ public class ReactController extends BaseService {
 
     @Operation(description = "API thả tim bài viết.")
     @PostMapping("/reaction-post")
-    public ResponseEntity<Response<Void>> reactPost(@RequestParam Long id, @RequestBody ReactionRequest reactPostRequest){
+    public ResponseEntity<Response<Void>> reactPost(@RequestParam Long id, @RequestBody ReactionRequest reactPostRequest) {
         return ResponseEntity.ok(new Response<>(reactService.reactPost(id, reactPostRequest, itMe())));
     }
 
     @Operation(description = "API danh sách lượt tim.")
     @GetMapping("/list-reaction-post")
-    public ResponseEntity<PageResponse<ProfileResponse>> listReactionPost(@RequestParam Long id, PageRequest pageRequest){
+    public ResponseEntity<PageResponse<ProfileResponse>> listReactionPost(@RequestParam Long id, PageRequest pageRequest) {
         return ResponseEntity.ok(reactService.listReactionPost(id, pageRequest, itMe()));
     }
 
     @Operation(description = "API danh sách bình luận.")
     @GetMapping("/list-comment-post")
-    public ResponseEntity<PageResponse<CommentResponse>> listCommentPost(@RequestParam Long id, PageRequest pageRequest){
+    public ResponseEntity<PageResponse<CommentResponse>> listCommentPost(@RequestParam Long id, PageRequest pageRequest) {
         return ResponseEntity.ok(reactService.listCommentPost(id, pageRequest, itMe()));
     }
 
     @Operation(description = "API thả tim bình luận.")
     @PostMapping("/reaction-comment")
-    public ResponseEntity<Response<Void>> reactionComment(@RequestParam Long id, @RequestBody ReactionRequest reactionRequest){
+    public ResponseEntity<Response<Void>> reactionComment(@RequestParam Long id, @RequestBody ReactionRequest reactionRequest) {
         return ResponseEntity.ok(new Response<>(reactService.reactionComment(id, reactionRequest, itMe())));
     }
 
     @Operation(description = "API trả lời bình luận.")
     @PostMapping("/comment-reply")
-    public ResponseEntity<Response<Void>> commentReply(@RequestParam Long id, @RequestBody CommentPostRequest commentPostRequest){
+    public ResponseEntity<Response<Void>> commentReply(@RequestParam Long id, @RequestBody CommentPostRequest commentPostRequest) {
         return ResponseEntity.ok(new Response<>(reactService.commentReply(id, commentPostRequest, itMe())));
+    }
+
+    @Operation(description = "API danh sách bình luận trong bình luận.")
+    @GetMapping("/list-comment-reply")
+    public ResponseEntity<PageResponse<CommentResponse>> listCommentReply(@RequestParam Long id, PageRequest pageRequest) {
+        return ResponseEntity.ok(reactService.listCommentReply(id, pageRequest, itMe()));
     }
 }

@@ -101,21 +101,7 @@ public class ReactServiceImpl implements ReactService {
         Pageable pageable = PageUtils.toPageable(pageRequest);
         Post post = checkPostExists(id);
         Page<Comment> commentPage = commentRepository.findAllByCommentPostId(post.getId(), pageable);
-        List<CommentResponse> commentResponses = commentPage
-                .toList()
-                .stream()
-                .map(comment -> {
-                    CommentResponse commentResponse = new CommentResponse();
-                    commentResponse.setContent(comment.getContent());
-                    commentResponse.setFiles(fileRepository.findAllByCommentFileId(comment.getId()));
-                    commentResponse.setProfile(profileRepository.findFiendProfileByAccountId(comment.getAccount().getId()).orElse(null));
-                    return commentResponse;
-                }).collect(Collectors.toList());
-        return new PageResponse<>(
-                commentResponses,
-                commentPage.getTotalElements(),
-                pageable.getPageSize()
-        );
+        return toPageCommentResponse(commentPage, pageable);
     }
 
     @Override
@@ -143,6 +129,14 @@ public class ReactServiceImpl implements ReactService {
         savedComment.setCommentReply(commentReply);
         commentReplyRepository.save(savedComment);
         return null;
+    }
+
+    @Override
+    public PageResponse<CommentResponse> listCommentReply(Long id, PageRequest pageRequest, Account itMe) {
+        Pageable pageable = PageUtils.toPageable(pageRequest);
+        Comment comment = checkCommentExists(id);
+        Page<Comment> commentPage = commentRepository.findAllByCommentId(comment.getId(), pageable);
+        return toPageCommentResponse(commentPage, pageable);
     }
 
     private Comment checkCommentExists(Long id) {
@@ -180,5 +174,23 @@ public class ReactServiceImpl implements ReactService {
             commentFileRepository.save(commentFile);
         });
         return finalComment;
+    }
+
+    private PageResponse<CommentResponse> toPageCommentResponse(Page<Comment> commentPage, Pageable pageable) {
+        List<CommentResponse> commentResponses = commentPage
+                .toList()
+                .stream()
+                .map(comment -> {
+                    CommentResponse commentResponse = new CommentResponse();
+                    commentResponse.setContent(comment.getContent());
+                    commentResponse.setFiles(fileRepository.findAllByCommentFileId(comment.getId()));
+                    commentResponse.setProfile(profileRepository.findFiendProfileByAccountId(comment.getAccount().getId()).orElse(null));
+                    return commentResponse;
+                }).collect(Collectors.toList());
+        return new PageResponse<>(
+                commentResponses,
+                commentPage.getTotalElements(),
+                pageable.getPageSize()
+        );
     }
 }

@@ -11,4 +11,9 @@ public interface CommentRepository extends JpaRepository<Comment, Long> {
             "JOIN CommentPost cp ON cp.comment = c " +
             "WHERE cp.post.id = ?1")
     Page<Comment> findAllByCommentPostId(Long postId, Pageable pageable);
+
+    @Query("SELECT c FROM Comment c " +
+            "JOIN CommentReply cr ON cr.comment = c " +
+            "WHERE cr.comment.id = ?1")
+    Page<Comment> findAllByCommentId(Long commentId, Pageable pageable);
 }
