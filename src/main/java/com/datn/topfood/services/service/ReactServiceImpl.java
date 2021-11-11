@@ -3,17 +3,24 @@ package com.datn.topfood.services.service;
 import com.datn.topfood.data.model.*;
 import com.datn.topfood.data.repository.jpa.*;
 import com.datn.topfood.dto.request.CommentPostRequest;
+import com.datn.topfood.dto.request.PageRequest;
 import com.datn.topfood.dto.request.ReactPostRequest;
+import com.datn.topfood.dto.response.PageResponse;
+import com.datn.topfood.dto.response.ProfileResponse;
 import com.datn.topfood.services.interf.ReactService;
 import com.datn.topfood.util.DateUtils;
+import com.datn.topfood.util.PageUtils;
 import com.datn.topfood.util.constant.Message;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -33,14 +40,13 @@ public class ReactServiceImpl implements ReactService {
     ReactionPostRepository reactionPostRepository;
     @Autowired
     ReactionRepository reactionRepository;
+    @Autowired
+    ProfileRepository profileRepository;
 
     @Override
     @Transactional
     public Void commentPost(Long id, CommentPostRequest commentPostRequest, Account itMe) {
-        Optional<Post> optionalPost = postRepository.findById(id);
-        if (!optionalPost.isPresent()) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, Message.POST_NOT_EXISTS);
-        }
+        Post post = checkPostExists(id);
         Timestamp currentTime = DateUtils.currentTimestamp();
         Comment comment = new Comment();
         comment.setContent(commentPostRequest.getContent());
@@ -56,19 +62,24 @@ public class ReactServiceImpl implements ReactService {
         comment = commentRepository.save(comment);
         CommentPost commentPost = new CommentPost();
         commentPost.setComment(comment);
-        commentPost.setPost(optionalPost.get());
+        commentPost.setPost(post);
         commentPost.setCreateAt(currentTime);
         commentPostRepository.save(commentPost);
         return null;
     }
 
-    @Override
-    @Transactional
-    public Void reactPost(Long id, ReactPostRequest reactPostRequest, Account itMe) {
+    private Post checkPostExists(Long id) {
         Optional<Post> optionalPost = postRepository.findById(id);
         if (!optionalPost.isPresent()) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, Message.POST_NOT_EXISTS);
         }
+        return optionalPost.get();
+    }
+
+    @Override
+    @Transactional
+    public Void reactPost(Long id, ReactPostRequest reactPostRequest, Account itMe) {
+        Post post = checkPostExists(id);
         Timestamp currentTime = DateUtils.currentTimestamp();
         Reaction reaction = new Reaction();
         reaction.setAccount(itMe);
@@ -77,8 +88,27 @@ public class ReactServiceImpl implements ReactService {
         reaction = reactionRepository.save(reaction);
         ReactionPost reactionPost = new ReactionPost();
         reactionPost.setReaction(reaction);
-        reactionPost.setPost(optionalPost.get());
+        reactionPost.setPost(post);
         reactionPostRepository.save(reactionPost);
         return null;
+    }
+
+    @Override
+    public PageResponse<ProfileResponse> listReactionPost(Long id, PageRequest pageRequest, Account itMe) {
+        Pageable pageable = PageUtils.toPageable(pageRequest);
+        Post post = checkPostExists(id);
+        Page<Reaction> reactionPage = reactionRepository.findAllByReactionPostId(post.getId(), pageable);
+        List<ProfileResponse> profileList = reactionPage
+                .toList()
+                .stream()
+                .map(reaction -> profileRepository.findFiendProfileByAccountId(
+                        reaction.getAccount().getId()).orElse(null)
+                )
+                .collect(Collectors.toList());
+        return new PageResponse<>(
+                profileList,
+                reactionPage.getTotalElements(),
+                pageable.getPageSize()
+        );
     }
 }

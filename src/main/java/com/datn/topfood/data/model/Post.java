@@ -55,6 +55,7 @@ public class Post extends Base {
     @ToStringExclude
     @OneToMany(mappedBy = "post", cascade = CascadeType.ALL)
     private List<Approach> approachs;
+
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
             name = "tag_post",
