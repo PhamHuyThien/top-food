@@ -83,26 +83,7 @@ public class ReactServiceImpl implements ReactService {
         Pageable pageable = PageUtils.toPageable(pageRequest);
         Post post = checkPostExists(id);
         Page<Reaction> reactionPage = reactionRepository.findAllByReactionPostId(post.getId(), pageable);
-        List<ReactionResponse> profileList = reactionPage
-                .toList()
-                .stream()
-                .map(reaction -> {
-                    ProfileResponse profileResponse = profileRepository.findFiendProfileByAccountId(reaction.getAccount().getId()).orElse(null);
-                    ReactionResponse reactionResponse = new ReactionResponse();
-                    reactionResponse.setId(reaction.getId());
-                    reactionResponse.setProfile(profileResponse);
-                    reactionResponse.setType(reaction.getType());
-                    reactionResponse.setCreateAt(reaction.getCreateAt());
-                    reactionResponse.setUpdateAt(reaction.getUpdateAt());
-                    reactionResponse.setDisableAt(reaction.getDisableAt());
-                    return reactionResponse;
-                })
-                .collect(Collectors.toList());
-        return new PageResponse<>(
-                profileList,
-                reactionPage.getTotalElements(),
-                pageable.getPageSize()
-        );
+        return toPageReactionResponse(reactionPage, pageable);
     }
 
     @Override
@@ -147,6 +128,15 @@ public class ReactServiceImpl implements ReactService {
         Page<Comment> commentPage = commentRepository.findAllByCommentId(comment.getId(), pageable);
         return toPageCommentResponse(commentPage, pageable);
     }
+
+    @Override
+    public PageResponse<ReactionResponse> listReactionComment(Long id, PageRequest pageRequest, Account itMe) {
+        Pageable pageable = PageUtils.toPageable(pageRequest);
+        Comment comment = checkCommentExists(id);
+        Page<Reaction> reactionPage = reactionRepository.findAllByReactionCommentId(comment.getId(), pageable);
+        return toPageReactionResponse(reactionPage, pageable);
+    }
+
 
     private Comment checkCommentExists(Long id) {
         Optional<Comment> commentOptional = commentRepository.findById(id);
@@ -203,6 +193,29 @@ public class ReactServiceImpl implements ReactService {
         return new PageResponse<>(
                 commentResponses,
                 commentPage.getTotalElements(),
+                pageable.getPageSize()
+        );
+    }
+
+    private PageResponse<ReactionResponse> toPageReactionResponse(Page<Reaction> reactionPage, Pageable pageable) {
+        List<ReactionResponse> profileList = reactionPage
+                .toList()
+                .stream()
+                .map(reaction -> {
+                    ProfileResponse profileResponse = profileRepository.findFiendProfileByAccountId(reaction.getAccount().getId()).orElse(null);
+                    ReactionResponse reactionResponse = new ReactionResponse();
+                    reactionResponse.setId(reaction.getId());
+                    reactionResponse.setProfile(profileResponse);
+                    reactionResponse.setType(reaction.getType());
+                    reactionResponse.setCreateAt(reaction.getCreateAt());
+                    reactionResponse.setUpdateAt(reaction.getUpdateAt());
+                    reactionResponse.setDisableAt(reaction.getDisableAt());
+                    return reactionResponse;
+                })
+                .collect(Collectors.toList());
+        return new PageResponse<>(
+                profileList,
+                reactionPage.getTotalElements(),
                 pageable.getPageSize()
         );
     }

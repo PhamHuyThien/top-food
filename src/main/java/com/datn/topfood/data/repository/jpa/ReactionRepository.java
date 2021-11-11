@@ -11,4 +11,9 @@ public interface ReactionRepository extends JpaRepository<Reaction, Long> {
             "JOIN ReactionPost rp ON rp.reaction = r " +
             "WHERE rp.post.id = ?1 ")
     Page<Reaction> findAllByReactionPostId(Long postId, Pageable pageable);
+
+    @Query("SELECT r FROM Reaction r " +
+            "JOIN CommentReaction cr ON cr.reaction = r " +
+            "WHERE cr.comment.id = ?1")
+    Page<Reaction> findAllByReactionCommentId(Long commentId, Pageable pageable);
 }

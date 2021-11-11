@@ -60,4 +60,10 @@ public class ReactController extends BaseService {
     public ResponseEntity<PageResponse<CommentResponse>> listCommentReply(@RequestParam Long id, PageRequest pageRequest) {
         return ResponseEntity.ok(reactService.listCommentReply(id, pageRequest, itMe()));
     }
+
+    @Operation(description = "API danh sách thả tim trong bình luận.")
+    @GetMapping("/list-reaction-comment")
+    public ResponseEntity<PageResponse<ReactionResponse>> listReactionComment(@RequestParam Long id, PageRequest pageRequest){
+        return ResponseEntity.ok(reactService.listReactionComment(id, pageRequest, itMe()));
+    }
 }

@@ -23,4 +23,6 @@ public interface ReactService {
     Void commentReply(Long id, CommentPostRequest commentPostRequest, Account itMe);
 
     PageResponse<CommentResponse> listCommentReply(Long id, PageRequest pageRequest, Account itMe);
+
+    PageResponse<ReactionResponse> listReactionComment(Long id, PageRequest pageRequest, Account itMe);
 }
