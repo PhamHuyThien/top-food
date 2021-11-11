@@ -4,7 +4,7 @@ import com.datn.topfood.data.model.*;
 import com.datn.topfood.data.repository.jpa.*;
 import com.datn.topfood.dto.request.CommentPostRequest;
 import com.datn.topfood.dto.request.PageRequest;
-import com.datn.topfood.dto.request.ReactPostRequest;
+import com.datn.topfood.dto.request.ReactionRequest;
 import com.datn.topfood.dto.response.CommentResponse;
 import com.datn.topfood.dto.response.PageResponse;
 import com.datn.topfood.dto.response.ProfileResponse;
@@ -21,10 +21,8 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.sql.Timestamp;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -45,6 +43,8 @@ public class ReactServiceImpl implements ReactService {
     ProfileRepository profileRepository;
     @Autowired
     CommentFileRepository commentFileRepository;
+    @Autowired
+    CommentReactionRepository commentReactionRepository;
 
     @Override
     @Transactional
@@ -85,7 +85,7 @@ public class ReactServiceImpl implements ReactService {
 
     @Override
     @Transactional
-    public Void reactPost(Long id, ReactPostRequest reactPostRequest, Account itMe) {
+    public Void reactPost(Long id, ReactionRequest reactPostRequest, Account itMe) {
         Post post = checkPostExists(id);
         Timestamp currentTime = DateUtils.currentTimestamp();
         Reaction reaction = new Reaction();
@@ -139,5 +139,29 @@ public class ReactServiceImpl implements ReactService {
                 commentPage.getTotalElements(),
                 pageable.getPageSize()
         );
+    }
+
+    @Override
+    public Void reactionComment(Long id, ReactionRequest reactionRequest, Account itMe) {
+        Comment comment = checkCommentExists(id);
+        Timestamp currentTime = DateUtils.currentTimestamp();
+        Reaction reaction = new Reaction();
+        reaction.setAccount(itMe);
+        reaction.setCreateAt(currentTime);
+        reaction.setType(reactionRequest.getType());
+        reaction = reactionRepository.save(reaction);
+        CommentReaction commentReaction = new CommentReaction();
+        commentReaction.setReaction(reaction);
+        commentReaction.setComment(comment);
+        commentReactionRepository.save(commentReaction);
+        return null;
+    }
+
+    private Comment checkCommentExists(Long id) {
+        Optional<Comment> commentOptional = commentRepository.findById(id);
+        if (!commentOptional.isPresent()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, Message.REACT_COMMENT_NOT_EXISTS);
+        }
+        return commentOptional.get();
     }
 }

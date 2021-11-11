@@ -2,7 +2,7 @@ package com.datn.topfood.controllers;
 
 import com.datn.topfood.dto.request.CommentPostRequest;
 import com.datn.topfood.dto.request.PageRequest;
-import com.datn.topfood.dto.request.ReactPostRequest;
+import com.datn.topfood.dto.request.ReactionRequest;
 import com.datn.topfood.dto.response.CommentResponse;
 import com.datn.topfood.dto.response.PageResponse;
 import com.datn.topfood.dto.response.ProfileResponse;
@@ -11,7 +11,6 @@ import com.datn.topfood.services.BaseService;
 import com.datn.topfood.services.interf.ReactService;
 import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
@@ -30,7 +29,7 @@ public class ReactController extends BaseService {
 
     @Operation(description = "API thả tim bài viết.")
     @PostMapping("/reaction-post")
-    public ResponseEntity<Response<Void>> reactPost(@RequestParam Long id, @RequestBody ReactPostRequest reactPostRequest){
+    public ResponseEntity<Response<Void>> reactPost(@RequestParam Long id, @RequestBody ReactionRequest reactPostRequest){
         return ResponseEntity.ok(new Response<>(reactService.reactPost(id, reactPostRequest, itMe())));
     }
 
@@ -44,5 +43,11 @@ public class ReactController extends BaseService {
     @GetMapping("/list-comment-post")
     public ResponseEntity<PageResponse<CommentResponse>> listCommentPost(@RequestParam Long id, PageRequest pageRequest){
         return ResponseEntity.ok(reactService.listCommentPost(id, pageRequest, itMe()));
+    }
+
+    @Operation(description = "API thả tim bình luận.")
+    @PostMapping("/reaction-comment")
+    public ResponseEntity<Response<Void>> reactionComment(@RequestParam Long id, @RequestBody ReactionRequest reactionRequest){
+        return ResponseEntity.ok(new Response<>(reactService.reactionComment(id, reactionRequest, itMe())));
     }
 }
