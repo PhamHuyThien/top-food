@@ -8,6 +8,7 @@ import com.datn.topfood.dto.request.ReactionRequest;
 import com.datn.topfood.dto.response.CommentResponse;
 import com.datn.topfood.dto.response.PageResponse;
 import com.datn.topfood.dto.response.ProfileResponse;
+import com.datn.topfood.dto.response.ReactionResponse;
 import com.datn.topfood.services.interf.ReactService;
 import com.datn.topfood.util.DateUtils;
 import com.datn.topfood.util.PageUtils;
@@ -78,16 +79,24 @@ public class ReactServiceImpl implements ReactService {
     }
 
     @Override
-    public PageResponse<ProfileResponse> listReactionPost(Long id, PageRequest pageRequest, Account itMe) {
+    public PageResponse<ReactionResponse> listReactionPost(Long id, PageRequest pageRequest, Account itMe) {
         Pageable pageable = PageUtils.toPageable(pageRequest);
         Post post = checkPostExists(id);
         Page<Reaction> reactionPage = reactionRepository.findAllByReactionPostId(post.getId(), pageable);
-        List<ProfileResponse> profileList = reactionPage
+        List<ReactionResponse> profileList = reactionPage
                 .toList()
                 .stream()
-                .map(reaction -> profileRepository.findFiendProfileByAccountId(
-                        reaction.getAccount().getId()).orElse(null)
-                )
+                .map(reaction -> {
+                    ProfileResponse profileResponse = profileRepository.findFiendProfileByAccountId(reaction.getAccount().getId()).orElse(null);
+                    ReactionResponse reactionResponse = new ReactionResponse();
+                    reactionResponse.setId(reaction.getId());
+                    reactionResponse.setProfile(profileResponse);
+                    reactionResponse.setType(reaction.getType());
+                    reactionResponse.setCreateAt(reaction.getCreateAt());
+                    reactionResponse.setUpdateAt(reaction.getUpdateAt());
+                    reactionResponse.setDisableAt(reaction.getDisableAt());
+                    return reactionResponse;
+                })
                 .collect(Collectors.toList());
         return new PageResponse<>(
                 profileList,
@@ -182,9 +191,13 @@ public class ReactServiceImpl implements ReactService {
                 .stream()
                 .map(comment -> {
                     CommentResponse commentResponse = new CommentResponse();
+                    commentResponse.setId(comment.getId());
                     commentResponse.setContent(comment.getContent());
                     commentResponse.setFiles(fileRepository.findAllByCommentFileId(comment.getId()));
                     commentResponse.setProfile(profileRepository.findFiendProfileByAccountId(comment.getAccount().getId()).orElse(null));
+                    commentResponse.setCreateAt(comment.getCreateAt());
+                    commentResponse.setUpdateAt(comment.getUpdateAt());
+                    commentResponse.setDisableAt(comment.getDisableAt());
                     return commentResponse;
                 }).collect(Collectors.toList());
         return new PageResponse<>(

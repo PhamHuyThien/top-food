@@ -3,10 +3,7 @@ package com.datn.topfood.controllers;
 import com.datn.topfood.dto.request.CommentPostRequest;
 import com.datn.topfood.dto.request.PageRequest;
 import com.datn.topfood.dto.request.ReactionRequest;
-import com.datn.topfood.dto.response.CommentResponse;
-import com.datn.topfood.dto.response.PageResponse;
-import com.datn.topfood.dto.response.ProfileResponse;
-import com.datn.topfood.dto.response.Response;
+import com.datn.topfood.dto.response.*;
 import com.datn.topfood.services.BaseService;
 import com.datn.topfood.services.interf.ReactService;
 import com.sun.org.apache.regexp.internal.RE;
@@ -36,7 +33,7 @@ public class ReactController extends BaseService {
 
     @Operation(description = "API danh sách lượt tim.")
     @GetMapping("/list-reaction-post")
-    public ResponseEntity<PageResponse<ProfileResponse>> listReactionPost(@RequestParam Long id, PageRequest pageRequest) {
+    public ResponseEntity<PageResponse<ReactionResponse>> listReactionPost(@RequestParam Long id, PageRequest pageRequest) {
         return ResponseEntity.ok(reactService.listReactionPost(id, pageRequest, itMe()));
     }
 
@@ -59,7 +56,7 @@ public class ReactController extends BaseService {
     }
 
     @Operation(description = "API danh sách bình luận trong bình luận.")
-    @GetMapping("/list-comment-reply")
+    @GetMapping("/list-reply-comment")
     public ResponseEntity<PageResponse<CommentResponse>> listCommentReply(@RequestParam Long id, PageRequest pageRequest) {
         return ResponseEntity.ok(reactService.listCommentReply(id, pageRequest, itMe()));
     }

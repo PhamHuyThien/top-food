@@ -1,14 +1,9 @@
 package com.datn.topfood.data.model;
 
-import java.util.Set;
-
 import javax.persistence.*;
 
 import com.datn.topfood.util.enums.ReactType;
-import com.datn.topfood.util.enums.ReactionType;
 import lombok.*;
-import org.apache.catalina.User;
-import org.apache.commons.lang3.builder.ToStringExclude;
 
 @Data
 @NoArgsConstructor

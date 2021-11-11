@@ -7,13 +7,14 @@ import com.datn.topfood.dto.request.ReactionRequest;
 import com.datn.topfood.dto.response.CommentResponse;
 import com.datn.topfood.dto.response.PageResponse;
 import com.datn.topfood.dto.response.ProfileResponse;
+import com.datn.topfood.dto.response.ReactionResponse;
 
 public interface ReactService {
     Void commentPost(Long id, CommentPostRequest commentPostRequest, Account itMe);
 
     Void reactPost(Long id, ReactionRequest reactPostRequest, Account itMe);
 
-    PageResponse<ProfileResponse> listReactionPost(Long id, PageRequest pageRequest, Account itMe);
+    PageResponse<ReactionResponse> listReactionPost(Long id, PageRequest pageRequest, Account itMe);
 
     PageResponse<CommentResponse> listCommentPost(Long id, PageRequest pageRequest, Account itMe);
 
