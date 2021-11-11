@@ -1,5 +1,6 @@
 package com.datn.topfood.dto.response;
 
+import com.datn.topfood.util.constant.Message;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -24,5 +25,7 @@ public class PageResponse<T> extends Response<T> {
         this.totalElements = totalElements;
         this.pageSize = pageSize;
         this.pageTotal = totalElements / (pageSize == 0 ? totalElements : pageSize);
+        this.status = true;
+        this.message = Message.OTHER_SUCCESS;
     }
 }

@@ -5,6 +5,7 @@ import com.datn.topfood.data.repository.jpa.*;
 import com.datn.topfood.dto.request.CommentPostRequest;
 import com.datn.topfood.dto.request.PageRequest;
 import com.datn.topfood.dto.request.ReactPostRequest;
+import com.datn.topfood.dto.response.CommentResponse;
 import com.datn.topfood.dto.response.PageResponse;
 import com.datn.topfood.dto.response.ProfileResponse;
 import com.datn.topfood.services.interf.ReactService;
@@ -42,6 +43,8 @@ public class ReactServiceImpl implements ReactService {
     ReactionRepository reactionRepository;
     @Autowired
     ProfileRepository profileRepository;
+    @Autowired
+    CommentFileRepository commentFileRepository;
 
     @Override
     @Transactional
@@ -51,15 +54,19 @@ public class ReactServiceImpl implements ReactService {
         Comment comment = new Comment();
         comment.setContent(commentPostRequest.getContent());
         comment.setCreateAt(currentTime);
-        Set<File> fileSet = commentPostRequest.getFiles().stream().map(strFile -> {
+        comment.setAccount(itMe);
+        comment = commentRepository.save(comment);
+        Comment finalComment = comment;
+        commentPostRequest.getFiles().forEach(strFile -> {
             File file = new File();
             file.setPath(strFile);
             file.setCreateAt(currentTime);
-            return fileRepository.save(file);
-        }).collect(Collectors.toSet());
-        comment.setFiles(fileSet);
-        comment.setAccount(itMe);
-        comment = commentRepository.save(comment);
+            file = fileRepository.save(file);
+            CommentFile commentFile = new CommentFile();
+            commentFile.setComment(finalComment);
+            commentFile.setFile(file);
+            commentFileRepository.save(commentFile);
+        });
         CommentPost commentPost = new CommentPost();
         commentPost.setComment(comment);
         commentPost.setPost(post);
@@ -108,6 +115,28 @@ public class ReactServiceImpl implements ReactService {
         return new PageResponse<>(
                 profileList,
                 reactionPage.getTotalElements(),
+                pageable.getPageSize()
+        );
+    }
+
+    @Override
+    public PageResponse<CommentResponse> listCommentPost(Long id, PageRequest pageRequest, Account itMe) {
+        Pageable pageable = PageUtils.toPageable(pageRequest);
+        Post post = checkPostExists(id);
+        Page<Comment> commentPage = commentRepository.findAllByCommentPostId(post.getId(), pageable);
+        List<CommentResponse> commentResponses = commentPage
+                .toList()
+                .stream()
+                .map(comment -> {
+                    CommentResponse commentResponse = new CommentResponse();
+                    commentResponse.setContent(comment.getContent());
+                    commentResponse.setFiles(fileRepository.findAllByCommentFileId(comment.getId()));
+                    commentResponse.setProfile(profileRepository.findFiendProfileByAccountId(comment.getAccount().getId()).orElse(null));
+                    return commentResponse;
+                }).collect(Collectors.toList());
+        return new PageResponse<>(
+                commentResponses,
+                commentPage.getTotalElements(),
                 pageable.getPageSize()
         );
     }

@@ -27,32 +27,4 @@ public class Comment extends Base{
 	@JoinColumn(name = "account_id")
 	private Account account;
 
-	@EqualsAndHashCode.Exclude
-	@ToStringExclude
-	@ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-	@JoinTable(
-			  name = "comment_reaction", 
-			  joinColumns = @JoinColumn(name = "comment_id"), 
-			  inverseJoinColumns = @JoinColumn(name = "reaction_id"))
-	private Set<Reaction> reactions;
-
-	@EqualsAndHashCode.Exclude
-	@ToStringExclude
-	@ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-	@JoinTable(
-			  name = "comment_file", 
-			  joinColumns = @JoinColumn(name = "comment_id"), 
-			  inverseJoinColumns = @JoinColumn(name = "file_id")) 
-	private Set<File> files;
-
-	@EqualsAndHashCode.Exclude
-	@ToStringExclude
-	@OneToMany(mappedBy = "comment",cascade = CascadeType.ALL)
-	private List<CommentReply> commentReplys;
-
-	@EqualsAndHashCode.Exclude
-	@ToStringExclude
-	@OneToMany(mappedBy = "comment",cascade = CascadeType.ALL)
-	private List<CommentPost> commentPosts;
-	
 }

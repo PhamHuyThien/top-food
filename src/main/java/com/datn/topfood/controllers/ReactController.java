@@ -3,6 +3,7 @@ package com.datn.topfood.controllers;
 import com.datn.topfood.dto.request.CommentPostRequest;
 import com.datn.topfood.dto.request.PageRequest;
 import com.datn.topfood.dto.request.ReactPostRequest;
+import com.datn.topfood.dto.response.CommentResponse;
 import com.datn.topfood.dto.response.PageResponse;
 import com.datn.topfood.dto.response.ProfileResponse;
 import com.datn.topfood.dto.response.Response;
@@ -10,6 +11,7 @@ import com.datn.topfood.services.BaseService;
 import com.datn.topfood.services.interf.ReactService;
 import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
@@ -36,5 +38,11 @@ public class ReactController extends BaseService {
     @GetMapping("/list-reaction-post")
     public ResponseEntity<PageResponse<ProfileResponse>> listReactionPost(@RequestParam Long id, PageRequest pageRequest){
         return ResponseEntity.ok(reactService.listReactionPost(id, pageRequest, itMe()));
+    }
+
+    @Operation(description = "API danh sách bình luận.")
+    @GetMapping("/list-comment-post")
+    public ResponseEntity<PageResponse<CommentResponse>> listCommentPost(@RequestParam Long id, PageRequest pageRequest){
+        return ResponseEntity.ok(reactService.listCommentPost(id, pageRequest, itMe()));
     }
 }
