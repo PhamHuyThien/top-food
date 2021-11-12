@@ -15,7 +15,9 @@ import java.util.List;
 @Entity
 public class Tag extends Base {
     Long id;
+    @Column(length = 50)
     String tagName;
+    @Column(length = 100)
     String image;
     @OneToMany(mappedBy = "tag",cascade = CascadeType.ALL)
     List<Food> food;

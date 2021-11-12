@@ -3,14 +3,7 @@ package com.datn.topfood.data.model;
 import java.util.List;
 import java.util.Set;
 
-import javax.persistence.CascadeType;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
-import javax.persistence.ManyToMany;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
+import javax.persistence.*;
 
 import org.apache.commons.lang3.builder.ToStringExclude;
 
@@ -27,6 +20,7 @@ import lombok.ToString;
 @Entity
 public class Comment extends Base{
 
+	@Column(length = 1000)
 	private String content;
 	
 	@ManyToOne 

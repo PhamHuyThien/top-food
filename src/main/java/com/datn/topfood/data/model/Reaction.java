@@ -2,13 +2,12 @@ package com.datn.topfood.data.model;
 
 import java.util.Set;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.ManyToMany;
+import javax.persistence.*;
 
+import com.datn.topfood.util.enums.ReactType;
+import com.datn.topfood.util.enums.ReactionType;
 import lombok.*;
+import org.apache.catalina.User;
 import org.apache.commons.lang3.builder.ToStringExclude;
 
 @Data
@@ -16,20 +15,11 @@ import org.apache.commons.lang3.builder.ToStringExclude;
 @AllArgsConstructor
 @ToString
 @Entity
-public class Reaction {
-	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Long id;
-	
-	private String type;
+public class Reaction extends Base {
+    @Enumerated(EnumType.STRING)
+    ReactType type;
 
-	@EqualsAndHashCode.Exclude
-	@ToStringExclude
-	@ManyToMany(mappedBy = "reactions")
-	private Set<Post> posts;
-
-	@EqualsAndHashCode.Exclude
-	@ToStringExclude
-	@ManyToMany(mappedBy = "reactions")
-	private Set<Comment> comments;
+    @ManyToOne
+    @JoinColumn(name = "account_id")
+    Account account;
 }

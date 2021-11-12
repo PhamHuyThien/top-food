@@ -81,7 +81,6 @@ public class StoreProfileServicImpl extends BaseService implements StoreProfileS
 		f.setPrice(foodRequest.getPrice());
 		f.setContent(foodRequest.getContent());
 		f.setProfile(profileRepository.findByAccountId(ime.getId()));
-		f.setStatus("active");
 		f.setFiles(ConvertUtils.convertArrFileReqToSetFile(foodRequest.getFiles()));
 		f.setCreateAt(DateUtils.currentTimestamp());
 		f.setTag(tagRepository.findById(foodRequest.getTagId()).get());
@@ -268,7 +267,6 @@ public class StoreProfileServicImpl extends BaseService implements StoreProfileS
 		p.setContent(postRequest.getContent());
 		p.setFiles(ConvertUtils.convertArrFileReqToSetFile(postRequest.getFiles()));
 		p.setCreateAt(DateUtils.currentTimestamp());
-		p.setStatus("active");
 		p.setProfile(profileRepository.findByAccountId(ime.getId()));
 		if (postRequest.getTagIds() != null) {
 			p.setTags(tagRepository.findAllListTagId(postRequest.getTagIds()));

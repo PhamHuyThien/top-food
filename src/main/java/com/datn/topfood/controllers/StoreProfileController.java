@@ -127,7 +127,8 @@ public class StoreProfileController {
     
     @Operation(description = "API tìm kiếm món ăn")
     @GetMapping("/search/food")
-    public ResponseEntity<PageResponse<FoodDetailResponse>> searchFoods(@RequestBody SearchFoodsRequest foodsRequest,PageRequest pageRequest) {
+    public ResponseEntity<PageResponse<FoodDetailResponse>> searchFoods(SearchFoodsRequest foodsRequest,PageRequest pageRequest) {
         return ResponseEntity.ok(profileServic.searchFoods(foodsRequest,pageRequest));
     }
 }
+
