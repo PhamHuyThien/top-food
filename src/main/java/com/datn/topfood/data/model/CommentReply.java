@@ -1,8 +1,6 @@
 package com.datn.topfood.data.model;
 
-import javax.persistence.Entity;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
+import javax.persistence.*;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -14,15 +12,17 @@ import lombok.ToString;
 @AllArgsConstructor
 @ToString
 @Entity
-public class CommentReply extends Base{
+public class CommentReply {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    protected Long id;
 
-	private String content;
-	
-	@ManyToOne
-	@JoinColumn(name = "comment_id")
-	private Comment comment;
-	
-	@ManyToOne
-	@JoinColumn(name = "account_id")
-	private Account account;
+    @ManyToOne
+    @JoinColumn(name = "comment_id")
+    Comment comment;
+
+    @ManyToOne
+    @JoinColumn(name = "comment_reply_id")
+    private Comment commentReply;
+
 }

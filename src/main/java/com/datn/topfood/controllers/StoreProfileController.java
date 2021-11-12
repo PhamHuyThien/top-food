@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.datn.topfood.data.model.Post;
@@ -109,9 +110,8 @@ public class StoreProfileController {
     
     @Operation(description = "API chi tiêt bài viết")
     @GetMapping("/post/detail/{postId}")
-    public ResponseEntity<Response<Post>> detailPost(@PathVariable("postId") Long id) {
-        profileServic.deletePost(id);
-        return ResponseEntity.ok(new Response<>(true, Message.OTHER_SUCCESS));
+    public ResponseEntity<Response<PostResponse>> detailPost(@PathVariable("postId") Long id) {
+        return ResponseEntity.ok(new Response<>(true, Message.OTHER_SUCCESS,profileServic.detailPost(id)));
     }
     
     @Operation(description = "API sửa bài viết")
@@ -122,8 +122,8 @@ public class StoreProfileController {
     
     @Operation(description = "API lấy danh sách bài viết")
     @GetMapping("/list-post")
-    public ResponseEntity<PageResponse<PostResponse>> getListPost(PageRequest pageRequest) {
-        return ResponseEntity.ok(profileServic.getListPost(pageRequest));
+    public ResponseEntity<PageResponse<PostResponse>> getListPost(@RequestParam("accountId") Long accountId,PageRequest pageRequest) {
+        return ResponseEntity.ok(profileServic.getListPost(accountId,pageRequest));
     }
     
     @Operation(description = "API tìm kiếm món ăn")
@@ -131,4 +131,6 @@ public class StoreProfileController {
     public ResponseEntity<PageResponse<FoodDetailResponse>> searchFoods(SearchFoodsRequest foodsRequest,PageRequest pageRequest) {
         return ResponseEntity.ok(profileServic.searchFoods(foodsRequest,pageRequest));
     }
+
 }
+

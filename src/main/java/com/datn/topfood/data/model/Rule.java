@@ -5,10 +5,7 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import javax.persistence.*;
 
 @Data
 @AllArgsConstructor
@@ -16,9 +13,10 @@ import javax.persistence.Id;
 @EqualsAndHashCode
 @Entity
 public class Rule extends Base {
-  @Id
-  @GeneratedValue(strategy = GenerationType.IDENTITY)
-  Long id;
+
+  @Column(length = 100)
   String title;
+
+  @Column(length = 200)
   String description;
 }

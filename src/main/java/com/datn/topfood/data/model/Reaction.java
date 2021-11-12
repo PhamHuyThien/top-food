@@ -1,35 +1,21 @@
 package com.datn.topfood.data.model;
 
-import java.util.Set;
+import javax.persistence.*;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.ManyToMany;
-
+import com.datn.topfood.util.enums.ReactType;
 import lombok.*;
-import org.apache.commons.lang3.builder.ToStringExclude;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @ToString
 @Entity
-public class Reaction {
-	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Long id;
-	
-	private String type;
+public class Reaction extends Base {
+    @Enumerated(EnumType.STRING)
+    @Column(length = 30)
+    ReactType type;
 
-	@EqualsAndHashCode.Exclude
-	@ToStringExclude
-	@ManyToMany(mappedBy = "reactions")
-	private Set<Post> posts;
-
-	@EqualsAndHashCode.Exclude
-	@ToStringExclude
-	@ManyToMany(mappedBy = "reactions")
-	private Set<Comment> comments;
+    @ManyToOne
+    @JoinColumn(name = "account_id")
+    Account account;
 }

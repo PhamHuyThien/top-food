@@ -2,13 +2,7 @@ package com.datn.topfood.data.model;
 
 import java.util.Set;
 
-import javax.persistence.CascadeType;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
-import javax.persistence.ManyToMany;
-import javax.persistence.ManyToOne;
+import javax.persistence.*;
 
 import lombok.*;
 import org.apache.commons.lang3.builder.ToStringExclude;
@@ -20,10 +14,14 @@ import org.apache.commons.lang3.builder.ToStringExclude;
 @Entity
 public class Food extends Base {
 
+    @Column(length = 50)
     private String name;
+
     private Double price;
+
+    @Column(length = 200)
     private String content;
-    private String status;
+
     @ManyToOne
     @JoinColumn(name = "tag_id")
     Tag tag;

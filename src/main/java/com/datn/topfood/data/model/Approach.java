@@ -17,17 +17,13 @@ import lombok.ToString;
 @AllArgsConstructor
 @ToString
 @Entity
-public class Approach {
+public class Approach extends Base {
 
-	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Long id;
-	
-	@ManyToOne
-	@JoinColumn(name = "post_id")
-	private Post post;
-	
-	@ManyToOne
-	@JoinColumn(name = "account_id")
-	private Account account;
+    @ManyToOne
+    @JoinColumn(name = "post_id")
+    private Post post;
+
+    @ManyToOne
+    @JoinColumn(name = "account_id")
+    private Account account;
 }

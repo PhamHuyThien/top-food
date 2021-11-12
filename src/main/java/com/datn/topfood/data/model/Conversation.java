@@ -1,9 +1,6 @@
 package com.datn.topfood.data.model;
 
-import javax.persistence.Entity;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToOne;
+import javax.persistence.*;
 
 
 import lombok.AllArgsConstructor;
@@ -18,9 +15,13 @@ import lombok.ToString;
 @Entity
 public class Conversation extends Base {
 
+    @Column(length = 100)
     private String title;
+
+    @Column(length = 100)
     private String image;
+
     @ManyToOne
-    @JoinColumn(name = "create_by")
+    @JoinColumn(name = "createby_id")
     private Account createBy;
 }

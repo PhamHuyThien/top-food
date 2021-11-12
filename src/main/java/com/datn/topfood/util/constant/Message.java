@@ -56,5 +56,7 @@ public class Message {
     
     public static final String NULL_DATA = "dữ liệu null.";
     public static final String POST_NOT_EXISTS = "bài viết không tồn tại. ";
+
+    public static final String REACT_COMMENT_NOT_EXISTS = "Bình luận này không tồn tại.";
 }
 

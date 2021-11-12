@@ -39,9 +39,9 @@ public interface StoreProfileServic {
 
     void deletePost(Long postId);
     
-    Post detailPost(Long id);
+    PostResponse detailPost(Long id);
     
-    PageResponse<PostResponse> getListPost(PageRequest pageRequest);
+    PageResponse<PostResponse> getListPost(Long accountId,PageRequest pageRequest);
     
     PostResponse updatePost(PostRequest postRequest);
     

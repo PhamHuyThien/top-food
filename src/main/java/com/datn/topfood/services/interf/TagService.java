@@ -21,4 +21,5 @@ public interface TagService {
     void deleteTag(Long id);
 
     void updateEnable(Long id);
+    List<TagResponse> getAllTitleTag(String tagName);
 }
