@@ -17,35 +17,42 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 @Entity
 public class Profile {
 
-	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Long id;
-	@Column(length = 100)
-	private String cover;
-	@Column(length = 100)
-	private String avatar;
-	@Column(length = 200)
-	private String bio;
-	@Column(length = 200)
-	private String address;
-	@Column(length = 50)
-	private String name;
-	private Timestamp birthday;
-	private Timestamp updateAt;
-	
-	@OneToOne
-	@JsonIgnore
-	private Account account;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
-	@EqualsAndHashCode.Exclude
-	@ToStringExclude
-	@OneToMany(mappedBy = "profile",cascade = CascadeType.ALL)
-	@JsonIgnore
-	private List<Post> posts;
+    @Column(length = 100)
+    private String cover;
 
-	@EqualsAndHashCode.Exclude
-	@ToStringExclude
-	@OneToMany(mappedBy = "profile",cascade = CascadeType.ALL)
-	@JsonIgnore
-	private List<Food> foods;
+    @Column(length = 100)
+    private String avatar;
+
+    @Column(length = 200)
+    private String bio;
+
+    @Column(length = 200)
+    private String address;
+
+    @Column(length = 50)
+    private String name;
+
+    private Timestamp birthday;
+
+    private Timestamp updateAt;
+
+    @OneToOne
+    @JsonIgnore
+    private Account account;
+
+    @EqualsAndHashCode.Exclude
+    @ToStringExclude
+    @OneToMany(mappedBy = "profile", cascade = CascadeType.ALL)
+    @JsonIgnore
+    private List<Post> posts;
+
+    @EqualsAndHashCode.Exclude
+    @ToStringExclude
+    @OneToMany(mappedBy = "profile", cascade = CascadeType.ALL)
+    @JsonIgnore
+    private List<Food> foods;
 }

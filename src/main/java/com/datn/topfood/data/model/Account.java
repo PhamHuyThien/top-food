@@ -2,6 +2,7 @@ package com.datn.topfood.data.model;
 
 import java.util.Collection;
 import javax.persistence.*;
+
 import com.datn.topfood.util.enums.AccountRole;
 import com.datn.topfood.util.enums.AccountStatus;
 import lombok.AllArgsConstructor;
@@ -24,7 +25,9 @@ public class Account extends Base implements UserDetails {
     @Column(unique = true, length = 50)
     private String email;
     @Enumerated(EnumType.STRING)
+    @Column(length = 20)
     private AccountStatus status;
+    @Column(length = 20)
     @Enumerated(EnumType.STRING)
     private AccountRole role;
 

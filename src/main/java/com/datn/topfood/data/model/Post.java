@@ -27,15 +27,6 @@ public class Post extends Base {
     @ToStringExclude
     @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JoinTable(
-            name = "post_reaction",
-            joinColumns = @JoinColumn(name = "post_id"),
-            inverseJoinColumns = @JoinColumn(name = "reaction_id"))
-    private Set<Reaction> reactions;
-
-    @EqualsAndHashCode.Exclude
-    @ToStringExclude
-    @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    @JoinTable(
             name = "post_file",
             joinColumns = @JoinColumn(name = "post_id"),
             inverseJoinColumns = @JoinColumn(name = "file_id"))
@@ -55,6 +46,7 @@ public class Post extends Base {
     @ToStringExclude
     @OneToMany(mappedBy = "post", cascade = CascadeType.ALL)
     private List<Approach> approachs;
+
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
             name = "tag_post",

@@ -17,11 +17,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-public class Intereact {
-
-	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Long id;
+public class Intereact extends Base {
 	
 	@ManyToOne
 	@JoinColumn(name = "post_id")

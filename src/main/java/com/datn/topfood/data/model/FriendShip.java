@@ -1,10 +1,6 @@
 package com.datn.topfood.data.model;
 
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
+import javax.persistence.*;
 
 import com.datn.topfood.util.enums.FriendShipStatus;
 
@@ -21,10 +17,11 @@ import lombok.ToString;
 public class FriendShip extends Base{
 
 	@Enumerated(EnumType.STRING)
+	@Column(length = 20)
 	private FriendShipStatus status;
 
 	@ManyToOne
-	@JoinColumn(name = "block_by")
+	@JoinColumn(name = "blockby_id")
 	private Account blockBy;
 
 	@ManyToOne

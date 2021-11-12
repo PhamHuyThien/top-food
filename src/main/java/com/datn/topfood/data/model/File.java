@@ -20,20 +20,7 @@ public class File extends Base{
 	private String path;
 	
 	@Enumerated(EnumType.STRING)
+	@Column(length = 30)
 	private FileType type;
 
-	@EqualsAndHashCode.Exclude
-	@ToStringExclude
-	@ManyToMany(mappedBy = "files")
-	private Set<Comment> comments;
-
-	@EqualsAndHashCode.Exclude
-	@ToStringExclude
-	@ManyToMany(mappedBy = "files")
-	private Set<Post> posts;
-
-	@EqualsAndHashCode.Exclude
-	@ToStringExclude
-	@ManyToMany(mappedBy = "files")
-	private Set<Food> foods;
 }

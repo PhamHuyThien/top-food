@@ -13,11 +13,10 @@ import javax.persistence.*;
 @EqualsAndHashCode
 @Entity
 public class Rule extends Base {
-  @Id
-  @GeneratedValue(strategy = GenerationType.IDENTITY)
-  Long id;
+
   @Column(length = 100)
   String title;
+
   @Column(length = 200)
   String description;
 }
