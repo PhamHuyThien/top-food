@@ -132,5 +132,10 @@ public class StoreProfileController {
         return ResponseEntity.ok(profileServic.searchFoods(foodsRequest,pageRequest));
     }
 
+    @Operation(description = "API danh sách món ăn theo giá tăng giảm")
+    @GetMapping("/list-foods-sort")
+    public ResponseEntity<PageResponse<FoodDetailResponse>> searchFoodsSort(PageRequest pageRequest) {
+        return ResponseEntity.ok(profileServic.searchFoodsSort(pageRequest));
+    }
 }
 

@@ -46,4 +46,6 @@ public interface StoreProfileServic {
     PostResponse updatePost(PostRequest postRequest);
     
     PageResponse<FoodDetailResponse> searchFoods(SearchFoodsRequest foodsRequest,PageRequest pageRequest);
+    
+    PageResponse<FoodDetailResponse> searchFoodsSort(PageRequest pageRequest);
 }
