@@ -41,9 +41,11 @@ public interface StoreProfileServic {
     
     PostResponse detailPost(Long id);
     
-    PageResponse<PostResponse> getListPost(PageRequest pageRequest);
+    PageResponse<PostResponse> getListPost(Long accountId,PageRequest pageRequest);
     
     PostResponse updatePost(PostRequest postRequest);
     
     PageResponse<FoodDetailResponse> searchFoods(SearchFoodsRequest foodsRequest,PageRequest pageRequest);
+    
+    PageResponse<FoodDetailResponse> searchFoodsSort(PageRequest pageRequest);
 }
