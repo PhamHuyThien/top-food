@@ -1,5 +1,6 @@
 package com.datn.topfood.data.model;
 
+import java.util.List;
 import java.util.Set;
 
 import javax.persistence.*;
@@ -29,6 +30,9 @@ public class Food extends Base {
     @ManyToOne
     @JoinColumn(name = "profile_id")
     private Profile profile;
+    
+    @ManyToMany
+    private Set<Post> posts;
 
     @EqualsAndHashCode.Exclude
     @ToStringExclude
@@ -38,4 +42,17 @@ public class Food extends Base {
             joinColumns = @JoinColumn(name = "food_id"),
             inverseJoinColumns = @JoinColumn(name = "file_id"))
     public Set<File> files;
+
+	public Food(String name, Double price, String content, Tag tag, Profile profile, Set<File> files) {
+		super();
+		this.name = name;
+		this.price = price;
+		this.content = content;
+		this.tag = tag;
+		this.profile = profile;
+		this.files = files;
+	}
+    
+    
+  
 }

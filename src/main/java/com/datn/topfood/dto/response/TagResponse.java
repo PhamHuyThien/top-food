@@ -21,7 +21,6 @@ public class TagResponse {
 	List<FoodResponse> foods;
 
 	public TagResponse(Long id, String tagName) {
-		super();
 		this.id = id;
 		this.tagName = tagName;
 	}

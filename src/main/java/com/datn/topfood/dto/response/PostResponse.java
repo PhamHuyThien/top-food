@@ -3,6 +3,7 @@ package com.datn.topfood.dto.response;
 import java.util.Collection;
 import java.util.List;
 
+import com.datn.topfood.data.model.Profile;
 import com.datn.topfood.data.model.Tag;
 import com.datn.topfood.dto.request.FileRequest;
 
@@ -19,4 +20,7 @@ public class PostResponse {
 	String content;
 	List<String> files;
 	List<TagResponse> tags;
+	String[] address;
+	List<FoodResponse> foods;
+	ProfileResponse profile;
 }
