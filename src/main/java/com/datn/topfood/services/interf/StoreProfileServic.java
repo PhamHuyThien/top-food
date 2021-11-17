@@ -1,5 +1,7 @@
 package com.datn.topfood.services.interf;
 
+import java.util.List;
+
 import com.datn.topfood.data.model.Post;
 import com.datn.topfood.dto.request.FoodReactionRequest;
 import com.datn.topfood.dto.request.FoodRequest;
@@ -59,4 +61,8 @@ public interface StoreProfileServic {
     void foodReactionDel(FoodReactionRequest foodReactionRequest);
     
     void addFoodHot(Long foodId);
+    
+    List<FoodDetailResponse> hotFood(Long id);
+    
+    void deleteFoodHot(Long foodId);
 }

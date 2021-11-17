@@ -496,23 +496,63 @@ public class StoreProfileServicImpl extends BaseService implements StoreProfileS
 		Profile me = profileRepository.findByAccountId(itMe().getId());
 		String hotFoods = me.getFoodHot();
 		if(hotFoods==null) {
-			me.setFoodHot(String.valueOf(foodId));
+			me.setFoodHot(String.valueOf(foodId)+";");
 		}else if(foodRepository.findById(foodId).get() == null) {
 		}else if(Stream.of(me.getFoodHot().split(";")).anyMatch(s->s.equals(String.valueOf(foodId)))){
 			throw new ResponseStatusException(HttpStatus.BAD_REQUEST,"món ăn đã có trong danh sách yêu thích");
 		}else if(hotFoods.split(";").length<4) {
-			me.setFoodHot(me.getFoodHot()+";"+String.valueOf(foodId));
+			me.setFoodHot(me.getFoodHot()+String.valueOf(foodId)+";");
 		}else {
 			String[] fh = me.getFoodHot().split(";");
 			String rs = "";
 			for(int i=0;i<fh.length;i++) {
 				if(i==fh.length-1) {
-					rs += String.valueOf(foodId);
+					rs += String.valueOf(foodId)+";";
 					break;
 				}
 				rs+=fh[i+1]+";";
 			}
 			me.setFoodHot(rs);
+		}
+		profileRepository.save(me);
+	}
+	
+	@Override
+	public List<FoodDetailResponse> hotFood(Long id) {
+		Profile me = profileRepository.findByAccountId(id);
+		List<FoodDetailResponse> detailResponses = new ArrayList<FoodDetailResponse>();
+		if(me.getFoodHot()!=null) {
+			for(String idstr:me.getFoodHot().split(";")) {
+				if(!idstr.isBlank()) {
+					Food f = foodRepository.findById(Long.valueOf(idstr)).get();
+					if(f.getDisableAt()==null) {
+						FoodDetailResponse detailResponse = new FoodDetailResponse();
+						detailResponse.setContent(f.getContent());
+						detailResponse.setFiles(f.getFiles().stream().map((file) -> file.getPath()).collect(Collectors.toList()));
+						detailResponse.setId(f.getId());
+						detailResponse.setName(f.getName());
+						detailResponse.setPrice(f.getPrice());
+						detailResponse.setTag(new TagResponse(f.getTag().getId(), f.getTag().getTagName()));
+						detailResponse.setTotalReaction(reactionFoodRepo.totalFoodReaction(f.getId()));
+						detailResponse.setMyReaction(reactionFoodRepo.isMyReaction(f.getId(), itMe().getId())!=null);
+						detailResponses.add(detailResponse);
+					}
+				}
+			}
+		}
+		return detailResponses;
+	}
+	
+	@Override
+	public void deleteFoodHot(Long foodId) {
+		Profile me = profileRepository.findByAccountId(itMe().getId());
+		String hotFoods = me.getFoodHot();
+		if(hotFoods==null) {
+			throw new ResponseStatusException(HttpStatus.BAD_REQUEST,"hiện không có món ăn nổi bật nào");
+		}else if(!Stream.of(me.getFoodHot().split(";")).anyMatch(s->s.equals(String.valueOf(foodId)))){
+			throw new ResponseStatusException(HttpStatus.BAD_REQUEST,"món ăn này không có trong danh sách món ăn nổi bật");
+		}else {
+			me.setFoodHot(me.getFoodHot().replace(String.valueOf(foodId)+";",""));
 		}
 		profileRepository.save(me);
 	}

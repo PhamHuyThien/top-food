@@ -1,6 +1,9 @@
 package com.datn.topfood.controllers;
 
 import com.datn.topfood.dto.response.*;
+
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -169,6 +172,19 @@ public class StoreProfileController {
     @PostMapping("/food-hot/{foodId}")
     public ResponseEntity<Response<Void>> addFoodHot(@PathVariable("foodId") Long id) {
     	profileServic.addFoodHot(id);
+        return ResponseEntity.ok(new Response<>(true, Message.OTHER_SUCCESS));
+    }
+    
+    @Operation(description = "API lấy món ăn nổi bật")
+    @GetMapping("/food-hot")
+    public ResponseEntity<Response<List<FoodDetailResponse>>> getHotFood(@RequestParam("accountId") Long id) {
+        return ResponseEntity.ok(new Response<>(true, Message.OTHER_SUCCESS,profileServic.hotFood(id)));
+    }
+    
+    @Operation(description = "API xóa món ăn nổi bật")
+    @DeleteMapping("/food-hot/delete/{foodId}")
+    public ResponseEntity<Response<Void>> deleteHotFood(@PathVariable("foodId") Long id) {
+    	profileServic.deleteFoodHot(id);
         return ResponseEntity.ok(new Response<>(true, Message.OTHER_SUCCESS));
     }
 }
