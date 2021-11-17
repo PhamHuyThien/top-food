@@ -97,7 +97,7 @@ public class ReactServiceImpl implements ReactService {
         Pageable pageable = PageUtils.toPageable(pageRequest);
         Post post = checkPostExists(id);
         Page<Comment> commentPage = commentRepository.findAllByCommentPostId(post.getId(), pageable);
-        return toPageCommentResponse(commentPage, pageable);
+        return toPageCommentResponse(commentPage, pageable, itMe);
     }
 
     @Override
@@ -138,7 +138,7 @@ public class ReactServiceImpl implements ReactService {
         Pageable pageable = PageUtils.toPageable(pageRequest);
         Comment comment = checkCommentExists(id);
         Page<Comment> commentPage = commentRepository.findAllByCommentId(comment.getId(), pageable);
-        return toPageCommentResponse(commentPage, pageable);
+        return toPageCommentResponse(commentPage, pageable, itMe);
     }
 
     @Override
@@ -218,6 +218,19 @@ public class ReactServiceImpl implements ReactService {
                 commentPage.getTotalElements(),
                 pageable.getPageSize()
         );
+    }
+
+    private PageResponse<CommentResponse> toPageCommentResponse(Page<Comment> commentPage, Pageable pageable, Account account) {
+        PageRequest pageRequest = PageUtils.ofDefault(new PageRequest());
+        pageRequest.setPageSize(0);
+        PageResponse<CommentResponse> commentResponsePageResponse = toPageCommentResponse(commentPage, pageable);
+        commentResponsePageResponse.getData().forEach(commentResponse -> {
+            PageResponse<ReactionResponse> reactionResponsePageResponse = listReactionComment(commentResponse.getId(), pageRequest, account);
+            CommentReaction commentReaction = commentReactionRepository.getByAccountIdAndCommentId(account.getId(), commentResponse.getId());
+            commentResponse.setTotalReaction(reactionResponsePageResponse.getTotalElements());
+            commentResponse.setItMeReaction(commentReaction != null ? commentReaction.getReaction().getType() : null);
+        });
+        return commentResponsePageResponse;
     }
 
     private PageResponse<ReactionResponse> toPageReactionResponse(Page<Reaction> reactionPage, Pageable pageable) {
