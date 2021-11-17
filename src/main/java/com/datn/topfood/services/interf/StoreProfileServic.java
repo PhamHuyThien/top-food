@@ -1,6 +1,7 @@
 package com.datn.topfood.services.interf;
 
 import com.datn.topfood.data.model.Post;
+import com.datn.topfood.dto.request.FoodReactionRequest;
 import com.datn.topfood.dto.request.FoodRequest;
 import com.datn.topfood.dto.request.PageRequest;
 import com.datn.topfood.dto.request.PostRequest;
@@ -48,4 +49,8 @@ public interface StoreProfileServic {
     PageResponse<FoodDetailResponse> searchFoods(SearchFoodsRequest foodsRequest,PageRequest pageRequest);
     
     PageResponse<FoodDetailResponse> searchFoodsSort(PageRequest pageRequest);
+    
+    void foodReaction(FoodReactionRequest foodReactionRequest);
+    
+    void foodReactionDel(FoodReactionRequest foodReactionRequest);
 }

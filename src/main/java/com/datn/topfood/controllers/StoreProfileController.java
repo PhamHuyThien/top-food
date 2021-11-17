@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.datn.topfood.data.model.Post;
+import com.datn.topfood.dto.request.FoodReactionRequest;
 import com.datn.topfood.dto.request.FoodRequest;
 import com.datn.topfood.dto.request.PageRequest;
 import com.datn.topfood.dto.request.PostRequest;
@@ -136,6 +137,20 @@ public class StoreProfileController {
     @GetMapping("/list-foods-sort")
     public ResponseEntity<PageResponse<FoodDetailResponse>> searchFoodsSort(PageRequest pageRequest) {
         return ResponseEntity.ok(profileServic.searchFoodsSort(pageRequest));
+    }
+    
+    @Operation(description = "API thả tim món ăn")
+    @PostMapping("/food-reaction")
+    public ResponseEntity<Response<Void>> foodReaction(@RequestBody FoodReactionRequest foodReactionRequest) {
+    	profileServic.foodReaction(foodReactionRequest);
+        return ResponseEntity.ok(new Response<>(true, Message.OTHER_SUCCESS));
+    }
+    
+    @Operation(description = "API hủy thả tim món ăn")
+    @DeleteMapping("/food-reaction")
+    public ResponseEntity<Response<Void>> foodReactionDel(@RequestBody FoodReactionRequest foodReactionRequest) {
+    	profileServic.foodReactionDel(foodReactionRequest);
+        return ResponseEntity.ok(new Response<>(true, Message.OTHER_SUCCESS));
     }
 }
 

@@ -1,5 +1,6 @@
 package com.datn.topfood.services.service;
 
+import java.sql.Date;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -20,13 +21,19 @@ import com.datn.topfood.data.model.AccountFollow;
 import com.datn.topfood.data.model.Food;
 import com.datn.topfood.data.model.Post;
 import com.datn.topfood.data.model.Profile;
+import com.datn.topfood.data.model.Reaction;
+import com.datn.topfood.data.model.ReactionFood;
 import com.datn.topfood.data.repository.custom.impl.StoreCustomRepository;
 import com.datn.topfood.data.repository.jpa.AccountFollowRepository;
+import com.datn.topfood.data.repository.jpa.AccountRepository;
 import com.datn.topfood.data.repository.jpa.FoodRepository;
 import com.datn.topfood.data.repository.jpa.PostRepository;
 import com.datn.topfood.data.repository.jpa.ProfileRepository;
+import com.datn.topfood.data.repository.jpa.ReactionFoodRepo;
+import com.datn.topfood.data.repository.jpa.ReactionRepository;
 import com.datn.topfood.data.repository.jpa.TagRepository;
 import com.datn.topfood.dto.request.FileRequest;
+import com.datn.topfood.dto.request.FoodReactionRequest;
 import com.datn.topfood.dto.request.FoodRequest;
 import com.datn.topfood.dto.request.PageRequest;
 import com.datn.topfood.dto.request.PostRequest;
@@ -46,6 +53,7 @@ import com.datn.topfood.util.DateUtils;
 import com.datn.topfood.util.PageUtils;
 import com.datn.topfood.util.constant.Message;
 import com.datn.topfood.util.enums.AccountRole;
+import com.datn.topfood.util.enums.ReactType;
 
 @Service
 public class StoreProfileServicImpl extends BaseService implements StoreProfileServic {
@@ -62,6 +70,12 @@ public class StoreProfileServicImpl extends BaseService implements StoreProfileS
 	TagRepository tagRepository;
 	@Autowired
 	StoreCustomRepository storeCustomRepository;
+	@Autowired
+	AccountRepository accountRepository;
+	@Autowired
+	ReactionFoodRepo reactionFoodRepo;
+	@Autowired
+	ReactionRepository reactionRepository;
 
 	public final int MAX_SIZE_FOOD = 100;
 
@@ -93,6 +107,9 @@ public class StoreProfileServicImpl extends BaseService implements StoreProfileS
 	@Override
 	public FoodDetailResponse foodDetail(Long foodId) {
 		Food f = foodRepository.findById(foodId).orElseThrow(() -> new RuntimeException("tag not found"));
+		if(f.getDisableAt()!=null) {
+			return null;
+		}
 		FoodDetailResponse detailResponse = new FoodDetailResponse();
 		detailResponse.setContent(f.getContent());
 		detailResponse.setFiles(f.getFiles().stream().map((file) -> file.getPath()).collect(Collectors.toList()));
@@ -100,6 +117,7 @@ public class StoreProfileServicImpl extends BaseService implements StoreProfileS
 		detailResponse.setName(f.getName());
 		detailResponse.setPrice(f.getPrice());
 		detailResponse.setTag(new TagResponse(f.getTag().getId(), f.getTag().getTagName()));
+		detailResponse.setTotalReaction(reactionFoodRepo.totalFoodReaction(foodId));
 		return detailResponse;
 	}
 
@@ -131,11 +149,6 @@ public class StoreProfileServicImpl extends BaseService implements StoreProfileS
 		swr.setBio(p.getBio());
 		swr.setCover(p.getCover());
 		swr.setFollower(followRepository.countFollowOfProfile(storeProfileId));
-		swr.setFoods(foodRepository.findByProfileId(storeProfileId).stream()
-				.map((food) -> new FoodDetailResponse(food.getId(), food.getName(), food.getPrice(), food.getContent(),
-						food.getFiles().stream().map((file) -> file.getPath()).collect(Collectors.toList()),
-						new TagResponse(food.getTag().getId(), food.getTag().getTagName())))
-				.collect(Collectors.toList()));
 		swr.setName(p.getName());
 		swr.setStoreId(p.getId());
 		return swr;
@@ -206,7 +219,8 @@ public class StoreProfileServicImpl extends BaseService implements StoreProfileS
 		if (food == null) {
 			throw new ResponseStatusException(HttpStatus.NOT_FOUND, Message.FOOD_NOT_EXISTS);
 		}
-		foodRepository.delete(food);
+		food.setDisableAt(DateUtils.currentTimestamp());
+		foodRepository.save(food);
 	}
 
 	@Override
@@ -220,7 +234,7 @@ public class StoreProfileServicImpl extends BaseService implements StoreProfileS
 		return new PageResponse<>(foods.stream()
 				.map((food) -> new FoodDetailResponse(food.getId(), food.getName(), food.getPrice(), food.getContent(),
 						food.getFiles().stream().map((file) -> file.getPath()).collect(Collectors.toList()),
-						new TagResponse(food.getTag().getId(), food.getTag().getTagName())))
+						new TagResponse(food.getTag().getId(), food.getTag().getTagName()),reactionFoodRepo.totalFoodReaction(food.getId())))
 				.collect(Collectors.toList()), foods.getTotalElements(), pageRequest.getPageSize());
 	}
 
@@ -249,7 +263,7 @@ public class StoreProfileServicImpl extends BaseService implements StoreProfileS
 
 		return new FoodDetailResponse(food.getId(), food.getName(), food.getPrice(), food.getContent(),
 				food.getFiles().stream().map((file) -> file.getPath()).collect(Collectors.toList()),
-				new TagResponse(food.getTag().getId(), food.getTag().getTagName()));
+				new TagResponse(food.getTag().getId(), food.getTag().getTagName()),reactionFoodRepo.totalFoodReaction(food.getId()));
 	}
 
 	@Override
@@ -376,7 +390,7 @@ public class StoreProfileServicImpl extends BaseService implements StoreProfileS
 		List<FoodDetailResponse> response = foods.stream()
 				.map((food) -> new FoodDetailResponse(food.getId(), food.getName(), food.getPrice(), food.getContent(),
 						food.getFiles().stream().map((file) -> file.getPath()).collect(Collectors.toList()),
-						new TagResponse(food.getTag().getId(), food.getTag().getTagName())))
+						new TagResponse(food.getTag().getId(), food.getTag().getTagName()),reactionFoodRepo.totalFoodReaction(food.getId())))
 				.collect(Collectors.toList());
 		return new PageResponse<>(response,
 				storeCustomRepository.countFoodsSearch(foodsRequest.getFoodName(), foodsRequest.getTagName(), min, max),
@@ -387,11 +401,41 @@ public class StoreProfileServicImpl extends BaseService implements StoreProfileS
 	public PageResponse<FoodDetailResponse> searchFoodsSort(PageRequest pageRequest) {
 		Pageable pageable = org.springframework.data.domain.PageRequest.of(pageRequest.getPage(), pageRequest.getPageSize(),
 				Sort.by(Direction.valueOf(pageRequest.getOrder().toUpperCase()), pageRequest.getOrderBy()));
-		Page<Food> foods = foodRepository.findAll(pageable);
+		Page<Food> foods = foodRepository.findAllAndSort(pageable);
 		return new PageResponse<>(foods.stream()
 				.map((food) -> new FoodDetailResponse(food.getId(), food.getName(), food.getPrice(), food.getContent(),
 						food.getFiles().stream().map((file) -> file.getPath()).collect(Collectors.toList()),
-						new TagResponse(food.getTag().getId(), food.getTag().getTagName())))
+						new TagResponse(food.getTag().getId(), food.getTag().getTagName()),reactionFoodRepo.totalFoodReaction(food.getId())))
 				.collect(Collectors.toList()), foods.getTotalElements(), pageRequest.getPageSize());
+	}
+	
+	@Transactional
+	@Override
+	public void foodReaction(FoodReactionRequest foodReactionRequest) {
+		Reaction reaction = reactionFoodRepo.findReactionByFoodIdAndAccountId(foodReactionRequest.getFoodId()
+				, itMe().getId());
+		if(reaction!=null) {
+			reaction.setDisableAt(null);
+			reactionRepository.save(reaction);
+			return;
+		}
+		reaction = new Reaction(ReactType.LOVE, accountRepository.findById(itMe().getId()).get());
+		reaction = reactionRepository.save(reaction);
+		ReactionFood reactionFood = new ReactionFood();
+		reactionFood.setReaction(reaction);
+		reactionFood.setFood(foodRepository.findById(foodReactionRequest.getFoodId()).get());
+		reactionFoodRepo.save(reactionFood);
+	}
+	
+	@Override
+	public void foodReactionDel(FoodReactionRequest foodReactionRequest) {
+		Reaction reaction = reactionFoodRepo.findReactionByFoodIdAndAccountId(foodReactionRequest.getFoodId()
+				, itMe().getId());
+		if(reaction==null) {
+			return;
+		}
+		reaction.setDisableAt(DateUtils.currentTimestamp());
+		
+		reactionRepository.save(reaction);
 	}
 }

@@ -42,6 +42,11 @@ public class Food extends Base {
             joinColumns = @JoinColumn(name = "food_id"),
             inverseJoinColumns = @JoinColumn(name = "file_id"))
     public Set<File> files;
+    
+    @EqualsAndHashCode.Exclude
+    @ToStringExclude
+    @OneToMany(mappedBy = "food", cascade = CascadeType.ALL)
+    private List<ReactionFood> reactionFoods;
 
 	public Food(String name, Double price, String content, Tag tag, Profile profile, Set<File> files) {
 		super();

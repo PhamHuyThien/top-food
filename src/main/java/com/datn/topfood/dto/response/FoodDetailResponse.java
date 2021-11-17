@@ -19,4 +19,5 @@ public class FoodDetailResponse {
 	String content;
 	List<String> files;
 	TagResponse tag;
+	Long totalReaction;
 }

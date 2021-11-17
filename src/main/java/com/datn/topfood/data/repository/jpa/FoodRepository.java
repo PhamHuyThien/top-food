@@ -23,4 +23,7 @@ public interface FoodRepository extends JpaRepository<Food, Long>{
 	
 	@Query("select f from Food as f where f.profile.account.username = ?1 AND f.disableAt IS NULL")
 	Page<Food> findByAccountUsername(String username,Pageable pageable);
+	
+	@Query("select f from Food as f where f.disableAt IS NULL")
+	Page<Food> findAllAndSort(Pageable pageable);
 }
