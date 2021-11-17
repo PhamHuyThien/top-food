@@ -60,500 +60,500 @@ import com.datn.topfood.util.enums.ReactType;
 @Service
 public class StoreProfileServicImpl extends BaseService implements StoreProfileServic {
 
-	@Autowired
-	FoodRepository foodRepository;
-	@Autowired
-	ProfileRepository profileRepository;
-	@Autowired
-	AccountFollowRepository followRepository;
-	@Autowired
-	PostRepository postRepository;
-	@Autowired
-	TagRepository tagRepository;
-	@Autowired
-	StoreCustomRepository storeCustomRepository;
-	@Autowired
-	AccountRepository accountRepository;
-	@Autowired
-	ReactionFoodRepo reactionFoodRepo;
-	@Autowired
-	ReactionRepository reactionRepository;
+    @Autowired
+    FoodRepository foodRepository;
+    @Autowired
+    ProfileRepository profileRepository;
+    @Autowired
+    AccountFollowRepository followRepository;
+    @Autowired
+    PostRepository postRepository;
+    @Autowired
+    TagRepository tagRepository;
+    @Autowired
+    StoreCustomRepository storeCustomRepository;
+    @Autowired
+    AccountRepository accountRepository;
+    @Autowired
+    ReactionFoodRepo reactionFoodRepo;
+    @Autowired
+    ReactionRepository reactionRepository;
 
-	public final int MAX_SIZE_FOOD = 100;
+    public final int MAX_SIZE_FOOD = 100;
 
-	@Override
-	@Transactional
-	public void createFood(FoodRequest foodRequest) {
-		Account ime = itMe();
-		if (foodRequest.getId() != null) {
-			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, Message.OTHER_ACTION_IS_DENIED);
-		}
-		if (ime.getRole().compareTo(AccountRole.ROLE_STORE) != 0) {
-			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, Message.OTHER_ACTION_IS_DENIED);
-		}
-		if (foodRepository.countFoodByProfileAccountUsername(ime.getUsername()) >= MAX_SIZE_FOOD) {
-			throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
-					Message.MAX_SIZE_FOOD_MESSAGE + MAX_SIZE_FOOD + " món.");
-		}
-		Food f = new Food();
-		f.setName(foodRequest.getName());
-		f.setPrice(foodRequest.getPrice());
-		f.setContent(foodRequest.getContent());
-		f.setProfile(profileRepository.findByAccountId(ime.getId()));
-		f.setFiles(ConvertUtils.convertArrFileReqToSetFile(foodRequest.getFiles()));
-		f.setCreateAt(DateUtils.currentTimestamp());
-		f.setTag(tagRepository.findById(foodRequest.getTagId()).get());
-		foodRepository.save(f);
-	}
+    @Override
+    @Transactional
+    public void createFood(FoodRequest foodRequest) {
+        Account ime = itMe();
+        if (foodRequest.getId() != null) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, Message.OTHER_ACTION_IS_DENIED);
+        }
+        if (ime.getRole().compareTo(AccountRole.ROLE_STORE) != 0) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, Message.OTHER_ACTION_IS_DENIED);
+        }
+        if (foodRepository.countFoodByProfileAccountUsername(ime.getUsername()) >= MAX_SIZE_FOOD) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+                    Message.MAX_SIZE_FOOD_MESSAGE + MAX_SIZE_FOOD + " món.");
+        }
+        Food f = new Food();
+        f.setName(foodRequest.getName());
+        f.setPrice(foodRequest.getPrice());
+        f.setContent(foodRequest.getContent());
+        f.setProfile(profileRepository.findByAccountId(ime.getId()));
+        f.setFiles(ConvertUtils.convertArrFileReqToSetFile(foodRequest.getFiles()));
+        f.setCreateAt(DateUtils.currentTimestamp());
+        f.setTag(tagRepository.findById(foodRequest.getTagId()).get());
+        foodRepository.save(f);
+    }
 
-	@Override
-	public FoodDetailResponse foodDetail(Long foodId) {
-		Food f = foodRepository.findById(foodId).orElseThrow(() -> new RuntimeException("tag not found"));
-		if(f.getDisableAt()!=null) {
-			return null;
-		}
-		FoodDetailResponse detailResponse = new FoodDetailResponse();
-		detailResponse.setContent(f.getContent());
-		detailResponse.setFiles(f.getFiles().stream().map((file) -> file.getPath()).collect(Collectors.toList()));
-		detailResponse.setId(f.getId());
-		detailResponse.setName(f.getName());
-		detailResponse.setPrice(f.getPrice());
-		detailResponse.setTag(new TagResponse(f.getTag().getId(), f.getTag().getTagName()));
-		detailResponse.setTotalReaction(reactionFoodRepo.totalFoodReaction(foodId));
-		detailResponse.setMyReaction(reactionFoodRepo.isMyReaction(f.getId(), itMe().getId())!=null);
-		return detailResponse;
-	}
+    @Override
+    public FoodDetailResponse foodDetail(Long foodId) {
+        Food f = foodRepository.findById(foodId).orElseThrow(() -> new RuntimeException("tag not found"));
+        if (f.getDisableAt() != null) {
+            return null;
+        }
+        FoodDetailResponse detailResponse = new FoodDetailResponse();
+        detailResponse.setContent(f.getContent());
+        detailResponse.setFiles(f.getFiles().stream().map((file) -> file.getPath()).collect(Collectors.toList()));
+        detailResponse.setId(f.getId());
+        detailResponse.setName(f.getName());
+        detailResponse.setPrice(f.getPrice());
+        detailResponse.setTag(new TagResponse(f.getTag().getId(), f.getTag().getTagName()));
+        detailResponse.setTotalReaction(reactionFoodRepo.totalFoodReaction(foodId));
+        detailResponse.setMyReaction(reactionFoodRepo.isMyReaction(f.getId(), itMe().getId()) != null);
+        return detailResponse;
+    }
 
-	@Override
-	@Transactional
-	public void followStore(Long storeProfileId) {
-		Profile p = profileRepository.findByAccountId(storeProfileId);
-		if (p == null) {
-			throw new ResponseStatusException(HttpStatus.NOT_FOUND, Message.OTHER_ACTION_IS_DENIED);
-		}
-		if (p.getAccount().getRole().compareTo(AccountRole.ROLE_STORE) != 0) {
-			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, Message.OTHER_ACTION_IS_DENIED);
-		}
-		AccountFollow afl = new AccountFollow();
-		afl.setProfile(p);
-		afl.setAccount(itMe());
-		followRepository.save(afl);
-	}
+    @Override
+    @Transactional
+    public void followStore(Long storeProfileId) {
+        Profile p = profileRepository.findByAccountId(storeProfileId);
+        if (p == null) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, Message.OTHER_ACTION_IS_DENIED);
+        }
+        if (p.getAccount().getRole().compareTo(AccountRole.ROLE_STORE) != 0) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, Message.OTHER_ACTION_IS_DENIED);
+        }
+        AccountFollow afl = new AccountFollow();
+        afl.setProfile(p);
+        afl.setAccount(itMe());
+        followRepository.save(afl);
+    }
 
-	@Override
-	public StoreWallResponse storeProfile(Long storeProfileId) {
-		Profile p = profileRepository.findByAccountId(storeProfileId);
-		if (p == null) {
-			throw new ResponseStatusException(HttpStatus.NOT_FOUND, Message.OTHER_ACTION_IS_DENIED);
-		}
-		StoreWallResponse swr = new StoreWallResponse();
-		swr.setAddress(p.getAddress());
-		swr.setAvatar(p.getAvatar());
-		swr.setBio(p.getBio());
-		swr.setCover(p.getCover());
-		swr.setFollower(followRepository.countFollowOfProfile(storeProfileId));
-		swr.setName(p.getName());
-		swr.setStoreId(p.getId());
-		return swr;
-	}
+    @Override
+    public StoreWallResponse storeProfile(Long storeProfileId) {
+        Profile p = profileRepository.findByAccountId(storeProfileId);
+        if (p == null) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, Message.OTHER_ACTION_IS_DENIED);
+        }
+        StoreWallResponse swr = new StoreWallResponse();
+        swr.setAddress(p.getAddress());
+        swr.setAvatar(p.getAvatar());
+        swr.setBio(p.getBio());
+        swr.setCover(p.getCover());
+        swr.setFollower(followRepository.countFollowOfProfile(storeProfileId));
+        swr.setName(p.getName());
+        swr.setStoreId(p.getId());
+        return swr;
+    }
 
-	@Override
-	public PageResponse<StoreWallResponse> listStoreFollow(PageRequest pageRequest) {
-		Account ime = itMe();
-		Pageable pageable = PageUtils.toPageable(pageRequest);
-		Page<AccountFollow> accountFollow = followRepository.listStoreFollow(ime.getUsername(), pageable);
-		return new PageResponse<>(accountFollow.stream().map((al) -> {
-			StoreWallResponse swr = new StoreWallResponse();
-			swr.setAddress(al.getProfile().getAddress());
-			swr.setAvatar(al.getProfile().getAvatar());
-			swr.setBio(al.getProfile().getBio());
-			swr.setCover(al.getProfile().getCover());
-			swr.setFollower(followRepository.countFollowOfProfile(al.getProfile().getId()));
-			swr.setName(al.getProfile().getName());
-			swr.setStoreId(al.getProfile().getId());
-			return swr;
-		}).collect(Collectors.toList()), accountFollow.getTotalElements(), pageRequest.getPageSize());
-	}
+    @Override
+    public PageResponse<StoreWallResponse> listStoreFollow(PageRequest pageRequest) {
+        Account ime = itMe();
+        Pageable pageable = PageUtils.toPageable(pageRequest);
+        Page<AccountFollow> accountFollow = followRepository.listStoreFollow(ime.getUsername(), pageable);
+        return new PageResponse<>(accountFollow.stream().map((al) -> {
+            StoreWallResponse swr = new StoreWallResponse();
+            swr.setAddress(al.getProfile().getAddress());
+            swr.setAvatar(al.getProfile().getAvatar());
+            swr.setBio(al.getProfile().getBio());
+            swr.setCover(al.getProfile().getCover());
+            swr.setFollower(followRepository.countFollowOfProfile(al.getProfile().getId()));
+            swr.setName(al.getProfile().getName());
+            swr.setStoreId(al.getProfile().getId());
+            return swr;
+        }).collect(Collectors.toList()), accountFollow.getTotalElements(), pageRequest.getPageSize());
+    }
 
-	@Override
-	public PageResponse<SimpleAccountResponse> listFollowStore(PageRequest pageRequest) {
-		Account ime = itMe();
-		if (ime.getRole().compareTo(AccountRole.ROLE_STORE) != 0) {
-			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, Message.OTHER_ACTION_IS_DENIED);
-		}
-		Pageable pageable = PageUtils.toPageable(pageRequest);
-		Page<AccountFollow> accountFollow = followRepository.listFolowerStore(ime.getUsername(), pageable);
-		return new PageResponse<>(accountFollow.stream().map((al) -> {
-			SimpleAccountResponse swr = new SimpleAccountResponse();
-			Profile p = profileRepository.findByAccountId(al.getAccount().getId());
-			swr.setAddress(p.getAddress());
-			swr.setAvatar(p.getAvatar());
-			swr.setBio(p.getBio());
-			swr.setCover(p.getCover());
-			swr.setName(p.getName());
-			return swr;
-		}).collect(Collectors.toList()), accountFollow.getTotalElements(), pageRequest.getPageSize());
-	}
+    @Override
+    public PageResponse<SimpleAccountResponse> listFollowStore(PageRequest pageRequest) {
+        Account ime = itMe();
+        if (ime.getRole().compareTo(AccountRole.ROLE_STORE) != 0) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, Message.OTHER_ACTION_IS_DENIED);
+        }
+        Pageable pageable = PageUtils.toPageable(pageRequest);
+        Page<AccountFollow> accountFollow = followRepository.listFolowerStore(ime.getUsername(), pageable);
+        return new PageResponse<>(accountFollow.stream().map((al) -> {
+            SimpleAccountResponse swr = new SimpleAccountResponse();
+            Profile p = profileRepository.findByAccountId(al.getAccount().getId());
+            swr.setAddress(p.getAddress());
+            swr.setAvatar(p.getAvatar());
+            swr.setBio(p.getBio());
+            swr.setCover(p.getCover());
+            swr.setName(p.getName());
+            return swr;
+        }).collect(Collectors.toList()), accountFollow.getTotalElements(), pageRequest.getPageSize());
+    }
 
-	@Override
-	@Transactional
-	public void unFollowStore(Long storeId) {
-		Account ime = itMe();
-		AccountFollow accountFollow = followRepository.findByAccountUsernameAndProfileId(ime.getUsername(), storeId)
-				.orElse(null);
-		if (accountFollow == null) {
-			throw new ResponseStatusException(HttpStatus.NOT_FOUND, Message.OTHER_ACTION_IS_DENIED);
-		}
-		followRepository.delete(accountFollow);
-	}
+    @Override
+    @Transactional
+    public void unFollowStore(Long storeId) {
+        Account ime = itMe();
+        AccountFollow accountFollow = followRepository.findByAccountUsernameAndProfileId(ime.getUsername(), storeId)
+                .orElse(null);
+        if (accountFollow == null) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, Message.OTHER_ACTION_IS_DENIED);
+        }
+        followRepository.delete(accountFollow);
+    }
 
-	@Override
-	@Transactional
-	public void deleteFood(Long foodId) {
-		Account ime = itMe();
-		if (ime.getRole().compareTo(AccountRole.ROLE_STORE) != 0) {
-			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, Message.OTHER_ACTION_IS_DENIED);
-		}
-		// kiểm tra món ăn có phải đúng của cửa hàng này hay không
-		if (foodRepository.findByIdAndAccountUsername(foodId, ime.getUsername()) == null) {
-			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, Message.OTHER_ACTION_IS_DENIED);
-		}
-		Food food = foodRepository.findById(foodId).orElse(null);
-		if (food == null) {
-			throw new ResponseStatusException(HttpStatus.NOT_FOUND, Message.FOOD_NOT_EXISTS);
-		}
-		food.setDisableAt(DateUtils.currentTimestamp());
-		foodRepository.save(food);
-	}
+    @Override
+    @Transactional
+    public void deleteFood(Long foodId) {
+        Account ime = itMe();
+        if (ime.getRole().compareTo(AccountRole.ROLE_STORE) != 0) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, Message.OTHER_ACTION_IS_DENIED);
+        }
+        // kiểm tra món ăn có phải đúng của cửa hàng này hay không
+        if (foodRepository.findByIdAndAccountUsername(foodId, ime.getUsername()) == null) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, Message.OTHER_ACTION_IS_DENIED);
+        }
+        Food food = foodRepository.findById(foodId).orElse(null);
+        if (food == null) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, Message.FOOD_NOT_EXISTS);
+        }
+        food.setDisableAt(DateUtils.currentTimestamp());
+        foodRepository.save(food);
+    }
 
-	@Override
-	public PageResponse<FoodDetailResponse> listFood(PageRequest pageRequest) {
-		Account ime = itMe();
-		if (ime.getRole().compareTo(AccountRole.ROLE_STORE) != 0) {
-			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, Message.OTHER_ACTION_IS_DENIED);
-		}
-		Pageable pageable = PageUtils.toPageable(pageRequest);
-		Page<Food> foods = foodRepository.findByAccountUsername(ime.getUsername(), pageable);
-		return new PageResponse<>(foods.stream()
-				.map((food) -> new FoodDetailResponse(food.getId(), food.getName(), food.getPrice(), food.getContent(),
-						food.getFiles().stream().map((file) -> file.getPath()).collect(Collectors.toList()),
-						new TagResponse(food.getTag().getId(), food.getTag().getTagName()),reactionFoodRepo.totalFoodReaction(food.getId()),
-						reactionFoodRepo.isMyReaction(food.getId(), itMe().getId())!=null))
-				.collect(Collectors.toList()), foods.getTotalElements(), pageRequest.getPageSize());
-	}
+    @Override
+    public PageResponse<FoodDetailResponse> listFood(PageRequest pageRequest) {
+        Account ime = itMe();
+        if (ime.getRole().compareTo(AccountRole.ROLE_STORE) != 0) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, Message.OTHER_ACTION_IS_DENIED);
+        }
+        Pageable pageable = PageUtils.toPageable(pageRequest);
+        Page<Food> foods = foodRepository.findByAccountUsername(ime.getUsername(), pageable);
+        return new PageResponse<>(foods.stream()
+                .map((food) -> new FoodDetailResponse(food.getId(), food.getName(), food.getPrice(), food.getContent(),
+                        food.getFiles().stream().map((file) -> file.getPath()).collect(Collectors.toList()),
+                        new TagResponse(food.getTag().getId(), food.getTag().getTagName()), reactionFoodRepo.totalFoodReaction(food.getId()),
+                        reactionFoodRepo.isMyReaction(food.getId(), itMe().getId()) != null))
+                .collect(Collectors.toList()), foods.getTotalElements(), pageRequest.getPageSize());
+    }
 
-	@Override
-	@Transactional
-	public FoodDetailResponse updateFood(FoodRequest foodRequest) {
-		Account ime = itMe();
-		if (ime.getRole().compareTo(AccountRole.ROLE_STORE) != 0) {
-			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, Message.OTHER_ACTION_IS_DENIED);
-		}
-		// kiểm tra món ăn có phải đúng của cửa hàng này hay không
-		if (foodRepository.findByIdAndAccountUsername(foodRequest.getId(), ime.getUsername()) == null) {
-			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, Message.OTHER_ACTION_IS_DENIED);
-		}
-		Food food = foodRepository.findById(foodRequest.getId()).orElse(null);
-		if (food == null) {
-			throw new ResponseStatusException(HttpStatus.NOT_FOUND, Message.FOOD_NOT_EXISTS);
-		}
-		food.setUpdateAt(DateUtils.currentTimestamp());
-		food.setContent(foodRequest.getContent());
-		food.setFiles(ConvertUtils.convertArrFileReqToSetFile(foodRequest.getFiles()));
-		food.setName(foodRequest.getName());
-		food.setPrice(foodRequest.getPrice());
-		food.setTag(tagRepository.findById(foodRequest.getTagId()).orElse(null));
-		food = foodRepository.save(food);
+    @Override
+    @Transactional
+    public FoodDetailResponse updateFood(FoodRequest foodRequest) {
+        Account ime = itMe();
+        if (ime.getRole().compareTo(AccountRole.ROLE_STORE) != 0) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, Message.OTHER_ACTION_IS_DENIED);
+        }
+        // kiểm tra món ăn có phải đúng của cửa hàng này hay không
+        if (foodRepository.findByIdAndAccountUsername(foodRequest.getId(), ime.getUsername()) == null) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, Message.OTHER_ACTION_IS_DENIED);
+        }
+        Food food = foodRepository.findById(foodRequest.getId()).orElse(null);
+        if (food == null) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, Message.FOOD_NOT_EXISTS);
+        }
+        food.setUpdateAt(DateUtils.currentTimestamp());
+        food.setContent(foodRequest.getContent());
+        food.setFiles(ConvertUtils.convertArrFileReqToSetFile(foodRequest.getFiles()));
+        food.setName(foodRequest.getName());
+        food.setPrice(foodRequest.getPrice());
+        food.setTag(tagRepository.findById(foodRequest.getTagId()).orElse(null));
+        food = foodRepository.save(food);
 
-		return new FoodDetailResponse(food.getId(), food.getName(), food.getPrice(), food.getContent(),
-				food.getFiles().stream().map((file) -> file.getPath()).collect(Collectors.toList()),
-				new TagResponse(food.getTag().getId(), food.getTag().getTagName()),reactionFoodRepo.totalFoodReaction(food.getId()),
-				reactionFoodRepo.isMyReaction(food.getId(), itMe().getId())!=null);
-	}
+        return new FoodDetailResponse(food.getId(), food.getName(), food.getPrice(), food.getContent(),
+                food.getFiles().stream().map((file) -> file.getPath()).collect(Collectors.toList()),
+                new TagResponse(food.getTag().getId(), food.getTag().getTagName()), reactionFoodRepo.totalFoodReaction(food.getId()),
+                reactionFoodRepo.isMyReaction(food.getId(), itMe().getId()) != null);
+    }
 
-	@Override
-	@Transactional
-	public PostResponse createPost(PostRequest postRequest) {
-		Account ime = itMe();
-		if (postRequest.getId() != null) {
-			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, Message.OTHER_ACTION_IS_DENIED);
-		}
-		Post p = new Post();
-		p.setContent(postRequest.getContent());
-		p.setFiles(ConvertUtils.convertArrFileReqToSetFile(postRequest.getFiles()));
-		p.setCreateAt(DateUtils.currentTimestamp());
-		p.setProfile(profileRepository.findByAccountId(ime.getId()));
-		String address = "";
-		for(String addr:postRequest.getAddress()) {
-			address+=addr+";";
-		}
-		p.setAddress(address);
-		p.setFoods(postRequest.getFoodIds().stream().map((id) -> {
-			return foodRepository.findById(id).get();
-		}).collect(Collectors.toList()));
-		
-		if (postRequest.getTagIds() != null) {
-			p.setTags(tagRepository.findAllListTagId(postRequest.getTagIds()));
-		}
-		p = postRepository.save(p);
-		return new PostResponse(p.getId(), p.getContent(), ConvertUtils.convertSetToArrFile(p.getFiles()), p.getTags()
-				.stream().map((tag) -> new TagResponse(tag.getId(), tag.getTagName())).collect(Collectors.toList()),
-				p.getAddress() !=null ? p.getAddress().split(";"):null,
-				p.getFoods().stream().map((f)->{
-					return new FoodResponse(f.getId(), f.getName(), f.getPrice(), f.getContent(),ConvertUtils.convertSetToArrFile(f.getFiles()), f.getProfile().getName());
-				}).collect(Collectors.toList()),ProfileResponse.builder().phoneNumber(p.getProfile().getAccount().getPhoneNumber()).build());
-	}
+    @Override
+    @Transactional
+    public PostResponse createPost(PostRequest postRequest) {
+        Account ime = itMe();
+        if (postRequest.getId() != null) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, Message.OTHER_ACTION_IS_DENIED);
+        }
+        Post p = new Post();
+        p.setContent(postRequest.getContent());
+        p.setFiles(ConvertUtils.convertArrFileReqToSetFile(postRequest.getFiles()));
+        p.setCreateAt(DateUtils.currentTimestamp());
+        p.setProfile(profileRepository.findByAccountId(ime.getId()));
+        String address = "";
+        for (String addr : postRequest.getAddress()) {
+            address += addr + ";";
+        }
+        p.setAddress(address);
+        p.setFoods(postRequest.getFoodIds().stream().map((id) -> {
+            return foodRepository.findById(id).get();
+        }).collect(Collectors.toList()));
 
-	@Override
-	@Transactional
-	public void deletePost(Long postId) {
-		Account ime = itMe();
-		Post p = postRepository.findByAccountAndPostId(ime.getUsername(), postId).orElse(null);
-		if (p == null) {
-			throw new ResponseStatusException(HttpStatus.NOT_FOUND, Message.OTHER_ACTION_IS_DENIED);
-		}
-		postRepository.delete(p);
-	}
+        if (postRequest.getTagIds() != null) {
+            p.setTags(tagRepository.findAllListTagId(postRequest.getTagIds()));
+        }
+        p = postRepository.save(p);
+        return new PostResponse(p.getId(), p.getContent(), ConvertUtils.convertSetToArrFile(p.getFiles()), p.getTags()
+                .stream().map((tag) -> new TagResponse(tag.getId(), tag.getTagName())).collect(Collectors.toList()),
+                p.getAddress() != null ? p.getAddress().split(";") : null,
+                p.getFoods().stream().map((f) -> {
+                    return new FoodResponse(f.getId(), f.getName(), f.getPrice(), f.getContent(), ConvertUtils.convertSetToArrFile(f.getFiles()), f.getProfile().getName());
+                }).collect(Collectors.toList()), ProfileResponse.builder().phoneNumber(p.getProfile().getAccount().getPhoneNumber()).build());
+    }
 
-	@Override
-	public PostResponse detailPost(Long id) {
-		Post p = postRepository.findById(id).orElse(null);
-		if( p != null) {
-		return new PostResponse(p.getId(), p.getContent(), ConvertUtils.convertSetToArrFile(p.getFiles()), p.getTags()
-				.stream().map((tag) -> new TagResponse(tag.getId(), tag.getTagName())).collect(Collectors.toList()),
-				p.getAddress() !=null ? p.getAddress().split(";"):null,
-				p.getFoods().stream().map((f)->{
-					return new FoodResponse(f.getId(), f.getName(), f.getPrice(), f.getContent(),ConvertUtils.convertSetToArrFile(f.getFiles()), f.getProfile().getName());
-				}).collect(Collectors.toList()),ProfileResponse.builder().phoneNumber(p.getProfile().getAccount().getPhoneNumber()).build());
-		}
-		return null;
-	}
+    @Override
+    @Transactional
+    public void deletePost(Long postId) {
+        Account ime = itMe();
+        Post p = postRepository.findByAccountAndPostId(ime.getUsername(), postId).orElse(null);
+        if (p == null) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, Message.OTHER_ACTION_IS_DENIED);
+        }
+        postRepository.delete(p);
+    }
 
-	@Override
-	public PageResponse<PostResponse> getListPost(Long accountId, PageRequest pageRequest) {
-		Pageable pageable = org.springframework.data.domain.PageRequest.of(pageRequest.getPage(), pageRequest.getPageSize(),
-				Sort.by(Direction.DESC, "id"));
-		Page<Post> listPost = postRepository.findAllByAccount(accountId, pageable);
-		List<PostResponse> listPostResponse = new ArrayList<PostResponse>();
-		if (listPost == null) {
-			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, Message.NULL_DATA);
-		}
-		for(Post p:listPost.getContent()) {
-			listPostResponse.add(new PostResponse(p.getId(), p.getContent(), ConvertUtils.convertSetToArrFile(p.getFiles()),p.getTags()
-					.stream().map((tag) -> new TagResponse(tag.getId(), tag.getTagName())).collect(Collectors.toList()),
-					p.getAddress() !=null ? p.getAddress().split(";"):null,
-					p.getFoods().stream().map((f)->{
-						return new FoodResponse(f.getId(), f.getName(), f.getPrice(), f.getContent(),ConvertUtils.convertSetToArrFile(f.getFiles()), f.getProfile().getName());
-					}).collect(Collectors.toList()),ProfileResponse.builder().phoneNumber(p.getProfile().getAccount().getPhoneNumber()).build()));
-		}
-		PageResponse<PostResponse> pageResponse = new PageResponse(listPostResponse, listPost.getTotalElements(),
-				pageRequest.getPageSize());
-		pageResponse.setStatus(true);
-		pageResponse.setMessage(Message.OTHER_SUCCESS);
-		return pageResponse;
-	}
+    @Override
+    public PostResponse detailPost(Long id) {
+        Post p = postRepository.findById(id).orElse(null);
+        if (p != null) {
+            return new PostResponse(p.getId(), p.getContent(), ConvertUtils.convertSetToArrFile(p.getFiles()), p.getTags()
+                    .stream().map((tag) -> new TagResponse(tag.getId(), tag.getTagName())).collect(Collectors.toList()),
+                    p.getAddress() != null ? p.getAddress().split(";") : null,
+                    p.getFoods().stream().map((f) -> {
+                        return new FoodResponse(f.getId(), f.getName(), f.getPrice(), f.getContent(), ConvertUtils.convertSetToArrFile(f.getFiles()), f.getProfile().getName());
+                    }).collect(Collectors.toList()), ProfileResponse.builder().phoneNumber(p.getProfile().getAccount().getPhoneNumber()).build());
+        }
+        return null;
+    }
 
-	@Override
-	public PostResponse updatePost(PostRequest postRequest) {
-		Post post = postRepository.findById(postRequest.getId()).get();
-		if (post == null) {
-			throw new ResponseStatusException(HttpStatus.NOT_FOUND, Message.POST_NOT_EXISTS);
-		}
-		post.setUpdateAt(DateUtils.currentTimestamp());
-		if (postRequest.getFiles() != null) {
-			post.setFiles(ConvertUtils.convertArrFileReqToSetFile(postRequest.getFiles()));
-		}
-		if (postRequest.getContent() != null) {
-			post.setContent(postRequest.getContent());
-		}
-		if (postRequest.getTagIds() != null) {
-			post.setTags(tagRepository.findAllListTagId(postRequest.getTagIds()));
-		}
-		String address = "";
-		for(String addr:postRequest.getAddress()) {
-			address+=addr+";";
-		}
-		post.setAddress(address);
-		post.setFoods(postRequest.getFoodIds().stream().map((id) -> {
-			return foodRepository.findById(id).get();
-		}).collect(Collectors.toList()));
-		post = postRepository.save(post);
-		return new PostResponse(post.getId(), post.getContent(), ConvertUtils.convertSetToArrFile(post.getFiles()), post.getTags()
-				.stream().map((tag) -> new TagResponse(tag.getId(), tag.getTagName())).collect(Collectors.toList()),
-				post.getAddress() !=null ? post.getAddress().split(";"):null,
-				post.getFoods().stream().map((f)->{
-					return new FoodResponse(f.getId(), f.getName(), f.getPrice(), f.getContent(),ConvertUtils.convertSetToArrFile(f.getFiles()), f.getProfile().getName());
-				}).collect(Collectors.toList()),ProfileResponse.builder().phoneNumber(post.getProfile().getAccount().getPhoneNumber()).build());
-	}
+    @Override
+    public PageResponse<PostResponse> getListPost(Long accountId, PageRequest pageRequest) {
+        Pageable pageable = org.springframework.data.domain.PageRequest.of(pageRequest.getPage(), pageRequest.getPageSize(),
+                Sort.by(Direction.DESC, "id"));
+        Page<Post> listPost = postRepository.findAllByAccount(accountId, pageable);
+        List<PostResponse> listPostResponse = new ArrayList<PostResponse>();
+        if (listPost == null) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, Message.NULL_DATA);
+        }
+        for (Post p : listPost.getContent()) {
+            listPostResponse.add(new PostResponse(p.getId(), p.getContent(), ConvertUtils.convertSetToArrFile(p.getFiles()), p.getTags()
+                    .stream().map((tag) -> new TagResponse(tag.getId(), tag.getTagName())).collect(Collectors.toList()),
+                    p.getAddress() != null ? p.getAddress().split(";") : null,
+                    p.getFoods().stream().map((f) -> {
+                        return new FoodResponse(f.getId(), f.getName(), f.getPrice(), f.getContent(), ConvertUtils.convertSetToArrFile(f.getFiles()), f.getProfile().getName());
+                    }).collect(Collectors.toList()), ProfileResponse.builder().phoneNumber(p.getProfile().getAccount().getPhoneNumber()).build()));
+        }
+        PageResponse<PostResponse> pageResponse = new PageResponse(listPostResponse, listPost.getTotalElements(),
+                pageRequest.getPageSize());
+        pageResponse.setStatus(true);
+        pageResponse.setMessage(Message.OTHER_SUCCESS);
+        return pageResponse;
+    }
 
-	@Override
-	public PageResponse<FoodDetailResponse> searchFoods(SearchFoodsRequest foodsRequest, PageRequest pageRequest) {
-		List<Food> foods = storeCustomRepository.searchFoods(foodsRequest.getFoodName(), foodsRequest.getTagName(),foodsRequest.getStoreName(), pageRequest);
-		List<FoodDetailResponse> response = foods.stream()
-				.map((food) -> new FoodDetailResponse(food.getId(), food.getName(), food.getPrice(), food.getContent(),
-						food.getFiles().stream().map((file) -> file.getPath()).collect(Collectors.toList()),
-						new TagResponse(food.getTag().getId(), food.getTag().getTagName()),reactionFoodRepo.totalFoodReaction(food.getId()),
-						reactionFoodRepo.isMyReaction(food.getId(), itMe().getId())!=null))
-				.collect(Collectors.toList());
-		return new PageResponse<>(response,
-				storeCustomRepository.countFoodsSearch(foodsRequest.getFoodName(), foodsRequest.getTagName(),foodsRequest.getStoreName()),
-				pageRequest.getPageSize());
-	}
+    @Override
+    public PostResponse updatePost(PostRequest postRequest) {
+        Post post = postRepository.findById(postRequest.getId()).get();
+        if (post == null) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, Message.POST_NOT_EXISTS);
+        }
+        post.setUpdateAt(DateUtils.currentTimestamp());
+        if (postRequest.getFiles() != null) {
+            post.setFiles(ConvertUtils.convertArrFileReqToSetFile(postRequest.getFiles()));
+        }
+        if (postRequest.getContent() != null) {
+            post.setContent(postRequest.getContent());
+        }
+        if (postRequest.getTagIds() != null) {
+            post.setTags(tagRepository.findAllListTagId(postRequest.getTagIds()));
+        }
+        String address = "";
+        for (String addr : postRequest.getAddress()) {
+            address += addr + ";";
+        }
+        post.setAddress(address);
+        post.setFoods(postRequest.getFoodIds().stream().map((id) -> {
+            return foodRepository.findById(id).get();
+        }).collect(Collectors.toList()));
+        post = postRepository.save(post);
+        return new PostResponse(post.getId(), post.getContent(), ConvertUtils.convertSetToArrFile(post.getFiles()), post.getTags()
+                .stream().map((tag) -> new TagResponse(tag.getId(), tag.getTagName())).collect(Collectors.toList()),
+                post.getAddress() != null ? post.getAddress().split(";") : null,
+                post.getFoods().stream().map((f) -> {
+                    return new FoodResponse(f.getId(), f.getName(), f.getPrice(), f.getContent(), ConvertUtils.convertSetToArrFile(f.getFiles()), f.getProfile().getName());
+                }).collect(Collectors.toList()), ProfileResponse.builder().phoneNumber(post.getProfile().getAccount().getPhoneNumber()).build());
+    }
 
-	@Override
-	public PageResponse<FoodDetailResponse> searchFoodsSort(PageRequest pageRequest) {
-		Pageable pageable = org.springframework.data.domain.PageRequest.of(pageRequest.getPage(), pageRequest.getPageSize(),
-				Sort.by(Direction.valueOf(pageRequest.getOrder().toUpperCase()), pageRequest.getOrderBy()));
-		Page<Food> foods = foodRepository.findAllAndSort(pageable);
-		return new PageResponse<>(foods.stream()
-				.map((food) -> new FoodDetailResponse(food.getId(), food.getName(), food.getPrice(), food.getContent(),
-						food.getFiles().stream().map((file) -> file.getPath()).collect(Collectors.toList()),
-						new TagResponse(food.getTag().getId(), food.getTag().getTagName()),reactionFoodRepo.totalFoodReaction(food.getId()),
-						reactionFoodRepo.isMyReaction(food.getId(), itMe().getId())!=null))
-				.collect(Collectors.toList()), foods.getTotalElements(), pageRequest.getPageSize());
-	}
-	
-	@Transactional
-	@Override
-	public void foodReaction(FoodReactionRequest foodReactionRequest) {
-		Reaction reaction = reactionFoodRepo.findReactionByFoodIdAndAccountId(foodReactionRequest.getFoodId()
-				, itMe().getId());
-		if(reaction!=null) {
-			reaction.setDisableAt(null);
-			reactionRepository.save(reaction);
-			return;
-		}
-		reaction = new Reaction(ReactType.LOVE, accountRepository.findById(itMe().getId()).get());
-		reaction = reactionRepository.save(reaction);
-		ReactionFood reactionFood = new ReactionFood();
-		reactionFood.setReaction(reaction);
-		reactionFood.setFood(foodRepository.findById(foodReactionRequest.getFoodId()).get());
-		reactionFoodRepo.save(reactionFood);
-	}
-	
-	@Override
-	public void foodReactionDel(FoodReactionRequest foodReactionRequest) {
-		Reaction reaction = reactionFoodRepo.findReactionByFoodIdAndAccountId(foodReactionRequest.getFoodId()
-				, itMe().getId());
-		if(reaction==null) {
-			return;
-		}
-		reaction.setDisableAt(DateUtils.currentTimestamp());
-		
-		reactionRepository.save(reaction);
-	}
-	
-	@Override
-	public PageResponse<PostResponse> searchPostByAddress(String address,PageRequest pageRequest) {
-		Pageable pageable = org.springframework.data.domain.PageRequest.of(pageRequest.getPage(), pageRequest.getPageSize(),
-				Sort.by(Direction.DESC, "id"));
-		Page<Post> listPost = postRepository.findByAddressContaining(address, pageable);
-		List<PostResponse> listPostResponse = new ArrayList<PostResponse>();
-		if (listPost == null) {
-			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, Message.NULL_DATA);
-		}
-		for(Post p:listPost.getContent()) {
-			listPostResponse.add(new PostResponse(p.getId(), p.getContent(), ConvertUtils.convertSetToArrFile(p.getFiles()),p.getTags()
-					.stream().map((tag) -> new TagResponse(tag.getId(), tag.getTagName())).collect(Collectors.toList()),
-					p.getAddress() !=null ? p.getAddress().split(";"):null,
-					p.getFoods().stream().map((f)->{
-						return new FoodResponse(f.getId(), f.getName(), f.getPrice(), f.getContent(),ConvertUtils.convertSetToArrFile(f.getFiles()), f.getProfile().getName());
-					}).collect(Collectors.toList()),ProfileResponse.builder().phoneNumber(p.getProfile().getAccount().getPhoneNumber()).build()));
-		}
-		PageResponse<PostResponse> pageResponse = new PageResponse(listPostResponse, listPost.getTotalElements(),
-				pageRequest.getPageSize());
-		pageResponse.setStatus(true);
-		pageResponse.setMessage(Message.OTHER_SUCCESS);
-		return pageResponse;
-	}
-	
-	@Override
-	public PageResponse<PostResponse> getListPostAll(PageRequest pageRequest) {
-		Pageable pageable = org.springframework.data.domain.PageRequest.of(pageRequest.getPage(), pageRequest.getPageSize(),
-				Sort.by(Direction.DESC, "id"));
-		Page<Post> listPost = postRepository.findAll(pageable);
-		List<PostResponse> listPostResponse = new ArrayList<PostResponse>();
-		if (listPost == null) {
-			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, Message.NULL_DATA);
-		}
-		for(Post p:listPost.getContent()) {
-			listPostResponse.add(new PostResponse(p.getId(), p.getContent(), ConvertUtils.convertSetToArrFile(p.getFiles()),p.getTags()
-					.stream().map((tag) -> new TagResponse(tag.getId(), tag.getTagName())).collect(Collectors.toList()),
-					p.getAddress() !=null ? p.getAddress().split(";"):null,
-					p.getFoods().stream().map((f)->{
-						return new FoodResponse(f.getId(), f.getName(), f.getPrice(), f.getContent(),ConvertUtils.convertSetToArrFile(f.getFiles()), f.getProfile().getName());
-					}).collect(Collectors.toList()),ProfileResponse.builder().phoneNumber(p.getProfile().getAccount().getPhoneNumber()).build()));
-		}
-		PageResponse<PostResponse> pageResponse = new PageResponse(listPostResponse, listPost.getTotalElements(),
-				pageRequest.getPageSize());
-		pageResponse.setStatus(true);
-		pageResponse.setMessage(Message.OTHER_SUCCESS);
-		return pageResponse;
-	}
-	
-	@Override
-	public void addFoodHot(Long foodId) {
-		Profile me = profileRepository.findByAccountId(itMe().getId());
-		String hotFoods = me.getFoodHot();
-		if(hotFoods==null) {
-			me.setFoodHot(String.valueOf(foodId)+";");
-		}else if(foodRepository.findById(foodId).get() == null) {
-		}else if(Stream.of(me.getFoodHot().split(";")).anyMatch(s->s.equals(String.valueOf(foodId)))){
-			throw new ResponseStatusException(HttpStatus.BAD_REQUEST,"món ăn đã có trong danh sách yêu thích");
-		}else if(hotFoods.split(";").length<4) {
-			me.setFoodHot(me.getFoodHot()+String.valueOf(foodId)+";");
-		}else {
-			String[] fh = me.getFoodHot().split(";");
-			String rs = "";
-			for(int i=0;i<fh.length;i++) {
-				if(i==fh.length-1) {
-					rs += String.valueOf(foodId)+";";
-					break;
-				}
-				rs+=fh[i+1]+";";
-			}
-			me.setFoodHot(rs);
-		}
-		profileRepository.save(me);
-	}
-	
-	@Override
-	public List<FoodDetailResponse> hotFood(Long id) {
-		Profile me = profileRepository.findByAccountId(id);
-		List<FoodDetailResponse> detailResponses = new ArrayList<FoodDetailResponse>();
-		if(me.getFoodHot()!=null) {
-			for(String idstr:me.getFoodHot().split(";")) {
-				if(!idstr.isBlank()) {
-					Food f = foodRepository.findById(Long.valueOf(idstr)).get();
-					if(f.getDisableAt()==null) {
-						FoodDetailResponse detailResponse = new FoodDetailResponse();
-						detailResponse.setContent(f.getContent());
-						detailResponse.setFiles(f.getFiles().stream().map((file) -> file.getPath()).collect(Collectors.toList()));
-						detailResponse.setId(f.getId());
-						detailResponse.setName(f.getName());
-						detailResponse.setPrice(f.getPrice());
-						detailResponse.setTag(new TagResponse(f.getTag().getId(), f.getTag().getTagName()));
-						detailResponse.setTotalReaction(reactionFoodRepo.totalFoodReaction(f.getId()));
-						detailResponse.setMyReaction(reactionFoodRepo.isMyReaction(f.getId(), itMe().getId())!=null);
-						detailResponses.add(detailResponse);
-					}
-				}
-			}
-		}
-		return detailResponses;
-	}
-	
-	@Override
-	public void deleteFoodHot(Long foodId) {
-		Profile me = profileRepository.findByAccountId(itMe().getId());
-		String hotFoods = me.getFoodHot();
-		if(hotFoods==null) {
-			throw new ResponseStatusException(HttpStatus.BAD_REQUEST,"hiện không có món ăn nổi bật nào");
-		}else if(!Stream.of(me.getFoodHot().split(";")).anyMatch(s->s.equals(String.valueOf(foodId)))){
-			throw new ResponseStatusException(HttpStatus.BAD_REQUEST,"món ăn này không có trong danh sách món ăn nổi bật");
-		}else {
-			me.setFoodHot(me.getFoodHot().replace(String.valueOf(foodId)+";",""));
-		}
-		profileRepository.save(me);
-	}
+    @Override
+    public PageResponse<FoodDetailResponse> searchFoods(SearchFoodsRequest foodsRequest, PageRequest pageRequest) {
+        List<Food> foods = storeCustomRepository.searchFoods(foodsRequest.getFoodName(), foodsRequest.getTagName(), foodsRequest.getStoreName(), pageRequest);
+        List<FoodDetailResponse> response = foods.stream()
+                .map((food) -> new FoodDetailResponse(food.getId(), food.getName(), food.getPrice(), food.getContent(),
+                        food.getFiles().stream().map((file) -> file.getPath()).collect(Collectors.toList()),
+                        new TagResponse(food.getTag().getId(), food.getTag().getTagName()), reactionFoodRepo.totalFoodReaction(food.getId()),
+                        reactionFoodRepo.isMyReaction(food.getId(), itMe().getId()) != null))
+                .collect(Collectors.toList());
+        return new PageResponse<>(response,
+                storeCustomRepository.countFoodsSearch(foodsRequest.getFoodName(), foodsRequest.getTagName(), foodsRequest.getStoreName()),
+                pageRequest.getPageSize());
+    }
+
+    @Override
+    public PageResponse<FoodDetailResponse> searchFoodsSort(PageRequest pageRequest) {
+        Pageable pageable = org.springframework.data.domain.PageRequest.of(pageRequest.getPage(), pageRequest.getPageSize(),
+                Sort.by(Direction.valueOf(pageRequest.getOrder().toUpperCase()), pageRequest.getOrderBy()));
+        Page<Food> foods = foodRepository.findAllAndSort(pageable);
+        return new PageResponse<>(foods.stream()
+                .map((food) -> new FoodDetailResponse(food.getId(), food.getName(), food.getPrice(), food.getContent(),
+                        food.getFiles().stream().map((file) -> file.getPath()).collect(Collectors.toList()),
+                        new TagResponse(food.getTag().getId(), food.getTag().getTagName()), reactionFoodRepo.totalFoodReaction(food.getId()),
+                        reactionFoodRepo.isMyReaction(food.getId(), itMe().getId()) != null))
+                .collect(Collectors.toList()), foods.getTotalElements(), pageRequest.getPageSize());
+    }
+
+    @Transactional
+    @Override
+    public void foodReaction(FoodReactionRequest foodReactionRequest) {
+        Reaction reaction = reactionFoodRepo.findReactionByFoodIdAndAccountId(foodReactionRequest.getFoodId()
+                , itMe().getId());
+        if (reaction != null) {
+            reaction.setDisableAt(null);
+            reactionRepository.save(reaction);
+            return;
+        }
+        reaction = new Reaction(ReactType.LOVE, accountRepository.findById(itMe().getId()).get());
+        reaction = reactionRepository.save(reaction);
+        ReactionFood reactionFood = new ReactionFood();
+        reactionFood.setReaction(reaction);
+        reactionFood.setFood(foodRepository.findById(foodReactionRequest.getFoodId()).get());
+        reactionFoodRepo.save(reactionFood);
+    }
+
+    @Override
+    public void foodReactionDel(FoodReactionRequest foodReactionRequest) {
+        Reaction reaction = reactionFoodRepo.findReactionByFoodIdAndAccountId(foodReactionRequest.getFoodId()
+                , itMe().getId());
+        if (reaction == null) {
+            return;
+        }
+        reaction.setDisableAt(DateUtils.currentTimestamp());
+
+        reactionRepository.save(reaction);
+    }
+
+    @Override
+    public PageResponse<PostResponse> searchPostByAddress(String address, PageRequest pageRequest) {
+        Pageable pageable = org.springframework.data.domain.PageRequest.of(pageRequest.getPage(), pageRequest.getPageSize(),
+                Sort.by(Direction.DESC, "id"));
+        Page<Post> listPost = postRepository.findByAddressContaining(address, pageable);
+        List<PostResponse> listPostResponse = new ArrayList<PostResponse>();
+        if (listPost == null) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, Message.NULL_DATA);
+        }
+        for (Post p : listPost.getContent()) {
+            listPostResponse.add(new PostResponse(p.getId(), p.getContent(), ConvertUtils.convertSetToArrFile(p.getFiles()), p.getTags()
+                    .stream().map((tag) -> new TagResponse(tag.getId(), tag.getTagName())).collect(Collectors.toList()),
+                    p.getAddress() != null ? p.getAddress().split(";") : null,
+                    p.getFoods().stream().map((f) -> {
+                        return new FoodResponse(f.getId(), f.getName(), f.getPrice(), f.getContent(), ConvertUtils.convertSetToArrFile(f.getFiles()), f.getProfile().getName());
+                    }).collect(Collectors.toList()), ProfileResponse.builder().phoneNumber(p.getProfile().getAccount().getPhoneNumber()).build()));
+        }
+        PageResponse<PostResponse> pageResponse = new PageResponse(listPostResponse, listPost.getTotalElements(),
+                pageRequest.getPageSize());
+        pageResponse.setStatus(true);
+        pageResponse.setMessage(Message.OTHER_SUCCESS);
+        return pageResponse;
+    }
+
+    @Override
+    public PageResponse<PostResponse> getListPostAll(PageRequest pageRequest) {
+        Pageable pageable = org.springframework.data.domain.PageRequest.of(pageRequest.getPage(), pageRequest.getPageSize(),
+                Sort.by(Direction.DESC, "id"));
+        Page<Post> listPost = postRepository.findAll(pageable);
+        List<PostResponse> listPostResponse = new ArrayList<PostResponse>();
+        if (listPost == null) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, Message.NULL_DATA);
+        }
+        for (Post p : listPost.getContent()) {
+            listPostResponse.add(new PostResponse(p.getId(), p.getContent(), ConvertUtils.convertSetToArrFile(p.getFiles()), p.getTags()
+                    .stream().map((tag) -> new TagResponse(tag.getId(), tag.getTagName())).collect(Collectors.toList()),
+                    p.getAddress() != null ? p.getAddress().split(";") : null,
+                    p.getFoods().stream().map((f) -> {
+                        return new FoodResponse(f.getId(), f.getName(), f.getPrice(), f.getContent(), ConvertUtils.convertSetToArrFile(f.getFiles()), f.getProfile().getName());
+                    }).collect(Collectors.toList()), ProfileResponse.builder().phoneNumber(p.getProfile().getAccount().getPhoneNumber()).build()));
+        }
+        PageResponse<PostResponse> pageResponse = new PageResponse(listPostResponse, listPost.getTotalElements(),
+                pageRequest.getPageSize());
+        pageResponse.setStatus(true);
+        pageResponse.setMessage(Message.OTHER_SUCCESS);
+        return pageResponse;
+    }
+
+    @Override
+    public void addFoodHot(Long foodId) {
+        Profile me = profileRepository.findByAccountId(itMe().getId());
+        String hotFoods = me.getFoodHot();
+        if (hotFoods == null) {
+            me.setFoodHot(String.valueOf(foodId) + ";");
+        } else if (foodRepository.findById(foodId).get() == null) {
+        } else if (Stream.of(me.getFoodHot().split(";")).anyMatch(s -> s.equals(String.valueOf(foodId)))) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "món ăn đã có trong danh sách yêu thích");
+        } else if (hotFoods.split(";").length < 4) {
+            me.setFoodHot(me.getFoodHot() + String.valueOf(foodId) + ";");
+        } else {
+            String[] fh = me.getFoodHot().split(";");
+            String rs = "";
+            for (int i = 0; i < fh.length; i++) {
+                if (i == fh.length - 1) {
+                    rs += String.valueOf(foodId) + ";";
+                    break;
+                }
+                rs += fh[i + 1] + ";";
+            }
+            me.setFoodHot(rs);
+        }
+        profileRepository.save(me);
+    }
+
+    @Override
+    public List<FoodDetailResponse> hotFood(Long id) {
+        Profile me = profileRepository.findByAccountId(id);
+        List<FoodDetailResponse> detailResponses = new ArrayList<FoodDetailResponse>();
+        if (me.getFoodHot() != null) {
+            for (String idstr : me.getFoodHot().split(";")) {
+                if (idstr.length() > 0) {
+                    Food f = foodRepository.findById(Long.valueOf(idstr)).get();
+                    if (f.getDisableAt() == null) {
+                        FoodDetailResponse detailResponse = new FoodDetailResponse();
+                        detailResponse.setContent(f.getContent());
+                        detailResponse.setFiles(f.getFiles().stream().map((file) -> file.getPath()).collect(Collectors.toList()));
+                        detailResponse.setId(f.getId());
+                        detailResponse.setName(f.getName());
+                        detailResponse.setPrice(f.getPrice());
+                        detailResponse.setTag(new TagResponse(f.getTag().getId(), f.getTag().getTagName()));
+                        detailResponse.setTotalReaction(reactionFoodRepo.totalFoodReaction(f.getId()));
+                        detailResponse.setMyReaction(reactionFoodRepo.isMyReaction(f.getId(), itMe().getId()) != null);
+                        detailResponses.add(detailResponse);
+                    }
+                }
+            }
+        }
+        return detailResponses;
+    }
+
+    @Override
+    public void deleteFoodHot(Long foodId) {
+        Profile me = profileRepository.findByAccountId(itMe().getId());
+        String hotFoods = me.getFoodHot();
+        if (hotFoods == null) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "hiện không có món ăn nổi bật nào");
+        } else if (!Stream.of(me.getFoodHot().split(";")).anyMatch(s -> s.equals(String.valueOf(foodId)))) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "món ăn này không có trong danh sách món ăn nổi bật");
+        } else {
+            me.setFoodHot(me.getFoodHot().replace(String.valueOf(foodId) + ";", ""));
+        }
+        profileRepository.save(me);
+    }
 }
