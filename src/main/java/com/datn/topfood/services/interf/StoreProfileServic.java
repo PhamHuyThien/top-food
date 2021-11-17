@@ -44,13 +44,19 @@ public interface StoreProfileServic {
     
     PageResponse<PostResponse> getListPost(Long accountId,PageRequest pageRequest);
     
+    PageResponse<PostResponse> getListPostAll(PageRequest pageRequest);
+    
     PostResponse updatePost(PostRequest postRequest);
     
     PageResponse<FoodDetailResponse> searchFoods(SearchFoodsRequest foodsRequest,PageRequest pageRequest);
     
     PageResponse<FoodDetailResponse> searchFoodsSort(PageRequest pageRequest);
     
+    PageResponse<PostResponse> searchPostByAddress(String address,PageRequest pageRequest);
+    
     void foodReaction(FoodReactionRequest foodReactionRequest);
     
     void foodReactionDel(FoodReactionRequest foodReactionRequest);
+    
+    void addFoodHot(Long foodId);
 }

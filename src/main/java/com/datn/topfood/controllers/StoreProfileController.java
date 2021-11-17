@@ -133,11 +133,11 @@ public class StoreProfileController {
         return ResponseEntity.ok(profileServic.searchFoods(foodsRequest,pageRequest));
     }
 
-    @Operation(description = "API danh sách món ăn theo giá tăng giảm")
-    @GetMapping("/list-foods-sort")
-    public ResponseEntity<PageResponse<FoodDetailResponse>> searchFoodsSort(PageRequest pageRequest) {
-        return ResponseEntity.ok(profileServic.searchFoodsSort(pageRequest));
-    }
+//    @Operation(description = "API danh sách món ăn theo giá tăng giảm")
+//    @GetMapping("/list-foods-sort")
+//    public ResponseEntity<PageResponse<FoodDetailResponse>> searchFoodsSort(PageRequest pageRequest) {
+//        return ResponseEntity.ok(profileServic.searchFoodsSort(pageRequest));
+//    }
     
     @Operation(description = "API thả tim món ăn")
     @PostMapping("/food-reaction")
@@ -150,6 +150,25 @@ public class StoreProfileController {
     @DeleteMapping("/food-reaction")
     public ResponseEntity<Response<Void>> foodReactionDel(@RequestBody FoodReactionRequest foodReactionRequest) {
     	profileServic.foodReactionDel(foodReactionRequest);
+        return ResponseEntity.ok(new Response<>(true, Message.OTHER_SUCCESS));
+    }
+    
+    @Operation(description = "API tìm kiếm bài viết theo thành phố")
+    @GetMapping("/list-post-address")
+    public ResponseEntity<PageResponse<FoodDetailResponse>> searchPostByAddress(PageRequest pageRequest) {
+        return ResponseEntity.ok(profileServic.searchFoodsSort(pageRequest));
+    }
+    
+    @Operation(description = "API lấy tất cả danh sách bài viết")
+    @GetMapping("/list-post-all")
+    public ResponseEntity<PageResponse<PostResponse>> getListPostAll(PageRequest pageRequest) {
+        return ResponseEntity.ok(profileServic.getListPostAll(pageRequest));
+    }
+    
+    @Operation(description = "API thêm món ăn nổi bật")
+    @PostMapping("/food-hot/{foodId}")
+    public ResponseEntity<Response<Void>> addFoodHot(@PathVariable("foodId") Long id) {
+    	profileServic.addFoodHot(id);
         return ResponseEntity.ok(new Response<>(true, Message.OTHER_SUCCESS));
     }
 }

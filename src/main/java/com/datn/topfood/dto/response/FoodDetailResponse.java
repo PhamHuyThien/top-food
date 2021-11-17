@@ -20,4 +20,6 @@ public class FoodDetailResponse {
 	List<String> files;
 	TagResponse tag;
 	Long totalReaction;
+	
+	boolean isMyReaction;
 }

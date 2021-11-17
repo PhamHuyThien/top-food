@@ -7,7 +7,6 @@ import com.datn.topfood.dto.request.PageRequest;
 
 public interface StoreCustomRepository {
 
-	List<Food> searchFoods(String foodName,String tagName,Double minPrice
-			,Double maxPrice,PageRequest pageRequest);
-	Long countFoodsSearch(String foodName,String tagName,Double minPrice,Double maxPrice);
+	List<Food> searchFoods(String foodName,String tagName,String storeName,PageRequest pageRequest);
+	Long countFoodsSearch(String foodName,String tagName,String storeName);
 }

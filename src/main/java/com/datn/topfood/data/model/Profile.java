@@ -36,7 +36,10 @@ public class Profile {
 
     @Column(length = 50)
     private String name;
-
+    
+    @Column(length = 200)
+    private String foodHot;
+    
     private Timestamp birthday;
 
     private Timestamp updateAt;
@@ -56,4 +59,21 @@ public class Profile {
     @OneToMany(mappedBy = "profile", cascade = CascadeType.ALL)
     @JsonIgnore
     private List<Food> foods;
+
+	public Profile(Long id, String cover, String avatar, String bio, String address, String name, Timestamp birthday,
+			Timestamp updateAt, Account account, List<Post> posts, List<Food> foods) {
+		super();
+		this.id = id;
+		this.cover = cover;
+		this.avatar = avatar;
+		this.bio = bio;
+		this.address = address;
+		this.name = name;
+		this.birthday = birthday;
+		this.updateAt = updateAt;
+		this.account = account;
+		this.posts = posts;
+		this.foods = foods;
+	}
+    
 }
