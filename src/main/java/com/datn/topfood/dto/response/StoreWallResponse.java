@@ -18,6 +18,4 @@ public class StoreWallResponse {
 	String bio;
 	String address;
 	String name;
-	
-	List<FoodDetailResponse> foods;
 }

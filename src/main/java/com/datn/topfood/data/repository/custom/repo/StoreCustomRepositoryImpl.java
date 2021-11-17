@@ -19,10 +19,10 @@ public class StoreCustomRepositoryImpl implements StoreCustomRepository {
 	EntityManager entityManager;
 
 	@Override
-	public List<Food> searchFoods(String foodName, String tagName, Double minPrice, Double maxPrice,
+	public List<Food> searchFoods(String foodName, String tagName,String storeName,
 			PageRequest pageRequest) {
 		String sql = "select f from Food as f join f.tag as t";
-		if(foodName!=null||tagName!=null||(minPrice!=null&&maxPrice!=null)) {
+		if(foodName!=null||tagName!=null||storeName!=null) {
 			sql+=" where ";
 		}
 		if(foodName!=null) {
@@ -34,11 +34,14 @@ public class StoreCustomRepositoryImpl implements StoreCustomRepository {
 			}
 			sql+=" t.tagName like :tag";
 		}
-		if(minPrice!=null && maxPrice!=null) {
+		if(storeName!=null) {
 			if(foodName!=null||tagName!=null) {
 				sql+=" and ";
 			}
-			sql+="f.price >= :min and f.price <= :max";
+			sql+=" f.profile.name like :store";
+		}
+		if(pageRequest.getOrder() != null) {
+			sql+= " ORDER BY f.price "+pageRequest.getOrder().toUpperCase();
 		}
 		TypedQuery<Food> foodQuery = entityManager.createQuery(sql, Food.class);
 		if(foodName!=null) {
@@ -47,9 +50,8 @@ public class StoreCustomRepositoryImpl implements StoreCustomRepository {
 		if(tagName!=null) {
 			foodQuery.setParameter("tag", "%"+tagName+"%");
 		}
-		if(minPrice!=null && maxPrice!=null) {
-			foodQuery.setParameter("min", minPrice);
-			foodQuery.setParameter("max", maxPrice);
+		if(storeName!=null) {
+			foodQuery.setParameter("store", "%"+storeName+"%");
 		}
 		foodQuery.setFirstResult(pageRequest.getPage() * pageRequest.getPageSize());
 		foodQuery.setMaxResults(pageRequest.getPageSize());
@@ -57,9 +59,9 @@ public class StoreCustomRepositoryImpl implements StoreCustomRepository {
 		return foods;
 	}
 	@Override
-	public Long countFoodsSearch(String foodName, String tagName, Double minPrice, Double maxPrice) {
-		String sql = "select f from Food as f join f.tag as t ";
-		if(foodName!=null||tagName!=null||(minPrice!=null&&maxPrice!=null)) {
+	public Long countFoodsSearch(String foodName, String tagName,String storeName) {
+		String sql = "select f from Food as f join f.tag as t";
+		if(foodName!=null||tagName!=null||storeName!=null) {
 			sql+=" where ";
 		}
 		if(foodName!=null) {
@@ -71,11 +73,11 @@ public class StoreCustomRepositoryImpl implements StoreCustomRepository {
 			}
 			sql+=" t.tagName like :tag";
 		}
-		if(minPrice!=null && maxPrice!=null) {
+		if(storeName!=null) {
 			if(foodName!=null||tagName!=null) {
 				sql+=" and ";
 			}
-			sql+=" f.price >= :min and f.price <= :max";
+			sql+=" f.profile.name like :store";
 		}
 		TypedQuery<Food> foodQuery = entityManager.createQuery(sql, Food.class);
 		if(foodName!=null) {
@@ -84,9 +86,8 @@ public class StoreCustomRepositoryImpl implements StoreCustomRepository {
 		if(tagName!=null) {
 			foodQuery.setParameter("tag", "%"+tagName+"%");
 		}
-		if(minPrice!=null && maxPrice!=null) {
-			foodQuery.setParameter("min", minPrice);
-			foodQuery.setParameter("max", maxPrice);
+		if(storeName!=null) {
+			foodQuery.setParameter("store", "%"+storeName+"%");
 		}
 		return Long.valueOf(foodQuery.getResultList().size());
 	}

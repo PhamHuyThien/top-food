@@ -1,6 +1,9 @@
 package com.datn.topfood.controllers;
 
 import com.datn.topfood.dto.response.*;
+
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -15,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.datn.topfood.data.model.Post;
+import com.datn.topfood.dto.request.FoodReactionRequest;
 import com.datn.topfood.dto.request.FoodRequest;
 import com.datn.topfood.dto.request.PageRequest;
 import com.datn.topfood.dto.request.PostRequest;
@@ -132,10 +136,56 @@ public class StoreProfileController {
         return ResponseEntity.ok(profileServic.searchFoods(foodsRequest,pageRequest));
     }
 
-    @Operation(description = "API danh sách món ăn theo giá tăng giảm")
-    @GetMapping("/list-foods-sort")
-    public ResponseEntity<PageResponse<FoodDetailResponse>> searchFoodsSort(PageRequest pageRequest) {
+//    @Operation(description = "API danh sách món ăn theo giá tăng giảm")
+//    @GetMapping("/list-foods-sort")
+//    public ResponseEntity<PageResponse<FoodDetailResponse>> searchFoodsSort(PageRequest pageRequest) {
+//        return ResponseEntity.ok(profileServic.searchFoodsSort(pageRequest));
+//    }
+    
+    @Operation(description = "API thả tim món ăn")
+    @PostMapping("/food-reaction")
+    public ResponseEntity<Response<Void>> foodReaction(@RequestBody FoodReactionRequest foodReactionRequest) {
+    	profileServic.foodReaction(foodReactionRequest);
+        return ResponseEntity.ok(new Response<>(true, Message.OTHER_SUCCESS));
+    }
+    
+    @Operation(description = "API hủy thả tim món ăn")
+    @DeleteMapping("/food-reaction")
+    public ResponseEntity<Response<Void>> foodReactionDel(@RequestBody FoodReactionRequest foodReactionRequest) {
+    	profileServic.foodReactionDel(foodReactionRequest);
+        return ResponseEntity.ok(new Response<>(true, Message.OTHER_SUCCESS));
+    }
+    
+    @Operation(description = "API tìm kiếm bài viết theo thành phố")
+    @GetMapping("/list-post-address")
+    public ResponseEntity<PageResponse<FoodDetailResponse>> searchPostByAddress(PageRequest pageRequest) {
         return ResponseEntity.ok(profileServic.searchFoodsSort(pageRequest));
+    }
+    
+    @Operation(description = "API lấy tất cả danh sách bài viết")
+    @GetMapping("/list-post-all")
+    public ResponseEntity<PageResponse<PostResponse>> getListPostAll(PageRequest pageRequest) {
+        return ResponseEntity.ok(profileServic.getListPostAll(pageRequest));
+    }
+    
+    @Operation(description = "API thêm món ăn nổi bật")
+    @PostMapping("/food-hot/{foodId}")
+    public ResponseEntity<Response<Void>> addFoodHot(@PathVariable("foodId") Long id) {
+    	profileServic.addFoodHot(id);
+        return ResponseEntity.ok(new Response<>(true, Message.OTHER_SUCCESS));
+    }
+    
+    @Operation(description = "API lấy món ăn nổi bật")
+    @GetMapping("/food-hot")
+    public ResponseEntity<Response<List<FoodDetailResponse>>> getHotFood(@RequestParam("accountId") Long id) {
+        return ResponseEntity.ok(new Response<>(true, Message.OTHER_SUCCESS,profileServic.hotFood(id)));
+    }
+    
+    @Operation(description = "API xóa món ăn nổi bật")
+    @DeleteMapping("/food-hot/delete/{foodId}")
+    public ResponseEntity<Response<Void>> deleteHotFood(@PathVariable("foodId") Long id) {
+    	profileServic.deleteFoodHot(id);
+        return ResponseEntity.ok(new Response<>(true, Message.OTHER_SUCCESS));
     }
 }
 

@@ -1,7 +1,5 @@
 package com.datn.topfood.dto.request;
 
-import java.util.List;
-
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -9,12 +7,7 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class PostRequest {
+public class FoodReactionRequest {
 
-	Long id;
-	String content;
-	List<String> files;
-	Long[] tagIds;
-	List<String> address;
-	List<Long> foodIds;
+	Long foodId;
 }
