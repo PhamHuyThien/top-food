@@ -156,8 +156,8 @@ public class StoreProfileController {
     
     @Operation(description = "API tìm kiếm bài viết theo thành phố")
     @GetMapping("/list-post-address")
-    public ResponseEntity<PageResponse<FoodDetailResponse>> searchPostByAddress(PageRequest pageRequest) {
-        return ResponseEntity.ok(profileServic.searchFoodsSort(pageRequest));
+    public ResponseEntity<PageResponse<PostResponse>> searchPostByAddress(@RequestParam("address")String address,PageRequest pageRequest) {
+        return ResponseEntity.ok(profileServic.searchPostByAddress(address,pageRequest));
     }
     
     @Operation(description = "API lấy tất cả danh sách bài viết")
