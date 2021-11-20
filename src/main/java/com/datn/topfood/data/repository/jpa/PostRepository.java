@@ -17,5 +17,6 @@ public interface PostRepository extends JpaRepository<Post, Long>{
 	@Query("select p from Post as p where p.profile.account.id = ?1")
 	public Page<Post> findAllByAccount(Long accountId,Pageable pageable);
 	
-	public Page<Post> findByAddressContaining(String address,Pageable pageable);
+	@Query("select p from Post as p where p.profile.city = ?1")
+	public Page<Post> findBypAddressContaining(Integer address,Pageable pageable);
 }

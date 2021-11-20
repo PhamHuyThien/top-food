@@ -73,8 +73,8 @@ public class StoreProfileController {
 
     @Operation(description = "API danh sách món ăn của cửa hàng")
     @GetMapping("/list-food")
-    public ResponseEntity<Response<PageResponse<FoodDetailResponse>>> listFood(PageRequest pageRequest) {
-        return ResponseEntity.ok(new Response<>(true, Message.OTHER_SUCCESS, profileServic.listFood(pageRequest)));
+    public ResponseEntity<Response<PageResponse<FoodDetailResponse>>> listFood(@RequestParam("accountId") Long id,PageRequest pageRequest) {
+        return ResponseEntity.ok(new Response<>(true, Message.OTHER_SUCCESS, profileServic.listFood(id,pageRequest)));
     }
 
     @Operation(description = "API hủy follow cửa hàng")
@@ -156,7 +156,7 @@ public class StoreProfileController {
     
     @Operation(description = "API tìm kiếm bài viết theo thành phố")
     @GetMapping("/list-post-address")
-    public ResponseEntity<PageResponse<PostResponse>> searchPostByAddress(@RequestParam("address")String address,PageRequest pageRequest) {
+    public ResponseEntity<PageResponse<PostResponse>> searchPostByAddress(@RequestParam("address")Integer address,PageRequest pageRequest) {
         return ResponseEntity.ok(profileServic.searchPostByAddress(address,pageRequest));
     }
     
@@ -184,6 +184,12 @@ public class StoreProfileController {
     public ResponseEntity<Response<Void>> deleteHotFood(@PathVariable("foodId") Long id) {
     	profileServic.deleteFoodHot(id);
         return ResponseEntity.ok(new Response<>(true, Message.OTHER_SUCCESS));
+    }
+    
+    @Operation(description = "API lấy bài viết")
+    @GetMapping("/new-feed")
+    public ResponseEntity<PageResponse<PostResponse>> newFeed(@RequestParam(value = "city",required = false) Integer city,PageRequest pageRequest) {
+        return ResponseEntity.ok(profileServic.newFeed(city,pageRequest));
     }
 }
 

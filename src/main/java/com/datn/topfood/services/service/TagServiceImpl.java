@@ -58,17 +58,18 @@ public class TagServiceImpl implements TagService {
         tagResponse.setUpdateAt(tag.getUpdateAt());
         List<FoodResponse> foodResponses = new ArrayList<>();
         for (Food x : tag.getFood()) {
-            FoodResponse foodResponse = new FoodResponse();
-            foodResponse.setId(x.getId());
-            foodResponse.setName(x.getName());
-            foodResponse.setPrice(x.getPrice());
-            foodResponse.setStoreName(x.getProfile().getName());
-            foodResponse.setFiles(x.getFiles().stream().map((file) -> {
-                return file.getPath();
-            }).collect(Collectors.toList()));
-            foodResponse.setContent(x.getContent());
-            foodResponses.add(foodResponse);
-
+        	if(x.getDisableAt()==null) {
+        		FoodResponse foodResponse = new FoodResponse();
+	            foodResponse.setId(x.getId());
+	            foodResponse.setName(x.getName());
+	            foodResponse.setPrice(x.getPrice());
+	            foodResponse.setStoreName(x.getProfile().getName());
+	            foodResponse.setFiles(x.getFiles().stream().map((file) -> {
+	                return file.getPath();
+	            }).collect(Collectors.toList()));
+	            foodResponse.setContent(x.getContent());
+	            foodResponses.add(foodResponse);
+        	}
         }
         tagResponse.setFoods(foodResponses);
         return tagResponse;

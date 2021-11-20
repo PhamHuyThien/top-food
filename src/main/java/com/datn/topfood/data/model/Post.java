@@ -25,9 +25,6 @@ public class Post extends Base {
     @JoinColumn(name = "profile_id")
     private Profile profile;
     
-    @Column(length = 1500)
-    private String address;
-    
     public Post(String content, Profile profile, Set<File> files, List<Intereact> intereacts,
 			List<CommentPost> commentPosts, List<Approach> approachs, Collection<Tag> tags) {
 		super();

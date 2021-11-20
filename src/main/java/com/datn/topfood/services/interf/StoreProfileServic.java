@@ -34,7 +34,7 @@ public interface StoreProfileServic {
 
     void deleteFood(Long foodId);
 
-    PageResponse<FoodDetailResponse> listFood(PageRequest pageRequest);
+    PageResponse<FoodDetailResponse> listFood(Long id,PageRequest pageRequest);
 
     FoodDetailResponse updateFood(FoodRequest foodRequest);
 
@@ -54,7 +54,7 @@ public interface StoreProfileServic {
     
     PageResponse<FoodDetailResponse> searchFoodsSort(PageRequest pageRequest);
     
-    PageResponse<PostResponse> searchPostByAddress(String address,PageRequest pageRequest);
+    PageResponse<PostResponse> searchPostByAddress(Integer address,PageRequest pageRequest);
     
     void foodReaction(FoodReactionRequest foodReactionRequest);
     
@@ -65,4 +65,6 @@ public interface StoreProfileServic {
     List<FoodDetailResponse> hotFood(Long id);
     
     void deleteFoodHot(Long foodId);
+    
+    PageResponse<PostResponse> newFeed(Integer city,PageRequest pageRequest);
 }

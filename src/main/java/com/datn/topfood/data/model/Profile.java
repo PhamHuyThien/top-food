@@ -37,6 +37,9 @@ public class Profile {
     @Column(length = 50)
     private String name;
     
+    @Column
+    private Integer city;
+    
     @Column(length = 200)
     private String foodHot;
     
