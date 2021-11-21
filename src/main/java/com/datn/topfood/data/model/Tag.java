@@ -3,6 +3,7 @@ package com.datn.topfood.data.model;
 
 import javax.persistence.*;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
 
 import java.util.Collection;
@@ -22,6 +23,7 @@ public class Tag extends Base {
     String image;
 
     @OneToMany(mappedBy = "tag", cascade = CascadeType.ALL)
+    @JsonIgnore
     List<Food> food;
 
     boolean enable = false;
