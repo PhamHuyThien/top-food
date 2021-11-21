@@ -99,14 +99,27 @@ public class StoreCustomRepositoryImpl implements StoreCustomRepository {
 	
 	@Override
 	public List<Post> newFeed(Integer address,List<Favorite> favorite,PageRequest pageRequest) {
-		List<Long> tagIds = favorite.stream().map((f)->{
+		if(favorite!=null && !favorite.isEmpty()) {
+			List<Long> tagIds = favorite.stream().map((f)->{
 			return f.getTag().getId();
-		}).collect(Collectors.toList());
+			}).collect(Collectors.toList());
+			String city = address == null?
+					"":"and p.profile.city = :city ";
+			String sql = "select p from Post as p join p.tags as t where t.id in :favorite "+ city +" group by p order by p.id desc";
+			TypedQuery<Post> postQuery = entityManager.createQuery(sql, Post.class);
+			postQuery.setParameter("favorite", tagIds);
+			if(address != null) {
+				postQuery.setParameter("city", address);
+			}
+			postQuery.setFirstResult(pageRequest.getPage() * pageRequest.getPageSize());
+			postQuery.setMaxResults(pageRequest.getPageSize());
+	        List<Post> posts = postQuery.getResultList();
+			return posts;
+		}
 		String city = address == null?
-				"":"and p.profile.city = :city ";
-		String sql = "select p from Post as p join p.tags as t where t.id in :favorite "+ city +" group by p order by p.id desc";
+				"":" where p.profile.city = :city ";
+		String sql = "select p from Post as p"+ city +" order by p.id desc";
 		TypedQuery<Post> postQuery = entityManager.createQuery(sql, Post.class);
-		postQuery.setParameter("favorite", tagIds);
 		if(address != null) {
 			postQuery.setParameter("city", address);
 		}
@@ -118,14 +131,24 @@ public class StoreCustomRepositoryImpl implements StoreCustomRepository {
 	
 	@Override
 	public Long newFeedSize(Integer address,List<Favorite> favorite,PageRequest pageRequest) {
-		List<Long> tagIds = favorite.stream().map((f)->{
+		if(favorite !=null && !favorite.isEmpty()) {
+			List<Long> tagIds = favorite.stream().map((f)->{
 			return f.getTag().getId();
-		}).collect(Collectors.toList());
+			}).collect(Collectors.toList());
+			String city = address == null?
+				"":"and p.profile.city = :city ";
+			String sql = "select p from Post as p join p.tags as t where t.id in :favorite "+ city +" group by p";
+			TypedQuery<Post> postQuery = entityManager.createQuery(sql, Post.class);
+			postQuery.setParameter("favorite", tagIds);
+			if(address != null) {
+				postQuery.setParameter("city", address);
+			}
+	        return Long.valueOf(postQuery.getResultList().size());
+		}
 		String city = address == null?
-			"":"and p.profile.city = :city ";
-		String sql = "select p from Post as p join p.tags as t where t.id in :favorite "+ city +" group by p";
+				"":" where p.profile.city = :city ";
+		String sql = "select p from Post as p"+ city +" order by p.id desc";
 		TypedQuery<Post> postQuery = entityManager.createQuery(sql, Post.class);
-		postQuery.setParameter("favorite", tagIds);
 		if(address != null) {
 			postQuery.setParameter("city", address);
 		}
