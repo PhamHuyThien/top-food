@@ -15,6 +15,5 @@ public class PostRequest {
 	String content;
 	List<String> files;
 	Long[] tagIds;
-	List<String> address;
 	List<Long> foodIds;
 }
