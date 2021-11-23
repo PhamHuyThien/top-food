@@ -104,7 +104,7 @@ public class StoreCustomRepositoryImpl implements StoreCustomRepository {
 			return f.getTag().getId();
 			}).collect(Collectors.toList());
 			String city = address == null?
-					"":"and p.profile.city = :city ";
+					"and p.disableAt is null":"and p.profile.city = :city and p.disableAt is null";
 			String sql = "select p from Post as p join p.tags as t where t.id in :favorite "+ city +" group by p order by p.id desc";
 			TypedQuery<Post> postQuery = entityManager.createQuery(sql, Post.class);
 			postQuery.setParameter("favorite", tagIds);
@@ -136,7 +136,7 @@ public class StoreCustomRepositoryImpl implements StoreCustomRepository {
 			return f.getTag().getId();
 			}).collect(Collectors.toList());
 			String city = address == null?
-				"":"and p.profile.city = :city ";
+			        "and p.disableAt is null":"and p.profile.city = :city and p.disableAt is null";
 			String sql = "select p from Post as p join p.tags as t where t.id in :favorite "+ city +" group by p";
 			TypedQuery<Post> postQuery = entityManager.createQuery(sql, Post.class);
 			postQuery.setParameter("favorite", tagIds);
