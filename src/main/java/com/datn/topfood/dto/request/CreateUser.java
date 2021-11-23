@@ -16,4 +16,5 @@ public class CreateUser {
     String name;
     Timestamp birthday;
     String role;
+    Integer city;
 }

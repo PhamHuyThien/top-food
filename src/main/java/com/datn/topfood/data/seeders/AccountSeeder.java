@@ -38,7 +38,7 @@ public class AccountSeeder implements Seeder {
                 new Profile(4L, "https://s3.cloud.cmctelecom.vn/tinhte2/2019/05/4645607_cover_home_windows_terminal_app_moi.jpg", "https://i.pinimg.com/564x/92/26/5c/92265c40c8e428122e0b32adc1994594.jpg", "WHO AM I?", "VN", "Nguyễn Thắng", currentTime, currentTime, null, null, null),
                 new Profile(5L, "https://s3.cloud.cmctelecom.vn/tinhte2/2019/05/4645607_cover_home_windows_terminal_app_moi.jpg", "https://upanh123.com/wp-content/uploads/2020/12/tai-anh-anime-ve-lam-avatar10.jpg", "WHO AM I?", "VN", "Nguyễn Bình Ngà", currentTime, currentTime, null, null, null),
                 new Profile(6L, "https://s3.cloud.cmctelecom.vn/tinhte2/2019/05/4645607_cover_home_windows_terminal_app_moi.jpg", "https://upanh123.com/wp-content/uploads/2020/12/tai-anh-anime-ve-lam-avatar10.jpg", "WHO AM I?", "VN", "Trần Đại Minh", currentTime, currentTime,null, null, null),
-                new Profile(7L, "https://cf.shopee.vn/file/0ad20ae511669aef2aad16191c1902f1", "https://cf.shopee.vn/file/57171334ad194140c5c1c088b456e3ca", "WHO AM I?", "VN", "TopFood Quán", currentTime, currentTime, null, null, null),
+                new Profile(1,7L, "https://cf.shopee.vn/file/0ad20ae511669aef2aad16191c1902f1", "https://cf.shopee.vn/file/57171334ad194140c5c1c088b456e3ca", "WHO AM I?", "VN", "TopFood Quán", currentTime, currentTime, null, null, null),
                 new Profile(8L, "https://s3.cloud.cmctelecom.vn/tinhte2/2019/05/4645607_cover_home_windows_terminal_app_moi.jpg", "https://www.clipartmax.com/png/middle/319-3191274_male-avatar-admin-profile.png", "WHO AM I?", "VN", "Administrator", currentTime, currentTime, null, null, null),
         };
         for (int i = 0; i < accounts.length; i++) {
