@@ -78,5 +78,21 @@ public class Profile {
 		this.posts = posts;
 		this.foods = foods;
 	}
-    
+	
+	public Profile(Integer city,Long id, String cover, String avatar, String bio, String address, String name, Timestamp birthday,
+			Timestamp updateAt, Account account, List<Post> posts, List<Food> foods) {
+		super();
+		this.city = city;
+		this.id = id;
+		this.cover = cover;
+		this.avatar = avatar;
+		this.bio = bio;
+		this.address = address;
+		this.name = name;
+		this.birthday = birthday;
+		this.updateAt = updateAt;
+		this.account = account;
+		this.posts = posts;
+		this.foods = foods;
+	}
 }

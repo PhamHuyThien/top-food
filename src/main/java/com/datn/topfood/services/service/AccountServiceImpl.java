@@ -146,6 +146,7 @@ public class AccountServiceImpl extends BaseService implements AccountService {
     profile.setName(request.getName());
     profile.setBirthday(request.getBirthday());
     profile.setAccount(account);
+    profile.setCity(request.getCity());
     profileRepository.save(profile);
   }
 
