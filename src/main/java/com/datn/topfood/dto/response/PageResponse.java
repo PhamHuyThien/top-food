@@ -6,6 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 
+import java.util.Collection;
 import java.util.List;
 
 
@@ -13,14 +14,14 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @ToString
-public class PageResponse<T> extends Response<T> {
+public class PageResponse<T> extends Response<List<T>> {
     protected long total;
     protected long totalElements;
     protected long pageSize;
     protected long pageTotal;
 
     public PageResponse(List<T> data, long totalElements, long pageSize) {
-        this.data = (T) data;
+        this.data = data;
         this.total = data.size();
         this.totalElements = totalElements;
         this.pageSize = pageSize;

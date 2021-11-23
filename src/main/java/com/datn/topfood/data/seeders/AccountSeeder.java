@@ -29,7 +29,13 @@ public class AccountSeeder implements Seeder {
                 new Account("nga", passwordDefault, "0912345674", "admin.topfood5@gmail.com", AccountStatus.WAIT_ACTIVE, AccountRole.ROLE_USER),
                 new Account("minh", passwordDefault, "0912345673", "admin.topfood6@gmail.com", AccountStatus.ACTIVE, AccountRole.ROLE_USER),
                 new Account("store", passwordDefault, "0912348888", "admin.topfood7@gmail.com", AccountStatus.ACTIVE, AccountRole.ROLE_STORE),
-                new Account("admin", passwordDefault, "0912349999", "admin.topfood8@gmail.com", AccountStatus.ACTIVE, AccountRole.ROLE_ADMIN)
+                new Account("admin", passwordDefault, "0912349999", "admin.topfood8@gmail.com", AccountStatus.ACTIVE, AccountRole.ROLE_ADMIN),
+                new Account("store1", passwordDefault, "0912348817", "admin.topfood71@gmail.com", AccountStatus.ACTIVE, AccountRole.ROLE_STORE),
+                new Account("store2", passwordDefault, "0912348816", "admin.topfood72@gmail.com", AccountStatus.ACTIVE, AccountRole.ROLE_STORE),
+                new Account("store3", passwordDefault, "0912348812", "admin.topfood73@gmail.com", AccountStatus.ACTIVE, AccountRole.ROLE_STORE),
+                new Account("store4", passwordDefault, "0912348813", "admin.topfood74@gmail.com", AccountStatus.ACTIVE, AccountRole.ROLE_STORE),
+                new Account("store5", passwordDefault, "0912348814", "admin.topfood75@gmail.com", AccountStatus.ACTIVE, AccountRole.ROLE_STORE),
+                new Account("store6", passwordDefault, "0912348815", "admin.topfood76@gmail.com", AccountStatus.ACTIVE, AccountRole.ROLE_STORE),
         };
         Profile[] profiles = new Profile[]{
                 new Profile(1L, "https://s3.cloud.cmctelecom.vn/tinhte2/2019/05/4645607_cover_home_windows_terminal_app_moi.jpg", "https://i.9mobi.vn/cf/Images/tt/2021/8/20/anh-avatar-dep-39.jpg", "WHO AM I?", "VN", "Phạm Huy Thiên", currentTime, currentTime,null, null, null),
@@ -40,6 +46,12 @@ public class AccountSeeder implements Seeder {
                 new Profile(6L, "https://s3.cloud.cmctelecom.vn/tinhte2/2019/05/4645607_cover_home_windows_terminal_app_moi.jpg", "https://upanh123.com/wp-content/uploads/2020/12/tai-anh-anime-ve-lam-avatar10.jpg", "WHO AM I?", "VN", "Trần Đại Minh", currentTime, currentTime,null, null, null),
                 new Profile(1,7L, "https://cf.shopee.vn/file/0ad20ae511669aef2aad16191c1902f1", "https://cf.shopee.vn/file/57171334ad194140c5c1c088b456e3ca", "WHO AM I?", "VN", "TopFood Quán", currentTime, currentTime, null, null, null),
                 new Profile(8L, "https://s3.cloud.cmctelecom.vn/tinhte2/2019/05/4645607_cover_home_windows_terminal_app_moi.jpg", "https://www.clipartmax.com/png/middle/319-3191274_male-avatar-admin-profile.png", "WHO AM I?", "VN", "Administrator", currentTime, currentTime, null, null, null),
+                new Profile(9L, "https://cf.shopee.vn/file/0ad20ae511669aef2aad16191c1902f1", "https://cf.shopee.vn/file/57171334ad194140c5c1c088b456e3ca", "WHO AM I?", "VN", "TopFood Quán 1", currentTime, currentTime, null, null, null),
+                new Profile(10L, "https://cf.shopee.vn/file/0ad20ae511669aef2aad16191c1902f1", "https://cf.shopee.vn/file/57171334ad194140c5c1c088b456e3ca", "WHO AM I?", "VN", "TopFood Quán 2", currentTime, currentTime, null, null, null),
+                new Profile(11L, "https://cf.shopee.vn/file/0ad20ae511669aef2aad16191c1902f1", "https://cf.shopee.vn/file/57171334ad194140c5c1c088b456e3ca", "WHO AM I?", "VN", "TopFood Quán 3", currentTime, currentTime, null, null, null),
+                new Profile(12L, "https://cf.shopee.vn/file/0ad20ae511669aef2aad16191c1902f1", "https://cf.shopee.vn/file/57171334ad194140c5c1c088b456e3ca", "WHO AM I?", "VN", "TopFood Quán 4", currentTime, currentTime, null, null, null),
+                new Profile(13L, "https://cf.shopee.vn/file/0ad20ae511669aef2aad16191c1902f1", "https://cf.shopee.vn/file/57171334ad194140c5c1c088b456e3ca", "WHO AM I?", "VN", "TopFood Quán 5", currentTime, currentTime, null, null, null),
+                new Profile(14L, "https://cf.shopee.vn/file/0ad20ae511669aef2aad16191c1902f1", "https://cf.shopee.vn/file/57171334ad194140c5c1c088b456e3ca", "WHO AM I?", "VN", "TopFood Quán 6", currentTime, currentTime, null, null, null),
         };
         for (int i = 0; i < accounts.length; i++) {
             accounts[i].setId(i + 1L);
