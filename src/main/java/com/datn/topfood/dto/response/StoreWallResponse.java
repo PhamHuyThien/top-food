@@ -18,4 +18,6 @@ public class StoreWallResponse {
 	String bio;
 	String address;
 	String name;
+	String phone;
+	boolean myFollow;
 }

@@ -161,6 +161,8 @@ public class StoreProfileServicImpl extends BaseService implements StoreProfileS
         swr.setFollower(followRepository.countFollowOfProfile(storeProfileId));
         swr.setName(p.getName());
         swr.setStoreId(p.getId());
+        swr.setPhone(p.getAccount().getPhoneNumber());
+        swr.setMyFollow(followRepository.findByAccountUsernameAndProfileId(itMe().getUsername(), p.getId()).orElse(null)!=null);
         return swr;
     }
 
@@ -178,7 +180,8 @@ public class StoreProfileServicImpl extends BaseService implements StoreProfileS
             swr.setFollower(followRepository.countFollowOfProfile(al.getProfile().getId()));
             swr.setName(al.getProfile().getName());
             swr.setStoreId(al.getProfile().getId());
-            return swr;
+            swr.setPhone(al.getProfile().getAccount().getPhoneNumber());
+            swr.setMyFollow(al.getAccount().getId()==ime.getId());            return swr;
         }).collect(Collectors.toList()), accountFollow.getTotalElements(), pageRequest.getPageSize());
     }
 
