@@ -61,9 +61,7 @@ public class Post extends Base {
     @OneToMany(mappedBy = "post", cascade = CascadeType.ALL)
     private List<Approach> approachs;
 
-    @ManyToMany(fetch = FetchType.EAGER)
-    @EqualsAndHashCode.Exclude
-    @ToStringExclude
+    @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
             name = "tag_post",
             joinColumns = @JoinColumn(name = "post_id"),
@@ -78,4 +76,7 @@ public class Post extends Base {
             joinColumns = @JoinColumn(name = "post_id"),
             inverseJoinColumns = @JoinColumn(name = "food_id"))
     private List<Food> foods;
+    @OneToMany(mappedBy = "post", cascade = CascadeType.ALL)
+    @JsonIgnore
+    List<Report> reports;
 }
