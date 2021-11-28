@@ -20,6 +20,7 @@ public class TagResponse {
 	Timestamp updateAt;
 	List<FoodResponse> foods;
 
+
 	public TagResponse(Long id, String tagName) {
 		this.id = id;
 		this.tagName = tagName;

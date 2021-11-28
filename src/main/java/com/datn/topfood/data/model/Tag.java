@@ -27,6 +27,8 @@ public class Tag extends Base {
     List<Food> food;
 
     boolean enable = false;
+    @ManyToMany(mappedBy = "tags", fetch = FetchType.EAGER)
+    List<Post> posts;
 
     public Tag(Long id, String tagName) {
         this.id = id;
