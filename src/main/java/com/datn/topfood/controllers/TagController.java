@@ -56,7 +56,7 @@ public class TagController {
 
     @GetMapping("/store/{id}")
     public TagResponse findByIdStore(@PathVariable("id") Long id) {
-        return tagService.findById(id);
+        return tagService.findByIdStore(id);
     }
 
 }
