@@ -28,6 +28,7 @@ public class Tag extends Base {
 
     boolean enable = false;
     @ManyToMany(mappedBy = "tags", fetch = FetchType.EAGER)
+    @JsonIgnore
     List<Post> posts;
 
     public Tag(Long id, String tagName) {
