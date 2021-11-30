@@ -191,5 +191,23 @@ public class StoreProfileController {
     public ResponseEntity<PageResponse<PostResponse>> newFeed(@RequestParam(value = "city",required = false) Integer city,PageRequest pageRequest) {
         return ResponseEntity.ok(profileServic.newFeed(city,pageRequest));
     }
+    
+    @Operation(description = "API lấy bài viết theo hastag")
+    @GetMapping("/list-post-hastag")
+    public ResponseEntity<PageResponse<PostResponse>> listPostHastag(PageRequest pageRequest) {
+        return ResponseEntity.ok(profileServic.postHastag(pageRequest));
+    }
+    
+    @Operation(description = "API lấy bài viết theo like")
+    @GetMapping("/list-post-like")
+    public ResponseEntity<PageResponse<PostResponse>> listPostLike(PageRequest pageRequest) {
+        return ResponseEntity.ok(profileServic.postLike(pageRequest));
+    }
+    
+    @Operation(description = "API lấy bài viết theo store follow")
+    @GetMapping("/list-post-follow")
+    public ResponseEntity<PageResponse<PostResponse>> listPostFollow(PageRequest pageRequest) {
+        return ResponseEntity.ok(profileServic.postFollow(pageRequest));
+    }
 }
 

@@ -3,6 +3,7 @@ package com.datn.topfood.data.repository.custom.impl;
 import java.util.List;
 
 import com.datn.topfood.data.model.Account;
+import com.datn.topfood.data.model.AccountFollow;
 import com.datn.topfood.data.model.Favorite;
 import com.datn.topfood.data.model.Food;
 import com.datn.topfood.data.model.Post;
@@ -16,4 +17,8 @@ public interface StoreCustomRepository {
 	
 	List<Post> newFeed(Integer city,List<Favorite> favorite,PageRequest pageRequest);
 	Long newFeedSize(Integer city,List<Favorite> favorite,PageRequest pageRequest);
+	
+	List<Post> postHastag(List<Favorite> favorite,PageRequest pageRequest);
+	List<Post> postLike(PageRequest pageRequest);
+	List<Post> postFollow(List<AccountFollow> accountFollow, PageRequest pageRequest);
 }
