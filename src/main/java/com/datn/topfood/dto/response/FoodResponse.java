@@ -21,6 +21,14 @@ public class FoodResponse {
     boolean reactionMe;
 
 
-    public FoodResponse(Long id, String name, Double price, String content, List<String> convertSetToArrFile, String name1) {
-    }
+	public FoodResponse(Long id, String name, Double price, String content, List<String> files, String storeName) {
+		super();
+		this.id = id;
+		this.name = name;
+		this.price = price;
+		this.content = content;
+		this.files = files;
+		this.storeName = storeName;
+	}
+    
 }
