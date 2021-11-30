@@ -1,18 +1,19 @@
 package com.datn.topfood.controllers;
 
 import com.datn.topfood.dto.request.*;
-import com.datn.topfood.dto.response.AccountDetailResponse;
-import com.datn.topfood.dto.response.AccountResponse;
-import com.datn.topfood.dto.response.PageResponse;
+import com.datn.topfood.dto.response.*;
+import com.datn.topfood.util.enums.AccountRole;
+import com.datn.topfood.util.enums.AccountStatus;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import com.datn.topfood.dto.response.Response;
 import com.datn.topfood.services.interf.AccountService;
 import com.datn.topfood.util.constant.Message;
 
 import io.swagger.v3.oas.annotations.Operation;
+
+import java.sql.Timestamp;
 
 @RestController
 @RequestMapping("/account")
@@ -72,5 +73,10 @@ public class AccountController {
     @GetMapping("/admin/{id}")
     public AccountDetailResponse getAccountById(@PathVariable("id") Long id) {
         return accountService.getAccountById(id);
+    }
+
+    @GetMapping("/total")
+    public TotalAccount totalAccount(@RequestParam AccountStatus status, @RequestParam AccountRole role) {
+        return accountService.getTotalAccount(status, role);
     }
 }

@@ -9,7 +9,7 @@ import com.datn.topfood.dto.response.TitleTagResponse;
 
 import java.util.List;
 
-public interface TagService {
+public interface TagService  {
     TagResponse createTag(TagRequest request);
 
     TagResponse updateTag(TagRequest request, Long id);
@@ -22,4 +22,5 @@ public interface TagService {
 
     void updateEnable(Long id);
     List<TagResponse> getAllTitleTag(String tagName);
+    TagResponse findByIdStore(Long id);
 }

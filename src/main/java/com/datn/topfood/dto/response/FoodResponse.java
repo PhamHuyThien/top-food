@@ -1,5 +1,6 @@
 package com.datn.topfood.dto.response;
 
+import com.datn.topfood.data.model.Reaction;
 import com.datn.topfood.dto.request.FileRequest;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -16,5 +17,10 @@ public class FoodResponse {
     String content;
     List<String> files;
     String storeName;
+    Long totalReaction;
+    boolean reactionMe;
 
+
+    public FoodResponse(Long id, String name, Double price, String content, List<String> convertSetToArrFile, String name1) {
+    }
 }

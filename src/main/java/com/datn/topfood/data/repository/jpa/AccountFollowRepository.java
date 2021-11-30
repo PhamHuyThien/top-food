@@ -23,4 +23,5 @@ public interface AccountFollowRepository extends JpaRepository<AccountFollow, Lo
 	
 	@Query("select al from AccountFollow as al where al.account.username = ?1 and al.profile.id = ?2")
 	Optional<AccountFollow> findByAccountUsernameAndProfileId(String username,Long ProfileId);
+	
 }

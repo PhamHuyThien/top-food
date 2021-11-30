@@ -54,4 +54,9 @@ public class TagController {
         tagService.updateEnable(id);
     }
 
+    @GetMapping("/store/{id}")
+    public TagResponse findByIdStore(@PathVariable("id") Long id) {
+        return tagService.findByIdStore(id);
+    }
+
 }
