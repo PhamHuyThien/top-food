@@ -9,10 +9,7 @@ import com.datn.topfood.data.repository.jpa.AccountRepository;
 import com.datn.topfood.data.repository.jpa.FriendShipRepository;
 import com.datn.topfood.data.repository.jpa.ProfileRepository;
 import com.datn.topfood.dto.request.*;
-import com.datn.topfood.dto.response.AccountDetailResponse;
-import com.datn.topfood.dto.response.AccountResponse;
-import com.datn.topfood.dto.response.PageResponse;
-import com.datn.topfood.dto.response.AccountPro;
+import com.datn.topfood.dto.response.*;
 import com.datn.topfood.services.BaseService;
 import com.datn.topfood.services.interf.AccountService;
 import com.datn.topfood.util.DateUtils;
@@ -29,6 +26,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -198,5 +196,15 @@ public class AccountServiceImpl extends BaseService implements AccountService {
     accountDetailResponse.setAddress(profile.getAddress());
     accountDetailResponse.setImg(profile.getAvatar());
     return accountDetailResponse;
+  }
+
+  @Override
+  public TotalAccount getTotalAccount(AccountStatus status, AccountRole role) {
+    Long total=accountRepository.totalAccount(role);
+    Long totalByRole=accountRepository.totalAccountByRole(status,role);
+    TotalAccount totalAccount=new TotalAccount();
+    totalAccount.setTotalAccount(total);
+    totalAccount.setTotalByRole(totalByRole);
+    return totalAccount ;
   }
 }

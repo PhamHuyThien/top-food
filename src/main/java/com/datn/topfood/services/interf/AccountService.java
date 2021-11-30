@@ -1,10 +1,11 @@
 package com.datn.topfood.services.interf;
 
 import com.datn.topfood.dto.request.*;
-import com.datn.topfood.dto.response.AccountDetailResponse;
-import com.datn.topfood.dto.response.AccountResponse;
-import com.datn.topfood.dto.response.PageResponse;
-import com.datn.topfood.dto.response.ProfileResponse;
+import com.datn.topfood.dto.response.*;
+import com.datn.topfood.util.enums.AccountRole;
+import com.datn.topfood.util.enums.AccountStatus;
+
+import java.sql.Timestamp;
 
 public interface AccountService {
 
@@ -29,4 +30,6 @@ public interface AccountService {
     void resetPassword(Long id);
 
     AccountDetailResponse getAccountById(Long id);
+
+    TotalAccount getTotalAccount(AccountStatus status, AccountRole role);
 }
