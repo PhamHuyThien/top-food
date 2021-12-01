@@ -67,4 +67,7 @@ public interface StoreProfileServic {
     void deleteFoodHot(Long foodId);
     
     PageResponse<PostResponse> newFeed(Integer city,PageRequest pageRequest);
+    PageResponse<PostResponse> postHastag(PageRequest pageRequest);
+    PageResponse<PostResponse> postLike(PageRequest pageRequest);
+    PageResponse<PostResponse> postFollow(PageRequest pageRequest);
 }

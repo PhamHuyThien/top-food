@@ -79,4 +79,9 @@ public class Post extends Base {
     @OneToMany(mappedBy = "post", cascade = CascadeType.ALL)
     @JsonIgnore
     List<Report> reports;
+    
+    @EqualsAndHashCode.Exclude
+    @ToStringExclude
+    @OneToMany(mappedBy = "post", cascade = CascadeType.ALL)
+    private List<ReactionPost> reactions;
 }

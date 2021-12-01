@@ -3,6 +3,7 @@ package com.datn.topfood.services.service;
 import java.sql.Date;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -569,6 +570,7 @@ public class StoreProfileServicImpl extends BaseService implements StoreProfileS
     	Account account = itMe();
     	List<Favorite> favorite = favoriteRepository.findByAccountId(account.getId());
     	List<Post> posts = storeCustomRepository.newFeed(city, favorite, pageRequest);
+    	Collections.shuffle(posts);
     	List<PostResponse> listPostResponse = new ArrayList<PostResponse>();
     	for (Post p : posts) {
             listPostResponse.add(new PostResponse(p.getId(), p.getContent(), ConvertUtils.convertSetToArrFile(p.getFiles()), p.getTags()
@@ -580,6 +582,74 @@ public class StoreProfileServicImpl extends BaseService implements StoreProfileS
                     ,reactionPostRepository.isMyReactionPost(p.getId(), itMe().getId())!=null));
         }
         PageResponse<PostResponse> pageResponse = new PageResponse(listPostResponse, storeCustomRepository.newFeedSize(city, favorite, pageRequest),
+                pageRequest.getPageSize());
+        pageResponse.setStatus(true);
+        pageResponse.setMessage(Message.OTHER_SUCCESS);
+        return pageResponse;
+    }
+    
+    @Override
+    public PageResponse<PostResponse> postFollow(PageRequest pageRequest) {
+    	List<AccountFollow> al = followRepository.listFollow(itMe().getId());
+    	List<Post> post = storeCustomRepository.postFollow(al, pageRequest);
+    	Collections.shuffle(post);
+    	List<PostResponse> listPostResponse = new ArrayList<PostResponse>();
+    	post = post.subList(pageRequest.getPage()*pageRequest.getPageSize(), Math.min(post.size(), pageRequest.getPage()*pageRequest.getPageSize()+pageRequest.getPageSize()));
+    	for (Post p : post) {
+            listPostResponse.add(new PostResponse(p.getId(), p.getContent(), ConvertUtils.convertSetToArrFile(p.getFiles()), p.getTags()
+                    .stream().map((tag) -> new TagResponse(tag.getId(), tag.getTagName())).collect(Collectors.toList()),
+                    p.getFoods().stream().map((f) -> {
+                        return new FoodResponse(f.getId(), f.getName(), f.getPrice(), f.getContent(), ConvertUtils.convertSetToArrFile(f.getFiles()), f.getProfile().getName());
+                    }).collect(Collectors.toList()),ProfileResponse.builder().profile(Profile.builder().name(p.getProfile().getName())
+                    		.address(p.getProfile().getAddress()).city(p.getProfile().getCity()).id(p.getProfile().getId()).avatar(p.getProfile().getAvatar()).build()).phoneNumber(p.getProfile().getAccount().getPhoneNumber()).build(),reactionPostRepository.totalReactionPost(p.getId())
+                    ,reactionPostRepository.isMyReactionPost(p.getId(), itMe().getId())!=null));
+        }
+        PageResponse<PostResponse> pageResponse = new PageResponse(listPostResponse, post.size(),
+                pageRequest.getPageSize());
+        pageResponse.setStatus(true);
+        pageResponse.setMessage(Message.OTHER_SUCCESS);
+        return pageResponse;
+    }
+    
+    @Override
+    public PageResponse<PostResponse> postLike(PageRequest pageRequest) {
+    	List<Post> post = storeCustomRepository.postLike(pageRequest);
+    	List<PostResponse> listPostResponse = new ArrayList<PostResponse>();
+    	post = post.subList(pageRequest.getPage()*pageRequest.getPageSize(), Math.min(post.size(), pageRequest.getPage()*pageRequest.getPageSize()+pageRequest.getPageSize()));
+    	for (Post p : post) {
+            listPostResponse.add(new PostResponse(p.getId(), p.getContent(), ConvertUtils.convertSetToArrFile(p.getFiles()), p.getTags()
+                    .stream().map((tag) -> new TagResponse(tag.getId(), tag.getTagName())).collect(Collectors.toList()),
+                    p.getFoods().stream().map((f) -> {
+                        return new FoodResponse(f.getId(), f.getName(), f.getPrice(), f.getContent(), ConvertUtils.convertSetToArrFile(f.getFiles()), f.getProfile().getName());
+                    }).collect(Collectors.toList()),ProfileResponse.builder().profile(Profile.builder().name(p.getProfile().getName())
+                    		.address(p.getProfile().getAddress()).city(p.getProfile().getCity()).id(p.getProfile().getId()).avatar(p.getProfile().getAvatar()).build()).phoneNumber(p.getProfile().getAccount().getPhoneNumber()).build(),reactionPostRepository.totalReactionPost(p.getId())
+                    ,reactionPostRepository.isMyReactionPost(p.getId(), itMe().getId())!=null));
+        }
+        PageResponse<PostResponse> pageResponse = new PageResponse(listPostResponse, post.size(),
+                pageRequest.getPageSize());
+        pageResponse.setStatus(true);
+        pageResponse.setMessage(Message.OTHER_SUCCESS);
+        return pageResponse;
+    }
+    
+    @Override
+    public PageResponse<PostResponse> postHastag(PageRequest pageRequest) {
+    	Account account = itMe();
+    	List<Favorite> favorite = favoriteRepository.findByAccountId(account.getId());
+    	List<Post> posts = storeCustomRepository.postHastag(favorite, pageRequest);
+    	posts = posts.subList(pageRequest.getPage()*pageRequest.getPageSize(), Math.min(posts.size(), pageRequest.getPage()*pageRequest.getPageSize()+pageRequest.getPageSize()));
+    	Collections.shuffle(posts);
+    	List<PostResponse> listPostResponse = new ArrayList<PostResponse>();
+    	for (Post p : posts) {
+            listPostResponse.add(new PostResponse(p.getId(), p.getContent(), ConvertUtils.convertSetToArrFile(p.getFiles()), p.getTags()
+                    .stream().map((tag) -> new TagResponse(tag.getId(), tag.getTagName())).collect(Collectors.toList()),
+                    p.getFoods().stream().map((f) -> {
+                        return new FoodResponse(f.getId(), f.getName(), f.getPrice(), f.getContent(), ConvertUtils.convertSetToArrFile(f.getFiles()), f.getProfile().getName());
+                    }).collect(Collectors.toList()),ProfileResponse.builder().profile(Profile.builder().name(p.getProfile().getName())
+                    		.address(p.getProfile().getAddress()).city(p.getProfile().getCity()).id(p.getProfile().getId()).avatar(p.getProfile().getAvatar()).build()).phoneNumber(p.getProfile().getAccount().getPhoneNumber()).build(),reactionPostRepository.totalReactionPost(p.getId())
+                    ,reactionPostRepository.isMyReactionPost(p.getId(), itMe().getId())!=null));
+        }
+        PageResponse<PostResponse> pageResponse = new PageResponse(listPostResponse, posts.size(),
                 pageRequest.getPageSize());
         pageResponse.setStatus(true);
         pageResponse.setMessage(Message.OTHER_SUCCESS);
