@@ -15,7 +15,7 @@ public interface AccountService {
 
     void checkOtp(long profileId, String otp);
 
-    PageResponse<AccountResponse> searchByPhoneNumber(String phoneNumber, AccountRole role, PageRequest request);
+    PageResponse<AccountResponse> searchByPhoneNumber(String phoneNumber, AccountRole role,AccountStatus status, PageRequest request);
 
     void updateEnable(Long id);
 

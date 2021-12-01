@@ -84,11 +84,11 @@ public class AccountServiceImpl extends BaseService implements AccountService {
   }
 
   @Override
-  public PageResponse<AccountResponse> searchByPhoneNumber(String phoneNumber,AccountRole role, PageRequest request) {
+  public PageResponse<AccountResponse> searchByPhoneNumber(String phoneNumber,AccountRole role,AccountStatus status, PageRequest request) {
     Pageable pageable = PageUtils.toPageable(request);
     List<AccountResponse> accountResponses = new ArrayList<>();
     phoneNumber = "%" + phoneNumber + "%";
-    Page<AccountPro> accounts = accountRepository.findByPhoneNumberLike(phoneNumber,role, pageable);
+    Page<AccountPro> accounts = accountRepository.findByPhoneNumberLike(phoneNumber,role,status, pageable);
     for (AccountPro x : accounts) {
       AccountResponse accountResponse = new AccountResponse();
       accountResponse.setDisableAt(x.getAccount().getDisableAt());

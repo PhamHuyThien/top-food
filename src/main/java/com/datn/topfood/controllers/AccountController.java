@@ -36,8 +36,8 @@ public class AccountController {
     }
 
     @GetMapping("")
-    public PageResponse<AccountResponse> searchByPhoneNumber(@RequestParam String phoneNumber,@RequestParam AccountRole role, PageRequest pageRequest) {
-        return accountService.searchByPhoneNumber(phoneNumber,role, pageRequest);
+    public PageResponse<AccountResponse> searchByPhoneNumber(@RequestParam String phoneNumber,@RequestParam AccountRole role,@RequestParam AccountStatus status, PageRequest pageRequest) {
+        return accountService.searchByPhoneNumber(phoneNumber,role,status, pageRequest);
     }
 
     @PutMapping("/enable/{id}")
