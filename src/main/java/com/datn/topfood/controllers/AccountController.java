@@ -36,8 +36,8 @@ public class AccountController {
     }
 
     @GetMapping("")
-    public PageResponse<AccountResponse> searchByPhoneNumber(@RequestParam String phoneNumber, PageRequest pageRequest) {
-        return accountService.searchByPhoneNumber(phoneNumber, pageRequest);
+    public PageResponse<AccountResponse> searchByPhoneNumber(@RequestParam String phoneNumber,@RequestParam AccountRole role, PageRequest pageRequest) {
+        return accountService.searchByPhoneNumber(phoneNumber,role, pageRequest);
     }
 
     @PutMapping("/enable/{id}")
@@ -75,8 +75,12 @@ public class AccountController {
         return accountService.getAccountById(id);
     }
 
-    @GetMapping("/total")
-    public TotalAccount totalAccount(@RequestParam AccountStatus status, @RequestParam AccountRole role) {
-        return accountService.getTotalAccount(status, role);
+    @GetMapping("/total/user")
+    public TotalAccountUser totalAccountUser() {
+        return accountService.getTotalAccountUser();
+    }
+    @GetMapping("/total/store")
+    public TotalAccountStore totalAccountStore() {
+        return accountService.getTotalAccountStore();
     }
 }
