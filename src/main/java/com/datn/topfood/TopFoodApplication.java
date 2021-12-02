@@ -17,6 +17,6 @@ public class TopFoodApplication {
     public static void main(String[] args) {
         SpringApplication.run(TopFoodApplication.class, args);
         TimeZone.setDefault(TimeZone.getTimeZone("Asia/Ho_Chi_Minh"));
-        BatchSeeder.seed();
+//        BatchSeeder.seed();
     }
 }
