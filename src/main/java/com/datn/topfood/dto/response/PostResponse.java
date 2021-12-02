@@ -24,4 +24,5 @@ public class PostResponse {
 	ProfileResponse profile;
 	Long totalReaction;
 	boolean isMyReaction;
+	String time;
 }
