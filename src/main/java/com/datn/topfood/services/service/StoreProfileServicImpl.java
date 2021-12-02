@@ -245,7 +245,7 @@ public class StoreProfileServicImpl extends BaseService implements StoreProfileS
                 .map((food) -> new FoodDetailResponse(food.getId(), food.getName(), food.getPrice(), food.getContent(),
                         food.getFiles().stream().map((file) -> file.getPath()).collect(Collectors.toList()),
                         new TagResponse(food.getTag().getId(), food.getTag().getTagName()), reactionFoodRepo.totalFoodReaction(food.getId()),
-                        reactionFoodRepo.isMyReaction(food.getId(), itMe().getId()) != null))
+                        reactionFoodRepo.isMyReaction(food.getId(), itMe().getId()) != null,food.getProfile().getFoodHot()==null ? false : Stream.of(food.getProfile().getFoodHot().split(";")).anyMatch(s->Long.valueOf(s)==food.getId())))
                 .collect(Collectors.toList()), foods.getTotalElements(), pageRequest.getPageSize());
     }
 
@@ -271,11 +271,11 @@ public class StoreProfileServicImpl extends BaseService implements StoreProfileS
         food.setPrice(foodRequest.getPrice());
         food.setTag(tagRepository.findById(foodRequest.getTagId()).orElse(null));
         food = foodRepository.save(food);
-
+        final long id = food.getId();
         return new FoodDetailResponse(food.getId(), food.getName(), food.getPrice(), food.getContent(),
                 food.getFiles().stream().map((file) -> file.getPath()).collect(Collectors.toList()),
                 new TagResponse(food.getTag().getId(), food.getTag().getTagName()), reactionFoodRepo.totalFoodReaction(food.getId()),
-                reactionFoodRepo.isMyReaction(food.getId(), itMe().getId()) != null);
+                reactionFoodRepo.isMyReaction(food.getId(), itMe().getId()) != null,food.getProfile().getFoodHot()==null ? false : Stream.of(food.getProfile().getFoodHot().split(";")).anyMatch(s->Long.valueOf(s)==id));
     }
 
     @Override
@@ -407,7 +407,7 @@ public class StoreProfileServicImpl extends BaseService implements StoreProfileS
                 .map((food) -> new FoodDetailResponse(food.getId(), food.getName(), food.getPrice(), food.getContent(),
                         food.getFiles().stream().map((file) -> file.getPath()).collect(Collectors.toList()),
                         new TagResponse(food.getTag().getId(), food.getTag().getTagName()), reactionFoodRepo.totalFoodReaction(food.getId()),
-                        reactionFoodRepo.isMyReaction(food.getId(), itMe().getId()) != null))
+                        reactionFoodRepo.isMyReaction(food.getId(), itMe().getId()) != null,food.getProfile().getFoodHot()==null ? false : Stream.of(food.getProfile().getFoodHot().split(";")).anyMatch(s->Long.valueOf(s)==food.getId())))
                 .collect(Collectors.toList());
         return new PageResponse<>(response,
                 storeCustomRepository.countFoodsSearch(foodsRequest.getFoodName(), foodsRequest.getTagName(), foodsRequest.getStoreName()),
@@ -423,7 +423,7 @@ public class StoreProfileServicImpl extends BaseService implements StoreProfileS
                 .map((food) -> new FoodDetailResponse(food.getId(), food.getName(), food.getPrice(), food.getContent(),
                         food.getFiles().stream().map((file) -> file.getPath()).collect(Collectors.toList()),
                         new TagResponse(food.getTag().getId(), food.getTag().getTagName()), reactionFoodRepo.totalFoodReaction(food.getId()),
-                        reactionFoodRepo.isMyReaction(food.getId(), itMe().getId()) != null))
+                        reactionFoodRepo.isMyReaction(food.getId(), itMe().getId()) != null,food.getProfile().getFoodHot()==null ? false : Stream.of(food.getProfile().getFoodHot().split(";")).anyMatch(s->Long.valueOf(s)==food.getId())))
                 .collect(Collectors.toList()), foods.getTotalElements(), pageRequest.getPageSize());
     }
 
