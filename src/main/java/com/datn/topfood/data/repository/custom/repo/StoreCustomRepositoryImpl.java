@@ -1,5 +1,7 @@
 package com.datn.topfood.data.repository.custom.repo;
 
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -10,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import com.datn.topfood.data.model.Account;
+import com.datn.topfood.data.model.AccountFollow;
 import com.datn.topfood.data.model.Favorite;
 import com.datn.topfood.data.model.Food;
 import com.datn.topfood.data.model.Post;
@@ -153,5 +156,40 @@ public class StoreCustomRepositoryImpl implements StoreCustomRepository {
 			postQuery.setParameter("city", address);
 		}
         return Long.valueOf(postQuery.getResultList().size());
+	}
+	
+	@Override
+	public List<Post> postFollow( List<AccountFollow> accountFollow, PageRequest pageRequest) {
+		List<Long> profileIds = accountFollow.stream().map((al)->{
+			return al.getProfile().getId();
+		}).collect(Collectors.toList());
+		String sql = "select p from Post as p where p.profile.id in :profileIds and p.disableAt is null";
+		TypedQuery<Post> postQuery = entityManager.createQuery(sql, Post.class);
+		postQuery.setParameter("profileIds", profileIds);
+		List<Post> rs = postQuery.getResultList();
+		return rs;
+	}
+	
+	@Override
+	public List<Post> postLike(PageRequest pageRequest) {
+		String sql = "select p from Post as p where p.disableAt is null";
+		TypedQuery<Post> postQuery = entityManager.createQuery(sql, Post.class);
+		List<Post> posts = postQuery.getResultList();
+		Collections.sort(posts,(p1,p2)->{
+			return p2.getReactions().size() - p1.getReactions().size();
+		});
+		return posts;
+	}
+	
+	@Override
+	public List<Post> postHastag(List<Favorite> favorite, PageRequest pageRequest) {
+		String sql = "select p from Post as p join p.tags as t where t.id in :favorite and p.disableAt is null group by p";
+		List<Long> tagIds = favorite.stream().map((f)->{
+		return f.getTag().getId();
+		}).collect(Collectors.toList());
+		TypedQuery<Post> postQuery = entityManager.createQuery(sql, Post.class);
+		postQuery.setParameter("favorite", tagIds);
+        List<Post> posts = postQuery.getResultList();
+		return posts;
 	}
 }
