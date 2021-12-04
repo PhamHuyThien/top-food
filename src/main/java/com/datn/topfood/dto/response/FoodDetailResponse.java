@@ -22,4 +22,5 @@ public class FoodDetailResponse {
 	Long totalReaction;
 	
 	boolean isMyReaction;
+	boolean foodHot;
 }

@@ -245,7 +245,7 @@ public class StoreProfileServicImpl extends BaseService implements StoreProfileS
                 .map((food) -> new FoodDetailResponse(food.getId(), food.getName(), food.getPrice(), food.getContent(),
                         food.getFiles().stream().map((file) -> file.getPath()).collect(Collectors.toList()),
                         new TagResponse(food.getTag().getId(), food.getTag().getTagName()), reactionFoodRepo.totalFoodReaction(food.getId()),
-                        reactionFoodRepo.isMyReaction(food.getId(), itMe().getId()) != null))
+                        reactionFoodRepo.isMyReaction(food.getId(), itMe().getId()) != null,food.getProfile().getFoodHot()==null ? false : Stream.of(food.getProfile().getFoodHot().split(";")).anyMatch(s->Long.valueOf(s)==food.getId())))
                 .collect(Collectors.toList()), foods.getTotalElements(), pageRequest.getPageSize());
     }
 
@@ -271,11 +271,11 @@ public class StoreProfileServicImpl extends BaseService implements StoreProfileS
         food.setPrice(foodRequest.getPrice());
         food.setTag(tagRepository.findById(foodRequest.getTagId()).orElse(null));
         food = foodRepository.save(food);
-
+        final long id = food.getId();
         return new FoodDetailResponse(food.getId(), food.getName(), food.getPrice(), food.getContent(),
                 food.getFiles().stream().map((file) -> file.getPath()).collect(Collectors.toList()),
                 new TagResponse(food.getTag().getId(), food.getTag().getTagName()), reactionFoodRepo.totalFoodReaction(food.getId()),
-                reactionFoodRepo.isMyReaction(food.getId(), itMe().getId()) != null);
+                reactionFoodRepo.isMyReaction(food.getId(), itMe().getId()) != null,food.getProfile().getFoodHot()==null ? false : Stream.of(food.getProfile().getFoodHot().split(";")).anyMatch(s->Long.valueOf(s)==id));
     }
 
     @Override
@@ -305,7 +305,9 @@ public class StoreProfileServicImpl extends BaseService implements StoreProfileS
                     return new FoodResponse(f.getId(), f.getName(), f.getPrice(), f.getContent(), ConvertUtils.convertSetToArrFile(f.getFiles()), f.getProfile().getName());
                 }).collect(Collectors.toList()),ProfileResponse.builder().profile(Profile.builder().name(p.getProfile().getName())
                 		.address(p.getProfile().getAddress()).city(p.getProfile().getCity()).id(p.getProfile().getId()).avatar(p.getProfile().getAvatar()).build()).phoneNumber(p.getProfile().getAccount().getPhoneNumber()).build(),reactionPostRepository.totalReactionPost(p.getId())
-                ,reactionPostRepository.isMyReactionPost(p.getId(), itMe().getId())!=null);
+                ,reactionPostRepository.isMyReactionPost(p.getId(), itMe().getId())!=null,p.getCreateAt().toString().substring(0,p.getCreateAt().toString().lastIndexOf(".")==-1?
+                		p.getCreateAt().toString().length():p.getCreateAt().toString().lastIndexOf(".")
+                		));
     }
 
     @Override
@@ -333,7 +335,9 @@ public class StoreProfileServicImpl extends BaseService implements StoreProfileS
                         return new FoodResponse(f.getId(), f.getName(), f.getPrice(), f.getContent(), ConvertUtils.convertSetToArrFile(f.getFiles()), f.getProfile().getName());
                     }).collect(Collectors.toList()),ProfileResponse.builder().profile(Profile.builder().name(p.getProfile().getName())
                     		.address(p.getProfile().getAddress()).city(p.getProfile().getCity()).id(p.getProfile().getId()).avatar(p.getProfile().getAvatar()).build()).phoneNumber(p.getProfile().getAccount().getPhoneNumber()).build(),reactionPostRepository.totalReactionPost(p.getId())
-                    ,reactionPostRepository.isMyReactionPost(p.getId(), itMe().getId())!=null);
+                    ,reactionPostRepository.isMyReactionPost(p.getId(), itMe().getId())!=null,p.getCreateAt().toString().substring(0,p.getCreateAt().toString().lastIndexOf(".")==-1?
+                    		p.getCreateAt().toString().length():p.getCreateAt().toString().lastIndexOf("."))
+                    		);
         }
         return null;
     }
@@ -354,7 +358,9 @@ public class StoreProfileServicImpl extends BaseService implements StoreProfileS
                         return new FoodResponse(f.getId(), f.getName(), f.getPrice(), f.getContent(), ConvertUtils.convertSetToArrFile(f.getFiles()), f.getProfile().getName());
                     }).collect(Collectors.toList()),ProfileResponse.builder().profile(Profile.builder().name(p.getProfile().getName())
                     		.address(p.getProfile().getAddress()).city(p.getProfile().getCity()).id(p.getProfile().getId()).avatar(p.getProfile().getAvatar()).build()).phoneNumber(p.getProfile().getAccount().getPhoneNumber()).build(),reactionPostRepository.totalReactionPost(p.getId())
-                    ,reactionPostRepository.isMyReactionPost(p.getId(), itMe().getId())!=null));
+                    ,reactionPostRepository.isMyReactionPost(p.getId(), itMe().getId())!=null,p.getCreateAt().toString().substring(0,p.getCreateAt().toString().lastIndexOf(".")==-1?
+                    		p.getCreateAt().toString().length():p.getCreateAt().toString().lastIndexOf("."))
+                    		));
         }
         PageResponse<PostResponse> pageResponse = new PageResponse(listPostResponse, listPost.getTotalElements(),
                 pageRequest.getPageSize());
@@ -389,7 +395,9 @@ public class StoreProfileServicImpl extends BaseService implements StoreProfileS
                     return new FoodResponse(f.getId(), f.getName(), f.getPrice(), f.getContent(), ConvertUtils.convertSetToArrFile(f.getFiles()), f.getProfile().getName());
                 }).collect(Collectors.toList()),ProfileResponse.builder().profile(Profile.builder().name(p.getProfile().getName())
                 		.address(p.getProfile().getAddress()).city(p.getProfile().getCity()).id(p.getProfile().getId()).avatar(p.getProfile().getAvatar()).build()).phoneNumber(p.getProfile().getAccount().getPhoneNumber()).build(),reactionPostRepository.totalReactionPost(p.getId())
-                ,reactionPostRepository.isMyReactionPost(p.getId(), itMe().getId())!=null);
+                ,reactionPostRepository.isMyReactionPost(p.getId(), itMe().getId())!=null,p.getCreateAt().toString().substring(0,p.getCreateAt().toString().lastIndexOf(".")==-1?
+                		p.getCreateAt().toString().length():p.getCreateAt().toString().lastIndexOf("."))
+                		);
     }
 
     @Override
@@ -399,7 +407,7 @@ public class StoreProfileServicImpl extends BaseService implements StoreProfileS
                 .map((food) -> new FoodDetailResponse(food.getId(), food.getName(), food.getPrice(), food.getContent(),
                         food.getFiles().stream().map((file) -> file.getPath()).collect(Collectors.toList()),
                         new TagResponse(food.getTag().getId(), food.getTag().getTagName()), reactionFoodRepo.totalFoodReaction(food.getId()),
-                        reactionFoodRepo.isMyReaction(food.getId(), itMe().getId()) != null))
+                        reactionFoodRepo.isMyReaction(food.getId(), itMe().getId()) != null,food.getProfile().getFoodHot()==null ? false : Stream.of(food.getProfile().getFoodHot().split(";")).anyMatch(s->Long.valueOf(s)==food.getId())))
                 .collect(Collectors.toList());
         return new PageResponse<>(response,
                 storeCustomRepository.countFoodsSearch(foodsRequest.getFoodName(), foodsRequest.getTagName(), foodsRequest.getStoreName()),
@@ -415,7 +423,7 @@ public class StoreProfileServicImpl extends BaseService implements StoreProfileS
                 .map((food) -> new FoodDetailResponse(food.getId(), food.getName(), food.getPrice(), food.getContent(),
                         food.getFiles().stream().map((file) -> file.getPath()).collect(Collectors.toList()),
                         new TagResponse(food.getTag().getId(), food.getTag().getTagName()), reactionFoodRepo.totalFoodReaction(food.getId()),
-                        reactionFoodRepo.isMyReaction(food.getId(), itMe().getId()) != null))
+                        reactionFoodRepo.isMyReaction(food.getId(), itMe().getId()) != null,food.getProfile().getFoodHot()==null ? false : Stream.of(food.getProfile().getFoodHot().split(";")).anyMatch(s->Long.valueOf(s)==food.getId())))
                 .collect(Collectors.toList()), foods.getTotalElements(), pageRequest.getPageSize());
     }
 
@@ -465,7 +473,9 @@ public class StoreProfileServicImpl extends BaseService implements StoreProfileS
                         return new FoodResponse(f.getId(), f.getName(), f.getPrice(), f.getContent(), ConvertUtils.convertSetToArrFile(f.getFiles()), f.getProfile().getName());
                     }).collect(Collectors.toList()),ProfileResponse.builder().profile(Profile.builder().name(p.getProfile().getName())
                     		.address(p.getProfile().getAddress()).city(p.getProfile().getCity()).id(p.getProfile().getId()).avatar(p.getProfile().getAvatar()).build()).phoneNumber(p.getProfile().getAccount().getPhoneNumber()).build(),reactionPostRepository.totalReactionPost(p.getId())
-                    ,reactionPostRepository.isMyReactionPost(p.getId(), itMe().getId())!=null));
+                    ,reactionPostRepository.isMyReactionPost(p.getId(), itMe().getId())!=null,p.getCreateAt().toString().substring(0,p.getCreateAt().toString().lastIndexOf(".")==-1?
+                    		p.getCreateAt().toString().length():p.getCreateAt().toString().lastIndexOf("."))
+                    		));
         }
         PageResponse<PostResponse> pageResponse = new PageResponse(listPostResponse, listPost.getTotalElements(),
                 pageRequest.getPageSize());
@@ -490,7 +500,9 @@ public class StoreProfileServicImpl extends BaseService implements StoreProfileS
                         return new FoodResponse(f.getId(), f.getName(), f.getPrice(), f.getContent(), ConvertUtils.convertSetToArrFile(f.getFiles()), f.getProfile().getName());
                     }).collect(Collectors.toList()),ProfileResponse.builder().profile(Profile.builder().name(p.getProfile().getName())
                     		.address(p.getProfile().getAddress()).city(p.getProfile().getCity()).id(p.getProfile().getId()).avatar(p.getProfile().getAvatar()).build()).phoneNumber(p.getProfile().getAccount().getPhoneNumber()).build(),reactionPostRepository.totalReactionPost(p.getId())
-                    ,reactionPostRepository.isMyReactionPost(p.getId(), itMe().getId())!=null));
+                    ,reactionPostRepository.isMyReactionPost(p.getId(), itMe().getId())!=null,p.getCreateAt().toString().substring(0,p.getCreateAt().toString().lastIndexOf(".")==-1?
+                    		p.getCreateAt().toString().length():p.getCreateAt().toString().lastIndexOf("."))
+                    		));
         }
         PageResponse<PostResponse> pageResponse = new PageResponse(listPostResponse, listPost.getTotalElements(),
                 pageRequest.getPageSize());
@@ -579,7 +591,9 @@ public class StoreProfileServicImpl extends BaseService implements StoreProfileS
                         return new FoodResponse(f.getId(), f.getName(), f.getPrice(), f.getContent(), ConvertUtils.convertSetToArrFile(f.getFiles()), f.getProfile().getName());
                     }).collect(Collectors.toList()),ProfileResponse.builder().profile(Profile.builder().name(p.getProfile().getName())
                     		.address(p.getProfile().getAddress()).city(p.getProfile().getCity()).id(p.getProfile().getId()).avatar(p.getProfile().getAvatar()).build()).phoneNumber(p.getProfile().getAccount().getPhoneNumber()).build(),reactionPostRepository.totalReactionPost(p.getId())
-                    ,reactionPostRepository.isMyReactionPost(p.getId(), itMe().getId())!=null));
+                    ,reactionPostRepository.isMyReactionPost(p.getId(), itMe().getId())!=null,p.getCreateAt().toString().substring(0,p.getCreateAt().toString().lastIndexOf(".")==-1?
+                    		p.getCreateAt().toString().length():p.getCreateAt().toString().lastIndexOf("."))
+                    		));
         }
         PageResponse<PostResponse> pageResponse = new PageResponse(listPostResponse, storeCustomRepository.newFeedSize(city, favorite, pageRequest),
                 pageRequest.getPageSize());
@@ -602,7 +616,9 @@ public class StoreProfileServicImpl extends BaseService implements StoreProfileS
                         return new FoodResponse(f.getId(), f.getName(), f.getPrice(), f.getContent(), ConvertUtils.convertSetToArrFile(f.getFiles()), f.getProfile().getName());
                     }).collect(Collectors.toList()),ProfileResponse.builder().profile(Profile.builder().name(p.getProfile().getName())
                     		.address(p.getProfile().getAddress()).city(p.getProfile().getCity()).id(p.getProfile().getId()).avatar(p.getProfile().getAvatar()).build()).phoneNumber(p.getProfile().getAccount().getPhoneNumber()).build(),reactionPostRepository.totalReactionPost(p.getId())
-                    ,reactionPostRepository.isMyReactionPost(p.getId(), itMe().getId())!=null));
+                    ,reactionPostRepository.isMyReactionPost(p.getId(), itMe().getId())!=null,p.getCreateAt().toString().substring(0,p.getCreateAt().toString().lastIndexOf(".")==-1?
+                    		p.getCreateAt().toString().length():p.getCreateAt().toString().lastIndexOf("."))
+                    		));
         }
         PageResponse<PostResponse> pageResponse = new PageResponse(listPostResponse, post.size(),
                 pageRequest.getPageSize());
@@ -623,7 +639,9 @@ public class StoreProfileServicImpl extends BaseService implements StoreProfileS
                         return new FoodResponse(f.getId(), f.getName(), f.getPrice(), f.getContent(), ConvertUtils.convertSetToArrFile(f.getFiles()), f.getProfile().getName());
                     }).collect(Collectors.toList()),ProfileResponse.builder().profile(Profile.builder().name(p.getProfile().getName())
                     		.address(p.getProfile().getAddress()).city(p.getProfile().getCity()).id(p.getProfile().getId()).avatar(p.getProfile().getAvatar()).build()).phoneNumber(p.getProfile().getAccount().getPhoneNumber()).build(),reactionPostRepository.totalReactionPost(p.getId())
-                    ,reactionPostRepository.isMyReactionPost(p.getId(), itMe().getId())!=null));
+                    ,reactionPostRepository.isMyReactionPost(p.getId(), itMe().getId())!=null,p.getCreateAt().toString().substring(0,p.getCreateAt().toString().lastIndexOf(".")==-1?
+                    		p.getCreateAt().toString().length():p.getCreateAt().toString().lastIndexOf("."))
+                    		));
         }
         PageResponse<PostResponse> pageResponse = new PageResponse(listPostResponse, post.size(),
                 pageRequest.getPageSize());
@@ -647,7 +665,9 @@ public class StoreProfileServicImpl extends BaseService implements StoreProfileS
                         return new FoodResponse(f.getId(), f.getName(), f.getPrice(), f.getContent(), ConvertUtils.convertSetToArrFile(f.getFiles()), f.getProfile().getName());
                     }).collect(Collectors.toList()),ProfileResponse.builder().profile(Profile.builder().name(p.getProfile().getName())
                     		.address(p.getProfile().getAddress()).city(p.getProfile().getCity()).id(p.getProfile().getId()).avatar(p.getProfile().getAvatar()).build()).phoneNumber(p.getProfile().getAccount().getPhoneNumber()).build(),reactionPostRepository.totalReactionPost(p.getId())
-                    ,reactionPostRepository.isMyReactionPost(p.getId(), itMe().getId())!=null));
+                    ,reactionPostRepository.isMyReactionPost(p.getId(), itMe().getId())!=null,p.getCreateAt().toString().substring(0,p.getCreateAt().toString().lastIndexOf(".")==-1?
+                    		p.getCreateAt().toString().length():p.getCreateAt().toString().lastIndexOf("."))
+                    		));
         }
         PageResponse<PostResponse> pageResponse = new PageResponse(listPostResponse, posts.size(),
                 pageRequest.getPageSize());
