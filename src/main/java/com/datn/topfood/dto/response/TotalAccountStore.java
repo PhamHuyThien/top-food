@@ -4,10 +4,12 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-@Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class TotalAccount {
-    Long totalByRole;
-    Long totalAccount;
+@Data
+public class TotalAccountStore {
+    Long total;
+    Long storeActive;
+    Long storeBlock;
+    Long storeWaitActive;
 }

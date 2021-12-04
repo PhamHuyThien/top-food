@@ -84,11 +84,11 @@ public class AccountServiceImpl extends BaseService implements AccountService {
   }
 
   @Override
-  public PageResponse<AccountResponse> searchByPhoneNumber(String phoneNumber, PageRequest request) {
+  public PageResponse<AccountResponse> searchByPhoneNumber(String phoneNumber,AccountRole role,AccountStatus status, PageRequest request) {
     Pageable pageable = PageUtils.toPageable(request);
     List<AccountResponse> accountResponses = new ArrayList<>();
     phoneNumber = "%" + phoneNumber + "%";
-    Page<AccountPro> accounts = accountRepository.findByPhoneNumberLike(phoneNumber, pageable);
+    Page<AccountPro> accounts = accountRepository.findByPhoneNumberLike(phoneNumber,role,status, pageable);
     for (AccountPro x : accounts) {
       AccountResponse accountResponse = new AccountResponse();
       accountResponse.setDisableAt(x.getAccount().getDisableAt());
@@ -199,12 +199,30 @@ public class AccountServiceImpl extends BaseService implements AccountService {
   }
 
   @Override
-  public TotalAccount getTotalAccount(AccountStatus status, AccountRole role) {
-    Long total=accountRepository.totalAccount(role);
-    Long totalByRole=accountRepository.totalAccountByRole(status,role);
-    TotalAccount totalAccount=new TotalAccount();
-    totalAccount.setTotalAccount(total);
-    totalAccount.setTotalByRole(totalByRole);
-    return totalAccount ;
+  public TotalAccountUser getTotalAccountUser() {
+    Long totalUser=accountRepository.totalAccount(AccountRole.ROLE_USER);
+    Long accountActive=accountRepository.totalAccountByRole(AccountStatus.ACTIVE,AccountRole.ROLE_USER);
+    Long accountBlock=accountRepository.totalAccountByRole(AccountStatus.DISABLE,AccountRole.ROLE_USER);
+    Long accountWaitActive=accountRepository.totalAccountByRole(AccountStatus.WAIT_ACTIVE,AccountRole.ROLE_USER);
+    TotalAccountUser totalAccountUser=new TotalAccountUser();
+    totalAccountUser.setTotal(totalUser);
+    totalAccountUser.setAccountActive(accountActive);
+    totalAccountUser.setAccountBlock(accountBlock);
+    totalAccountUser.setAccountWaitActive(accountWaitActive);
+    return totalAccountUser;
+  }
+
+  @Override
+  public TotalAccountStore getTotalAccountStore() {
+    Long totalStore=accountRepository.totalAccount(AccountRole.ROLE_STORE);
+    Long totalStoreActive=accountRepository.totalAccountByRole(AccountStatus.ACTIVE,AccountRole.ROLE_STORE);
+    Long totalStoreBlock=accountRepository.totalAccountByRole(AccountStatus.DISABLE,AccountRole.ROLE_STORE);
+    Long totalStoreWaitActive=accountRepository.totalAccountByRole(AccountStatus.WAIT_ACTIVE,AccountRole.ROLE_STORE);
+    TotalAccountStore totalAccountStore=new TotalAccountStore();
+    totalAccountStore.setTotal(totalStore);
+    totalAccountStore.setStoreActive(totalStoreActive);
+    totalAccountStore.setStoreBlock(totalStoreBlock);
+    totalAccountStore.setStoreWaitActive(totalStoreWaitActive);
+    return totalAccountStore;
   }
 }
