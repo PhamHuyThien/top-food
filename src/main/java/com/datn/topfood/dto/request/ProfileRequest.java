@@ -16,4 +16,5 @@ public class ProfileRequest {
   String address;
   Timestamp birthday;
   String avatar;
+  String phone;
 }

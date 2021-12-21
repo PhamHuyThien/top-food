@@ -62,6 +62,9 @@ public class ProfileServiceImpl extends BaseService implements ProfileService {
         profile.setAvatar(profileRequest.getAvatar());
         profile.setUpdateAt(DateUtils.currentTimestamp());
         profileRepository.save(profile);
+        Account account = accountRepository.findById(profile.getId()).orElseThrow(() -> new RuntimeException("account not found"));
+        account.setPhoneNumber(profileRequest.getPhone());
+        accountRepository.save(account);
     }
 
     @Override
