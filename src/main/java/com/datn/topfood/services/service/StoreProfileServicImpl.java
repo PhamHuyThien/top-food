@@ -154,7 +154,7 @@ public class StoreProfileServicImpl extends BaseService implements StoreProfileS
 
     @Override
     public StoreWallResponse storeProfile(Long storeProfileId) {
-        Profile p = profileRepository.findByAccountId(storeProfileId);
+        Profile p = profileRepository.findById(storeProfileId).orElse(null);
         if (p == null) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, Message.OTHER_ACTION_IS_DENIED);
         }

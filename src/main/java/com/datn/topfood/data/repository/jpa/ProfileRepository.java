@@ -39,7 +39,9 @@ public interface ProfileRepository extends JpaRepository<Profile, Long> {
     Optional<ProfileResponse> findFiendProfileByProfileId(Long profileId);
 
     Profile findByAccountId(long profileId);
-    
+
+    Profile findById(long profileId);
+
     @Query("select p from Profile as p where p.account.id = ?1")
     Profile findprofileByAccountId(long profileId);
 
