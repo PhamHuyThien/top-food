@@ -16,7 +16,11 @@ public interface PostRepository extends JpaRepository<Post, Long>{
 	
 	@Query("select p from Post as p where p.profile.account.id = ?1 and p.disableAt is null")
 	public Page<Post> findAllByAccount(Long accountId,Pageable pageable);
-	
+
+	@Query("select p from Post as p where p.profile.id = ?1 and p.disableAt is null")
+	public Page<Post> findAllByProfileId(Long profileId,Pageable pageable);
+
+
 	@Query("select p from Post as p where p.profile.city = ?1 and p.disableAt is null")
 	public Page<Post> findByPostCity(Integer address,Pageable pageable);
 	

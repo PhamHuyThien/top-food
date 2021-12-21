@@ -245,7 +245,7 @@ public class StoreProfileServicImpl extends BaseService implements StoreProfileS
     @Override
     public PageResponse<FoodDetailResponse> listFood(Long id, PageRequest pageRequest) {
         Pageable pageable = PageUtils.toPageable(pageRequest);
-        Page<Food> foods = foodRepository.findByAccountUsername(accountRepository.findById(id).get().getUsername(), pageable);
+        Page<Food> foods = foodRepository.findByProfileId(id, pageable);
         return new PageResponse<>(foods.stream()
                 .map((food) -> new FoodDetailResponse(food.getId(), food.getName(), food.getPrice(), food.getContent(),
                         food.getFiles().stream().map((file) -> file.getPath()).collect(Collectors.toList()),
@@ -351,7 +351,7 @@ public class StoreProfileServicImpl extends BaseService implements StoreProfileS
     public PageResponse<PostResponse> getListPost(Long accountId, PageRequest pageRequest) {
         Pageable pageable = org.springframework.data.domain.PageRequest.of(pageRequest.getPage(), pageRequest.getPageSize(),
                 Sort.by(Direction.DESC, "id"));
-        Page<Post> listPost = postRepository.findAllByAccount(accountId, pageable);
+        Page<Post> listPost = postRepository.findAllByProfileId(accountId, pageable);
         List<PostResponse> listPostResponse = new ArrayList<PostResponse>();
         if (listPost == null) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, Message.NULL_DATA);
@@ -467,7 +467,7 @@ public class StoreProfileServicImpl extends BaseService implements StoreProfileS
         Pageable pageable = org.springframework.data.domain.PageRequest.of(pageRequest.getPage(), pageRequest.getPageSize(),
                 Sort.by(Direction.DESC, "id"));
         Page<Post> listPost = postRepository.findByPostCity(address, pageable);
-        List<PostResponse> listPostResponse = new ArrayList<PostResponse>();
+        List<PostResponse> listPostResponse = new ArrayList<>();
         if (listPost == null) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, Message.NULL_DATA);
         }
@@ -476,8 +476,16 @@ public class StoreProfileServicImpl extends BaseService implements StoreProfileS
                     .stream().map((tag) -> new TagResponse(tag.getId(), tag.getTagName())).collect(Collectors.toList()),
                     p.getFoods().stream().map((f) -> {
                         return new FoodResponse(f.getId(), f.getName(), f.getPrice(), f.getContent(), ConvertUtils.convertSetToArrFile(f.getFiles()), f.getProfile().getName());
-                    }).collect(Collectors.toList()), ProfileResponse.builder().profile(Profile.builder().name(p.getProfile().getName())
-                    .address(p.getProfile().getAddress()).city(p.getProfile().getCity()).id(p.getProfile().getId()).avatar(p.getProfile().getAvatar()).build()).phoneNumber(p.getProfile().getAccount().getPhoneNumber()).build(), reactionPostRepository.totalReactionPost(p.getId())
+                    }).collect(Collectors.toList()),
+                        ProfileResponse.builder()
+                            .accountId(p.getProfile().getAccount().getId())
+                                .profile(Profile.builder().name(p.getProfile().getName())
+                                            .address(p.getProfile().getAddress())
+                    .city(p.getProfile().getCity())
+                    .id(p.getProfile().getId())
+                    .avatar(p.getProfile().getAvatar()).build())
+                    .phoneNumber(p.getProfile().getAccount().getPhoneNumber())
+                    .build(), reactionPostRepository.totalReactionPost(p.getId())
                     , reactionPostRepository.isMyReactionPost(p.getId(), itMe().getId()) != null, p.getCreateAt().toString().substring(0, p.getCreateAt().toString().lastIndexOf(".") == -1 ?
                     p.getCreateAt().toString().length() : p.getCreateAt().toString().lastIndexOf("."))
             ));
