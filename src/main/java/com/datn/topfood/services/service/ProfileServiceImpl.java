@@ -43,7 +43,7 @@ public class ProfileServiceImpl extends BaseService implements ProfileService {
 
     @Override
     public ProfileResponse getFiendProfileByAccountId(Long id) {
-        ProfileResponse profileResponse = profileRepository.findFiendProfileByAccountId(id).orElse(null);
+        ProfileResponse profileResponse = profileRepository.findFiendProfileByAccountIdOrProfileId(id, id).orElse(null);
         if (profileResponse == null) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, Message.PROFILE_NOT_EXISTS);
         }
@@ -71,6 +71,9 @@ public class ProfileServiceImpl extends BaseService implements ProfileService {
         List<SearchProfileResponse> profileResponses = new ArrayList<>();
         search = "%" + search + "%";
         Page<Profile> profilePage = profileRepository.findByNameLikeOrPhoneLike(search, search, itMe.getId(), pageable);
+        if (profilePage.isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Danh sách trống.");
+        }
         for (Profile profile : profilePage) {
             SearchProfileResponse searchProfileResponse = new SearchProfileResponse();
             FriendShip friendShip = friendShipRepository.findFriendShipRelation(itMe.getUsername(), profile.getAccount().getUsername());

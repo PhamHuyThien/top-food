@@ -25,6 +25,19 @@ public interface ProfileRepository extends JpaRepository<Profile, Long> {
             "WHERE acc.id = ?1")
     Optional<ProfileResponse> findFiendProfileByAccountId(Long id);
 
+    @Query("select new com.datn.topfood.dto.response.ProfileResponse(" +
+            "acc.id, " +
+            "acc.username, " +
+            "acc.phoneNumber, " +
+            "acc.email, " +
+            "acc.role, " +
+            "prof " +
+            ") " +
+            "from Profile prof " +
+            "JOIN Account acc ON prof.account = acc " +
+            "WHERE acc.id = ?1 or prof.id = ?2")
+    Optional<ProfileResponse> findFiendProfileByAccountIdOrProfileId(Long id, Long profileId);
+
     Profile findByAccountId(long profileId);
     
     @Query("select p from Profile as p where p.account.id = ?1")
